@@ -4,5 +4,5 @@
 
 {% block content %}
 <h1> Home </h1>
-<p> greeting value is: {{ greeting }}.</p>
+<p> greeting value is still: {{ greeting }}.</p>
 {% endblock %}

@@ -8,7 +8,7 @@ public class BasicApplication extends Application {
 
   @Override
   protected void onInit() {
-    //addPublicResourceRoute();
+    addPublicResourceRoute();
     //addWebjarsResourceRoute();
 
     // send 'Hello World' as response
