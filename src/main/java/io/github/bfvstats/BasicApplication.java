@@ -8,6 +8,9 @@ public class BasicApplication extends Application {
 
   @Override
   protected void onInit() {
+    //addPublicResourceRoute();
+    //addWebjarsResourceRoute();
+
     // send 'Hello World' as response
     GET("/", routeContext -> routeContext.send("Hello World"));
 
