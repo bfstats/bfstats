@@ -14,6 +14,7 @@ repositories {
 
 dependencies {
     testCompile "junit:junit:4.11"
+    compile "ro.pippo:pippo-test:${pippoVersion}"
 
     compileOnly "org.projectlombok:lombok:1.16.12"
 
