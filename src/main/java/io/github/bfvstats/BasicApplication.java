@@ -2,7 +2,7 @@ package io.github.bfvstats;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import io.github.bfvstats.controller.ContactController;
+import io.github.bfvstats.controller.PlayerController;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.guice.GuiceControllerFactory;
 
@@ -21,8 +21,8 @@ public class BasicApplication extends ControllerApplication {
     addPublicResourceRoute();
     //addWebjarsResourceRoute();
 
-    GET("/contacts(/?)", ContactController.class, "list");
-    GET("/contacts/{id}", ContactController.class, "details");
+    GET("/players(/?)", PlayerController.class, "list");
+    GET("/players/{id}", PlayerController.class, "details");
 
     // send 'Hello World' as response
     GET("/", routeContext -> routeContext.send("Hello World"));
@@ -32,20 +32,20 @@ public class BasicApplication extends ControllerApplication {
 
     // send a json as response
     GET("/json", routeContext -> {
-      Contact contact = createContact();
-      routeContext.json().send(contact);
+      Player player = createPlayer();
+      routeContext.json().send(player);
     });
 
     // send xml as response
     GET("/xml", routeContext -> {
-      Contact contact = createContact();
-      routeContext.xml().send(contact);
+      Player player = createPlayer();
+      routeContext.xml().send(player);
     });
 
     // send an object and negotiate the Response content-type, default to XML
     GET("/negotiate", routeContext -> {
-      Contact contact = createContact();
-      routeContext.xml().negotiateContentType().send(contact);
+      Player player = createPlayer();
+      routeContext.xml().negotiateContentType().send(player);
     });
 
     // send a template as response
@@ -55,8 +55,8 @@ public class BasicApplication extends ControllerApplication {
     });
   }
 
-  private Contact createContact() {
-    return new Contact()
+  private Player createPlayer() {
+    return new Player()
         .setId(12345)
         .setName("John")
         .setPhone("0733434435")

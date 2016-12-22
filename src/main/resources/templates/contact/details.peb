@@ -1,9 +1,0 @@
-{% extends "layout" %}
-
-{% block title %} Contact Details {% endblock %}
-
-{% block content %}
-Contact details
-Name: {{ contact.name }}
-
-{% endblock %}

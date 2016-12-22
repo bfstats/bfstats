@@ -1,0 +1,13 @@
+{% extends "layout" %}
+
+{% block title %} Players List {% endblock %}
+
+{% block content %}
+
+{% for player in players %}
+Name: {{ player.name }}
+{% else %}
+<p> There are no players. </p>
+{% endfor %}
+
+{% endblock %}

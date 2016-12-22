@@ -2,7 +2,7 @@ package io.github.bfvstats.service;
 
 // For convenience, always static import your generated tables and jOOQ functions to decrease verbosity:
 
-import io.github.bfvstats.Contact;
+import io.github.bfvstats.Player;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -16,11 +16,11 @@ import java.util.List;
 
 import static io.github.bfvstats.jpa.tables.SelectbfPlayers.SELECTBF_PLAYERS;
 
-public class DatabaseContractService implements ContactService {
+public class DatabaseContractService implements PlayerService {
   @Override
-  public List<Contact> getContacts() {
+  public List<Player> getPlayers() {
 
-    List<Contact> contacts = new ArrayList<>();
+    List<Player> players = new ArrayList<>();
 
     // Connection is the only JDBC resource that we need
     // PreparedStatement and ResultSet are handled by jOOQ, internally
@@ -33,10 +33,10 @@ public class DatabaseContractService implements ContactService {
         String nickname = r.getValue(SELECTBF_PLAYERS.NAME);
         String keyHash = r.getValue(SELECTBF_PLAYERS.KEYHASH);
 
-        Contact contact = new Contact().setId(id)
+        Player player = new Player().setId(id)
             .setName(nickname)
             .setAddress(keyHash);
-        contacts.add(contact);
+        players.add(player);
 
         System.out.println("ID: " + id + " nickname: " + nickname + " key hash: " + keyHash);
       }
@@ -45,11 +45,11 @@ public class DatabaseContractService implements ContactService {
       e.printStackTrace();
     }
 
-    return contacts;
+    return players;
   }
 
   @Override
-  public Contact getContact(int id) {
+  public Player getPlayer(int id) {
     return null;
   }
 }

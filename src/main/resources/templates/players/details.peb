@@ -1,0 +1,9 @@
+{% extends "layout" %}
+
+{% block title %} Player {{ player.name }} {% endblock %}
+
+{% block content %}
+Player details
+Name: {{ player.name }}
+
+{% endblock %}
