@@ -1,0 +1,1 @@
+java -classpath jooq-3.8.6.jar;jooq-meta-3.8.6.jar;jooq-codegen-3.8.6.jar;sqlite-jdbc-3.15.1.jar;. org.jooq.util.GenerationTool library.xml
