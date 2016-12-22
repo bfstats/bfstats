@@ -9,19 +9,23 @@ def pippoVersion = '1.0.0'
 //sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-    testCompile "junit:junit:4.11"
-    compile "ro.pippo:pippo-test:${pippoVersion}"
+  testCompile "junit:junit:4.11"
+  compile "ro.pippo:pippo-test:${pippoVersion}"
 
-    compileOnly "org.projectlombok:lombok:1.16.12"
+  compileOnly "org.projectlombok:lombok:1.16.12"
 
-    compile "org.slf4j:slf4j-simple:1.7.22"
-    compile "ro.pippo:pippo-core:${pippoVersion}"
-    compile "ro.pippo:pippo-jackson:${pippoVersion}"
-    compile "ro.pippo:pippo-jaxb:${pippoVersion}"
-    compile "ro.pippo:pippo-pebble:${pippoVersion}"
-    compile "ro.pippo:pippo-undertow:${pippoVersion}"
+  compile "org.slf4j:slf4j-simple:1.7.22"
+  compile "ro.pippo:pippo-core:${pippoVersion}"
+
+  compile "com.google.inject:guice:4.1.0"
+  compile "ro.pippo:pippo-guice:${pippoVersion}"
+
+  compile "ro.pippo:pippo-jackson:${pippoVersion}"
+  compile "ro.pippo:pippo-jaxb:${pippoVersion}"
+  compile "ro.pippo:pippo-pebble:${pippoVersion}"
+  compile "ro.pippo:pippo-undertow:${pippoVersion}"
 }
