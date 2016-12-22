@@ -1,15 +1,28 @@
 package io.github.bfvstats;
 
-import ro.pippo.core.Application;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import io.github.bfvstats.controller.ContactController;
+import ro.pippo.controller.ControllerApplication;
+import ro.pippo.guice.GuiceControllerFactory;
 
 import java.io.File;
 
-public class BasicApplication extends Application {
+public class BasicApplication extends ControllerApplication {
 
   @Override
   protected void onInit() {
+    // create guice injector
+    Injector injector = Guice.createInjector(new InjectionModule());
+
+    // registering GuiceControllerFactory
+    setControllerFactory(new GuiceControllerFactory(injector));
+
     addPublicResourceRoute();
     //addWebjarsResourceRoute();
+
+    GET("/contacts", ContactController.class, "list");
+    GET("/contacts/{id}", ContactController.class, "details");
 
     // send 'Hello World' as response
     GET("/", routeContext -> routeContext.send("Hello World"));

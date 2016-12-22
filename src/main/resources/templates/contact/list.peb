@@ -1,0 +1,7 @@
+{% extends "layout" %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+Contacts list
+{% endblock %}
