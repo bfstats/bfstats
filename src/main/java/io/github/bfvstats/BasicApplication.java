@@ -21,7 +21,7 @@ public class BasicApplication extends ControllerApplication {
     addPublicResourceRoute();
     //addWebjarsResourceRoute();
 
-    GET("/contacts", ContactController.class, "list");
+    GET("/contacts(/?)", ContactController.class, "list");
     GET("/contacts/{id}", ContactController.class, "details");
 
     // send 'Hello World' as response
