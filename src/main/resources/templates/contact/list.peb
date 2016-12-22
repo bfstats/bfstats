@@ -4,4 +4,11 @@
 
 {% block content %}
 Contacts list
+
+{% for contact in contacts %}
+Name: {{ contact.name }}
+{% else %}
+<p> There are no contacts. </p>
+{% endfor %}
+
 {% endblock %}
