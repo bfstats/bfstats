@@ -3,6 +3,7 @@ package io.github.bfvstats;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.github.bfvstats.controller.PlayerController;
+import io.github.bfvstats.util.DbUtils;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.guice.GuiceControllerFactory;
 
@@ -53,6 +54,13 @@ public class BasicApplication extends ControllerApplication {
       routeContext.setLocal("greeting", "Hello");
       routeContext.render("hello");
     });
+
+    closeDbConnections();
+  }
+
+  private void closeDbConnections() {
+    ALL("/.*", (routeContext) -> DbUtils.closeDslContext())
+        .runAsFinally();
   }
 
   private Player createPlayer() {
