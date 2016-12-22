@@ -4,10 +4,15 @@
 
 {% block content %}
 
-{% for player in players %}
-Name: {{ player.name }}
+
+{% if players is empty %}
+  There are no players.
 {% else %}
-<p> There are no players. </p>
-{% endfor %}
+  <ul>
+    {% for player in players %}
+    <li><a href="/players/{{ player.id }}">{{ player.name }}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}
 
 {% endblock %}

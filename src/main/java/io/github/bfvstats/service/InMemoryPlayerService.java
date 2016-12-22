@@ -20,7 +20,6 @@ public class InMemoryPlayerService implements PlayerService {
     return new Player()
         .setId(id)
         .setName("John")
-        .setPhone("0733434435")
-        .setAddress("Sunflower Street, No. 6");
+        .setKeyHash("Sunflower Street, No. 6");
   }
 }

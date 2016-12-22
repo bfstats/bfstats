@@ -59,7 +59,6 @@ public class BasicApplication extends ControllerApplication {
     return new Player()
         .setId(12345)
         .setName("John")
-        .setPhone("0733434435")
-        .setAddress("Sunflower Street, No. 6");
+        .setKeyHash("Sunflower Street, No. 6");
   }
 }

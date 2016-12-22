@@ -35,10 +35,8 @@ public class DatabaseContractService implements PlayerService {
 
         Player player = new Player().setId(id)
             .setName(nickname)
-            .setAddress(keyHash);
+            .setKeyHash(keyHash);
         players.add(player);
-
-        System.out.println("ID: " + id + " nickname: " + nickname + " key hash: " + keyHash);
       }
 
     } catch (SQLException e) {
@@ -50,6 +48,22 @@ public class DatabaseContractService implements PlayerService {
 
   @Override
   public Player getPlayer(int id) {
+    try (Connection conn = DriverManager.getConnection("jdbc:sqlite:test.db", "", "")) {
+      DSLContext create = DSL.using(conn);
+      Record r = create.select().from(SELECTBF_PLAYERS).
+          where(SELECTBF_PLAYERS.ID.equal(id)).fetchOne();
+
+      String nickname = r.getValue(SELECTBF_PLAYERS.NAME);
+      String keyHash = r.getValue(SELECTBF_PLAYERS.KEYHASH);
+
+      return new Player().setId(id)
+          .setName(nickname)
+          .setKeyHash(keyHash);
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
     return null;
   }
 }
