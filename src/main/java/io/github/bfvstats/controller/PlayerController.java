@@ -26,4 +26,16 @@ public class PlayerController extends Controller {
     Player player = playerService.getPlayer(id);
     getResponse().bind("player", player).render("players/details");
   }
+
+  public void jsonRandom() {
+    Player player = createPlayer();
+    getRouteContext().json().send(player);
+  }
+
+  private Player createPlayer() {
+    return new Player()
+        .setId(12345)
+        .setName("John")
+        .setKeyHash("Sunflower Street, No. 6");
+  }
 }
