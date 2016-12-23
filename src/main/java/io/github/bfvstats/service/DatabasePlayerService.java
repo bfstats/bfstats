@@ -8,7 +8,7 @@ import org.jooq.Result;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.bfvstats.jpa.tables.SelectbfPlayers.SELECTBF_PLAYERS;
+import static io.github.bfvstats.jpa.Tables.SELECTBF_PLAYERS;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class DatabasePlayerService implements PlayerService {

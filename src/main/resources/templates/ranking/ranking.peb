@@ -1,0 +1,59 @@
+{% extends "layout" %}
+
+{% block title %} Player Rankings {% endblock %}
+
+{% block content %}
+{% if players is empty %}
+There are no players.
+{% else %}
+<table>
+  <thead>
+  <tr>
+    <th>Rank</th>
+    <th>Player</th>
+    <th>Points</th>
+    <th>S/R</th>
+    <th>Score</th>
+    <th>Kills</th>
+    <th>Deaths</th>
+    <th>K/D</th>
+    <th>Gold</th>
+    <th>Silver</th>
+    <th>Bronze</th>
+    <th>TKs</th>
+    <th>Basepoint Conquers</th>
+    <th>Flag Captures</th>
+    <th>Objectives achieved</th>
+    <th>Rounds Played</th>
+    <th>Heals</th>
+    <th>Repairs</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for player in players %}
+  <tr>
+    <td>{{ player.rank }}</td>
+    <td><a href="/players/{{ player.id }}">{{ player.name }}</a></td>
+    <td>{{ player.points }}</td>
+    <td>{{ player.averageScore }}</td>
+    <td>{{ player.score }}</td>
+    <td>{{ player.kills }}</td>
+    <td>{{ player.deaths }}</td>
+    <td>{{ player.killDeathRatio }}</td>
+    <td>{{ player.goldCount }}</td>
+    <td>{{ player.silverCount }}</td>
+    <td>{{ player.bronzeCount }}</td>
+    <td>{{ player.teamKills }}</td>
+    <td>{{ player.attacks }}</td>
+    <td>{{ player.captures }}</td>
+    <td>{{ player.objectives }}</td>
+    <td>{{ player.roundsPlayed }}</td>
+    <td>{{ player.heals }}</td>
+    <td>{{ player.otherRepairs }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% endblock %}
