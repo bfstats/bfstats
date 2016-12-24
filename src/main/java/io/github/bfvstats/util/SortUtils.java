@@ -47,6 +47,9 @@ public class SortUtils {
   // if string type column, then converts it to lower(), so that sorting is case insensitive
   private static Field<?> getSortableField(Table table, String columnName) {
     Field<?> field = table.field(columnName);
+    if (field == null) {
+      throw new IllegalArgumentException("Bad sorting property");
+    }
     if (field.getType().equals(String.class)) {
       Field<String> fieldTypedString = field.cast(String.class);
       field = DSL.lower(fieldTypedString);

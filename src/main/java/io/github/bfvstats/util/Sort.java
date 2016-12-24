@@ -1,7 +1,9 @@
 package io.github.bfvstats.util;
 
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 public class Sort {
   public enum SortOrder {
     ASC, DESC

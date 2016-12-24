@@ -2,6 +2,29 @@
 
 {% block title %} Player Rankings {% endblock %}
 
+{% macro getNewOrder(columnName, sortingColumn, sortingOrder) %}
+{{sortingColumn == columnName ? (sortingOrder == "ASC" ? "DESC" : "ASC") : "DESC"}}
+{% endmacro %}
+
+{% macro sortingUrl(columnName,sortingColumn,sortingOrder) %}
+{{'sort=' + columnName + ',' + getNewOrder(columnName,sortingColumn,sortingOrder)}}
+{% endmacro %}
+
+{% macro sortingIndicator(columnName, sortingColumn, sortingOrder) %}
+{% if sortingColumn == columnName %}
+  {% if sortingOrder == "ASC" %}
+  <span class="sorted order-ascending">▲</span>
+  {% else %}
+  <span class="sorted order-descending">▼</span>
+  {% endif %}
+{% endif %}
+{% endmacro %}
+
+{% macro sortableLink(description, columnName, sortingColumn, sortingOrder) %}
+<a href="?{{sortingUrl(columnName,sortingColumn,sortingOrder)}}">{{description}}</a>{{sortingIndicator(columnName, sortingColumn, sortingOrder)}}
+{% endmacro %}
+
+
 {% block content %}
 {% if players is empty %}
 There are no players.
@@ -9,24 +32,26 @@ There are no players.
 <table>
   <thead>
   <tr>
-    <th>Rank</th>
-    <th>Player</th>
-    <th>Points</th>
-    <th>S/R</th>
-    <th>Score</th>
-    <th>Kills</th>
-    <th>Deaths</th>
-    <th>K/D</th>
-    <th>Gold</th>
-    <th>Silver</th>
-    <th>Bronze</th>
-    <th>TKs</th>
-    <th>Basepoint Conquers</th>
-    <th>Flag Captures</th>
-    <th>Objectives achieved</th>
-    <th>Rounds Played</th>
-    <th>Heals</th>
-    <th>Repairs</th>
+    <th>{{sortableLink('Rank','rank',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Player','playername',sortingColumn,sortingOrder)}}</th>
+    {#
+    <th>{{sortableLink('Points','score',sortingColumn,sortingOrder)}}</th>
+    #}
+    <th title="Average score per round">S/R</th>
+    <th>{{sortableLink('Score','score',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Kills','kills',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Deaths','deaths',sortingColumn,sortingOrder)}}</th>
+    <th title="Kill/death ratio">{{sortableLink('K/D','kdrate',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of gold medals">{{sortableLink('Gold','first',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of silver medals">{{sortableLink('Silver','second',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of bronze medals">{{sortableLink('Bronze','third',sortingColumn,sortingOrder)}}</th>
+    <th title="Team kills">{{sortableLink('TKs','tks',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Basepoint Conquers','attacks',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Flag Captures','captures',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Objectives achieved','objectives',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Rounds Played','rounds_played',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Heals','heals',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Repairs','otherrepairs',sortingColumn,sortingOrder)}}</th>
   </tr>
   </thead>
   <tbody>
@@ -34,7 +59,9 @@ There are no players.
   <tr>
     <td>{{ player.rank }}</td>
     <td><a href="/players/{{ player.id }}">{{ player.name }}</a></td>
+    {#
     <td>{{ player.points }}</td>
+    #}
     <td>{{ player.averageScore }}</td>
     <td>{{ player.score }}</td>
     <td>{{ player.kills }}</td>

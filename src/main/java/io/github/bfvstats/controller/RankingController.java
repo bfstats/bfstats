@@ -2,6 +2,7 @@ package io.github.bfvstats.controller;
 
 import io.github.bfvstats.model.PlayerStats;
 import io.github.bfvstats.service.RankingService;
+import io.github.bfvstats.util.Sort;
 import ro.pippo.controller.Controller;
 
 import javax.inject.Inject;
@@ -19,7 +20,16 @@ public class RankingController extends Controller {
   }
 
   public void ranking() {
-    List<PlayerStats> players = rankingService.getRankings(getSortColumnAndOrderFromRequest(getRequest()));
-    getResponse().bind("players", players).render("ranking/ranking");
+    Sort sort = getSortColumnAndOrderFromRequest(getRequest());
+    if (sort == null) {
+      sort = new Sort("rank", Sort.SortOrder.ASC);
+    }
+    List<PlayerStats> players = rankingService.getRankings(sort);
+
+    getResponse()
+        .bind("players", players)
+        .bind("sortingColumn", sort.getProperty())
+        .bind("sortingOrder", sort.getOrder().name())
+        .render("ranking/ranking");
   }
 }

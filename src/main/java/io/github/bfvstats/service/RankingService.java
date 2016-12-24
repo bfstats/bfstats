@@ -22,7 +22,8 @@ public class RankingService {
       sort = new Sort("rank", Sort.SortOrder.ASC);
     }
 
-    Result<SelectbfCacheRankingRecord> records = getDslContext().selectFrom(SELECTBF_CACHE_RANKING)
+    Result<SelectbfCacheRankingRecord> records = getDslContext()
+        .selectFrom(SELECTBF_CACHE_RANKING)
         .where(SELECTBF_CACHE_RANKING.ROUNDS_PLAYED.greaterOrEqual(minimumRounds))
         .orderBy(getSortField(SELECTBF_CACHE_RANKING, sort))
         .limit(0, 50)
