@@ -29,7 +29,7 @@
 {% if players is empty %}
 There are no players.
 {% else %}
-<table>
+<table class="ranking_table">
   <thead>
   <tr>
     <th>{{sortableLink('Rank','rank',sortingColumn,sortingOrder)}}</th>
@@ -42,9 +42,9 @@ There are no players.
     <th>{{sortableLink('Kills','kills',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Deaths','deaths',sortingColumn,sortingOrder)}}</th>
     <th title="Kill/death ratio">{{sortableLink('K/D','kdrate',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of gold medals">{{sortableLink('Gold','first',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of silver medals">{{sortableLink('Silver','second',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of bronze medals">{{sortableLink('Bronze','third',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of gold medals" class="medals gold_medals">{{sortableLink('Gold','first',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of silver medals" class="medals silver_medals">{{sortableLink('Silver','second',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of bronze medals" class="medals bronze_medals">{{sortableLink('Bronze','third',sortingColumn,sortingOrder)}}</th>
     <th title="Team kills">{{sortableLink('TKs','tks',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Basepoint Conquers','attacks',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Flag Captures','captures',sortingColumn,sortingOrder)}}</th>

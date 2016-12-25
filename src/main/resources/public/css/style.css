@@ -15,6 +15,63 @@ table td, th {
   border: 1px solid #FFFFFF;
 }
 
+th {
+  padding: 3px 5px;
+}
+
 th .sorted {
   font-size: 0.6em;
+  display:inline-block;
+  width: 16px;
+  height: 16px;
+  text-indent: 100%;
+  overflow: hidden;
+}
+
+.sorted.order-descending {
+  background-image: url('../img/descending.png');
+}
+
+.sorted.order-ascending {
+  background-image: url('../img/ascending.png');
+}
+
+.ranking_table tbody tr:nth-child(odd) td {
+  background-color: #121212;
+}
+
+.ranking_table th, .ranking_table td {
+  border-color: #969696;
+}
+
+.ranking_table th, .ranking_table td {
+  border-top: 0;
+  border-bottom: 0;
+}
+.ranking_table th:first-child, .ranking_table td:first-child {
+  border-left: 0;
+}
+.ranking_table th:last-child, .ranking_table td:last-child {
+  border-right: 0;
+}
+
+.ranking_table thead th {
+  border-bottom: 4px solid #373737;
+}
+
+.ranking_table th.medals a {
+  display: inline-block;
+  width: 8px;
+  text-indent: 100%;
+  overflow: hidden;
+}
+
+.ranking_table th.gold_medals a {
+  background: transparent url('../img/gold.png') center center no-repeat;
+}
+.ranking_table th.silver_medals a {
+  background: transparent url('../img/silver.png') right center no-repeat;
+}
+.ranking_table th.bronze_medals a {
+  background: transparent url('../img/bronze.png') right center no-repeat;
 }
