@@ -8,6 +8,7 @@ import ro.pippo.core.ParameterValue;
 import ro.pippo.core.Request;
 
 import java.util.Arrays;
+import java.util.Map;
 
 public class SortUtils {
 
@@ -35,7 +36,7 @@ public class SortUtils {
         .sort(getJooqSortOrder(sort.getOrder()));
   }
 
-  private static org.jooq.SortOrder getJooqSortOrder(Sort.SortOrder sortOrder) {
+  public static org.jooq.SortOrder getJooqSortOrder(Sort.SortOrder sortOrder) {
     if (sortOrder == Sort.SortOrder.ASC) {
       return org.jooq.SortOrder.ASC;
     } else if (sortOrder == Sort.SortOrder.DESC) {
@@ -45,7 +46,7 @@ public class SortUtils {
   }
 
   // if string type column, then converts it to lower(), so that sorting is case insensitive
-  private static Field<?> getSortableField(Table table, String columnName) {
+  public static Field<?> getSortableField(Table table, String columnName) {
     Field<?> field = table.field(columnName);
     if (field == null) {
       throw new IllegalArgumentException("Bad sorting property");
@@ -55,5 +56,13 @@ public class SortUtils {
       field = DSL.lower(fieldTypedString);
     }
     return field;
+  }
+
+  public static Field<?> getSortableFieldOrOverride(Table table, String columnName, Map<String, Field<?>> orderOverrides) {
+    if (orderOverrides.containsKey(columnName)) {
+      return orderOverrides.get(columnName);
+    } else {
+      return getSortableField(table, columnName);
+    }
   }
 }

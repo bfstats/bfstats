@@ -1,18 +1,26 @@
 package io.github.bfvstats.service;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.bfvstats.jpa.tables.records.SelectbfCacheRankingRecord;
 import io.github.bfvstats.model.PlayerStats;
 import io.github.bfvstats.util.Sort;
+import org.jooq.Field;
 import org.jooq.Result;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static io.github.bfvstats.jpa.Tables.SELECTBF_CACHE_RANKING;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
-import static io.github.bfvstats.util.SortUtils.getSortField;
+import static io.github.bfvstats.util.SortUtils.getJooqSortOrder;
+import static io.github.bfvstats.util.SortUtils.getSortableFieldOrOverride;
 
 public class RankingService {
+
+  private Map<String, Field<?>> orderOverrides = ImmutableMap.<String, Field<?>>builder()
+      .put("averageScore", SELECTBF_CACHE_RANKING.SCORE.div(SELECTBF_CACHE_RANKING.ROUNDS_PLAYED))
+      .build();
 
   public List<PlayerStats> getRankings(Sort sort) {
     List<PlayerStats> players = new ArrayList<>();
@@ -22,10 +30,12 @@ public class RankingService {
       sort = new Sort("rank", Sort.SortOrder.ASC);
     }
 
+    Field<?> sortableField = getSortableFieldOrOverride(SELECTBF_CACHE_RANKING, sort.getProperty(), orderOverrides);
+
     Result<SelectbfCacheRankingRecord> records = getDslContext()
         .selectFrom(SELECTBF_CACHE_RANKING)
         .where(SELECTBF_CACHE_RANKING.ROUNDS_PLAYED.greaterOrEqual(minimumRounds))
-        .orderBy(getSortField(SELECTBF_CACHE_RANKING, sort))
+        .orderBy(sortableField.sort(getJooqSortOrder(sort.getOrder())))
         .limit(0, 50)
         .fetch();
     records.forEach(r -> players.add(toPlayerStats(r)));

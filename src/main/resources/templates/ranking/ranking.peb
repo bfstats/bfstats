@@ -37,7 +37,7 @@ There are no players.
     {#
     <th>{{sortableLink('Points','score',sortingColumn,sortingOrder)}}</th>
     #}
-    <th title="Average score per round">S/R</th>
+    <th title="Average score per round">{{sortableLink('S/R','averageScore',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Score','score',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Kills','kills',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Deaths','deaths',sortingColumn,sortingOrder)}}</th>
