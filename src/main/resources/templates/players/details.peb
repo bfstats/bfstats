@@ -18,7 +18,7 @@
   <tbody>
   {% for weapon in weapons %}
   <tr>
-    <td>{{ loop.index }}</td>
+    <td>{{ loop.index + 1 }}</td>
     <td>{{ weapon.name }}</td>
     <td>{{ weapon.timesUsed }}</td>
     <td>{{ weapon.percentage }}</td>
@@ -28,7 +28,6 @@
       </div>
     </td>
   </tr>
-
   {% endfor %}
   </tbody>
 </table>
@@ -48,7 +47,7 @@
   <tbody>
   {% for vehicle in vehicles %}
   <tr>
-    <td>{{ loop.index }}</td>
+    <td>{{ loop.index + 1 }}</td>
     <td>{{ vehicle.name }}</td>
     <td>{{ vehicle.driveTime }}</td>
     <td>{{ vehicle.timesUsed }}</td>
@@ -59,7 +58,6 @@
       </div>
     </td>
   </tr>
-
   {% endfor %}
   </tbody>
 </table>
@@ -77,7 +75,7 @@
   <tbody>
   {% for map in maps %}
   <tr>
-    <td>{{ loop.index }}</td>
+    <td>{{ loop.index + 1 }}</td>
     <td>{{ map.name }}</td>
     <td>{{ map.score }}</td>
     <td>{{ map.percentage }}</td>
@@ -87,7 +85,6 @@
       </div>
     </td>
   </tr>
-
   {% endfor %}
   </tbody>
 </table>
