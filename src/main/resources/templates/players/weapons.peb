@@ -1,0 +1,26 @@
+<table class="styled_table">
+  <thead>
+  <tr>
+    <th>#</th>
+    <th>Weapon</th>
+    <th>Times used</th>
+    <th>%</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for weapon in weapons %}
+  <tr>
+    <td>{{ loop.index + 1 }}</td>
+    <td>{{ weapon.name }}</td>
+    <td>{{ weapon.timesUsed }}</td>
+    <td>{{ weapon.percentage }}</td>
+    <td>
+      <div class="meter">
+        <span style="width: {{ weapon.percentage }}%"></span>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>

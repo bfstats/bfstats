@@ -5,89 +5,9 @@
 {% block content %}
 <h3>{{ player.name }}</h3>
 
-<table class="styled_table">
-  <thead>
-  <tr>
-    <th>#</th>
-    <th>Weapon</th>
-    <th>Times used</th>
-    <th>%</th>
-    <th></th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for weapon in weapons %}
-  <tr>
-    <td>{{ loop.index + 1 }}</td>
-    <td>{{ weapon.name }}</td>
-    <td>{{ weapon.timesUsed }}</td>
-    <td>{{ weapon.percentage }}</td>
-    <td>
-      <div class="meter">
-        <span style="width: {{ weapon.percentage }}%"></span>
-      </div>
-    </td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
-
-
-<table class="styled_table">
-  <thead>
-  <tr>
-    <th>#</th>
-    <th>Vehicle</th>
-    <th>Drive time</th>
-    <th>Times used</th>
-    <th>%</th>
-    <th></th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for vehicle in vehicles %}
-  <tr>
-    <td>{{ loop.index + 1 }}</td>
-    <td>{{ vehicle.name }}</td>
-    <td>{{ vehicle.driveTime }}</td>
-    <td>{{ vehicle.timesUsed }}</td>
-    <td>{{ vehicle.percentage }}</td>
-    <td>
-      <div class="meter">
-        <span style="width: {{ vehicle.percentage }}%"></span>
-      </div>
-    </td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
-
-<table class="styled_table">
-  <thead>
-  <tr>
-    <th>#</th>
-    <th>Map</th>
-    <th>Score</th>
-    <th>%</th>
-    <th></th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for map in maps %}
-  <tr>
-    <td>{{ loop.index + 1 }}</td>
-    <td>{{ map.name }}</td>
-    <td>{{ map.score }}</td>
-    <td>{{ map.percentage }}</td>
-    <td>
-      <div class="meter">
-        <span style="width: {{ map.percentage }}%"></span>
-      </div>
-    </td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
+{% include "players/weapons" %}
+{% include "players/vehicles" %}
+{% include "players/maps" %}
 
 {% if otherNicknames is not empty %}
 <div class="other_nicknames">
