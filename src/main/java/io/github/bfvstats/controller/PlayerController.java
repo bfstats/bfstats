@@ -1,6 +1,7 @@
 package io.github.bfvstats.controller;
 
 import io.github.bfvstats.Player;
+import io.github.bfvstats.model.MapUsage;
 import io.github.bfvstats.model.NicknameUsage;
 import io.github.bfvstats.model.VehicleUsage;
 import io.github.bfvstats.model.WeaponUsage;
@@ -32,12 +33,14 @@ public class PlayerController extends Controller {
         .filter(nu -> !nu.getName().equals(player.getName())).collect(Collectors.toList());
     List<WeaponUsage> weapons = playerService.getWeaponUsages(id);
     List<VehicleUsage> vehicles = playerService.getVehicleUsages(id);
+    List<MapUsage> maps = playerService.getMapUsages(id);
 
     getResponse()
         .bind("player", player)
         .bind("otherNicknames", otherNicknames)
         .bind("weapons", weapons)
         .bind("vehicles", vehicles)
+        .bind("maps", maps)
         .render("players/details");
   }
 
