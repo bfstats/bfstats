@@ -1,10 +1,10 @@
 body {
   background-color: #252826;
-  color: #fff;
+  color: #f0f0f0;
 }
 
 a {
-  color: #fff;
+  color: #f0f0f0;
 }
 
 table {
@@ -36,26 +36,26 @@ th .sorted {
   background-image: url('../img/ascending.png');
 }
 
-.ranking_table tbody tr:nth-child(odd) td {
+.styled_table tbody tr:nth-child(odd) td {
   background-color: #121212;
 }
 
-.ranking_table th, .ranking_table td {
+.styled_table th, .styled_table td {
   border-color: #969696;
 }
 
-.ranking_table th, .ranking_table td {
+.styled_table th, .styled_table td {
   border-top: 0;
   border-bottom: 0;
 }
-.ranking_table th:first-child, .ranking_table td:first-child {
+.styled_table th:first-child, .styled_table td:first-child {
   border-left: 0;
 }
-.ranking_table th:last-child, .ranking_table td:last-child {
+.styled_table th:last-child, .styled_table td:last-child {
   border-right: 0;
 }
 
-.ranking_table thead th {
+.styled_table thead th {
   border-bottom: 4px solid #373737;
 }
 
@@ -74,4 +74,30 @@ th .sorted {
 }
 .ranking_table th.bronze_medals a {
   background: transparent url('../img/bronze.png') right center no-repeat;
+}
+
+
+tr.chat-team {
+  text-shadow:
+     -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+       1px 1px 0 #000;
+}
+
+tr.chat-team a {
+  color: inherit;
+}
+
+/*red*/
+tr.team-1 {
+  color: #ff5959;
+}
+tr.team-2 {
+  color: #6699ff;
+}
+
+.chat_table th, .chat_table td {
+  border-left: 0;
+  border-right: 0;
 }

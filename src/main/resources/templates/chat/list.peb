@@ -1,0 +1,32 @@
+{% extends "layout" %}
+
+{% block title %} Chat List {% endblock %}
+
+{% block content %}
+
+
+{% if chatMessages is empty %}
+There are no chat messages
+{% else %}
+<table class="styled_table chat_table">
+  <thead>
+  <tr>
+    <th>Time</th>
+    <th>Name</th>
+    <th>Message</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for chatMessage in chatMessages %}
+  <tr class="chat-team team-{{ chatMessage.team }}">
+    <td>{{ chatMessage.time | formatTime('dd-MM-yyyy HH:mm') }} </td>
+    <td><a href="/players/{{ chatMessage.playerId }}">{{ chatMessage.playerName }}</a>:</td>
+    <td>{{ chatMessage.text }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endif %}
+
+{% endblock %}

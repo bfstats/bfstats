@@ -7,9 +7,9 @@ import io.github.bfvstats.util.Sort;
 import org.jooq.Field;
 import org.jooq.Result;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static io.github.bfvstats.jpa.Tables.SELECTBF_CACHE_RANKING;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
@@ -23,7 +23,6 @@ public class RankingService {
       .build();
 
   public List<PlayerStats> getRankings(Sort sort) {
-    List<PlayerStats> players = new ArrayList<>();
     int minimumRounds = 0;
 
     if (sort == null) {
@@ -38,8 +37,8 @@ public class RankingService {
         .orderBy(sortableField.sort(getJooqSortOrder(sort.getOrder())))
         .limit(0, 50)
         .fetch();
-    records.forEach(r -> players.add(toPlayerStats(r)));
-    return players;
+
+    return records.stream().map(this::toPlayerStats).collect(Collectors.toList());
   }
 
   private PlayerStats toPlayerStats(SelectbfCacheRankingRecord r) {

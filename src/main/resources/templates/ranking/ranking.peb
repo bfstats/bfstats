@@ -29,7 +29,7 @@
 {% if players is empty %}
 There are no players.
 {% else %}
-<table class="ranking_table">
+<table class="ranking_table styled_table">
   <thead>
   <tr>
     <th>{{sortableLink('Rank','rank',sortingColumn,sortingOrder)}}</th>

@@ -2,6 +2,7 @@ package io.github.bfvstats;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import io.github.bfvstats.controller.ChatController;
 import io.github.bfvstats.controller.PlayerController;
 import io.github.bfvstats.controller.RankingController;
 import io.github.bfvstats.util.DbUtils;
@@ -28,6 +29,8 @@ public class BasicApplication extends ControllerApplication {
     GET("/players/{id}", PlayerController.class, "details");
 
     GET("/ranking(/?)", RankingController.class, "ranking");
+
+    GET("/chat(/?)", ChatController.class, "list");
 
     closeDbConnections();
   }
