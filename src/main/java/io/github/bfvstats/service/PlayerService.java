@@ -2,13 +2,16 @@ package io.github.bfvstats.service;
 
 
 import io.github.bfvstats.Player;
+import io.github.bfvstats.jpa.tables.records.SelectbfDrivesRecord;
 import io.github.bfvstats.jpa.tables.records.SelectbfKillsWeaponRecord;
 import io.github.bfvstats.jpa.tables.records.SelectbfNicknamesRecord;
 import io.github.bfvstats.jpa.tables.records.SelectbfPlayersRecord;
 import io.github.bfvstats.model.NicknameUsage;
+import io.github.bfvstats.model.VehicleUsage;
 import io.github.bfvstats.model.WeaponUsage;
 import org.jooq.Result;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,5 +65,27 @@ public class PlayerService {
         .setName(r.getWeapon())
         .setTimesUsed(r.getTimesUsed())
         .setPercentage(r.getTimesUsed() * 100 / totalWeaponsTimesUsed);
+  }
+
+  public List<VehicleUsage> getVehicleUsages(int playerId) {
+    Result<SelectbfDrivesRecord> records = getDslContext().selectFrom(SELECTBF_DRIVES)
+        .where(SELECTBF_DRIVES.PLAYER_ID.eq(playerId))
+        .orderBy(SELECTBF_DRIVES.DRIVETIME.desc())
+        .fetch();
+
+    float totalVehiclesDriveTime = records.stream().map(SelectbfDrivesRecord::getDrivetime).reduce(0f, Float::sum);
+    return records.stream().map(r -> toVehicleUsage(r, totalVehiclesDriveTime)).collect(Collectors.toList());
+  }
+
+  private static VehicleUsage toVehicleUsage(SelectbfDrivesRecord r, float totalVehiclesDriveTime) {
+    return new VehicleUsage()
+        .setName(r.getVehicle().toString())
+        .setDriveTime(convertSecondToHHMMSSString(r.getDrivetime().intValue())) // seconds
+        .setTimesUsed(r.getTimesUsed())
+        .setPercentage(r.getDrivetime() * 100 / totalVehiclesDriveTime);
+  }
+
+  private static String convertSecondToHHMMSSString(int nSecondTime) {
+    return LocalTime.MIN.plusSeconds(nSecondTime).toString();
   }
 }
