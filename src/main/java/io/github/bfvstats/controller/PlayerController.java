@@ -1,12 +1,14 @@
 package io.github.bfvstats.controller;
 
 import io.github.bfvstats.Player;
+import io.github.bfvstats.model.NicknameUsage;
 import io.github.bfvstats.service.PlayerService;
 import ro.pippo.controller.Controller;
 import ro.pippo.core.Param;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlayerController extends Controller {
 
@@ -24,7 +26,13 @@ public class PlayerController extends Controller {
 
   public void details(@Param("id") int id) {
     Player player = playerService.getPlayer(id);
-    getResponse().bind("player", player).render("players/details");
+    List<NicknameUsage> otherNicknames = playerService.getNicknameUsagesForPlayer(id).stream()
+        .filter(nu -> !nu.getName().equals(player.getName())).collect(Collectors.toList());
+
+    getResponse()
+        .bind("player", player)
+        .bind("otherNicknames", otherNicknames)
+        .render("players/details");
   }
 
   public void jsonRandom() {

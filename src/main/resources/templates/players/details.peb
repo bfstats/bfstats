@@ -6,4 +6,15 @@
 Player details
 Name: {{ player.name }}
 
+{% if otherNicknames is not empty %}
+<div class="other_nicknames">
+  Also played with nicknames:
+  {% for nickname in otherNicknames %}
+  {{ nickname.name }} x {{ nickname.timesUsed }}
+  {% if loop.index < loop.length-1 %}, {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+
+
 {% endblock %}
