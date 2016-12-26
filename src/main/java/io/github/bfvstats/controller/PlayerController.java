@@ -2,6 +2,7 @@ package io.github.bfvstats.controller;
 
 import io.github.bfvstats.Player;
 import io.github.bfvstats.model.NicknameUsage;
+import io.github.bfvstats.model.WeaponUsage;
 import io.github.bfvstats.service.PlayerService;
 import ro.pippo.controller.Controller;
 import ro.pippo.core.Param;
@@ -26,12 +27,14 @@ public class PlayerController extends Controller {
 
   public void details(@Param("id") int id) {
     Player player = playerService.getPlayer(id);
-    List<NicknameUsage> otherNicknames = playerService.getNicknameUsagesForPlayer(id).stream()
+    List<NicknameUsage> otherNicknames = playerService.getNicknameUsages(id).stream()
         .filter(nu -> !nu.getName().equals(player.getName())).collect(Collectors.toList());
+    List<WeaponUsage> weapons = playerService.getWeaponUsages(id);
 
     getResponse()
         .bind("player", player)
         .bind("otherNicknames", otherNicknames)
+        .bind("weapons", weapons)
         .render("players/details");
   }
 

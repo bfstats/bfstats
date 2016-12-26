@@ -19,6 +19,26 @@ th {
   padding: 3px 5px;
 }
 
+.meter {
+  margin: 3px;
+	height: 7px;  /* Can be anything */
+  width: 70px;
+	background: #555;
+	padding: 2px;
+}
+
+.meter > span {
+  display: block;
+  height: 100%;
+  background-color: rgb(43,194,83);
+  background-image: linear-gradient(
+    center bottom,
+    rgb(43,194,83) 37%,
+    rgb(84,240,84) 69%
+  );
+  overflow: hidden;
+}
+
 th .sorted {
   font-size: 0.6em;
   display:inline-block;
