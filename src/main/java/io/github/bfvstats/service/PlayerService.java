@@ -5,18 +5,16 @@ import io.github.bfvstats.Player;
 import io.github.bfvstats.jpa.tables.records.SelectbfPlayersRecord;
 import org.jooq.Result;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.github.bfvstats.jpa.Tables.SELECTBF_PLAYERS;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class PlayerService {
   public List<Player> getPlayers() {
-    List<Player> players = new ArrayList<>();
     Result<SelectbfPlayersRecord> records = getDslContext().selectFrom(SELECTBF_PLAYERS).fetch();
-    records.forEach(r -> players.add(toPlayer(r)));
-    return players;
+    return records.stream().map(PlayerService::toPlayer).collect(Collectors.toList());
   }
 
   public Player getPlayer(int id) {
