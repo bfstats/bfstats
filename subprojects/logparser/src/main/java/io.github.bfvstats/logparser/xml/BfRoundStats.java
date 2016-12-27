@@ -38,6 +38,14 @@ public class BfRoundStats {
         .orElse(null);
   }
 
+  public int getTicketsForTeam1() {
+    return getTicketsForTeam(1);
+  }
+
+  public int getTicketsForTeam2() {
+    return getTicketsForTeam(2);
+  }
+
   @Getter
   private static class BfTeamTickets {
     @XmlAttribute(name = "team", required = true)
@@ -126,25 +134,6 @@ public class BfRoundStats {
     }
   }
 
-  @XmlRootElement(name = "nonprint", namespace = BfLog.NAMESPACE)
-  @Getter
-  public static class BfNonPrint {
-    @XmlValue
-    int value;
-
-    @XmlTransient
-    private String strValue;
-
-    void afterUnmarshal(Unmarshaller u, Object parent) {
-      char charValue = (char) this.value;
-      this.strValue = Character.toString(charValue);
-    }
-
-    public String toString() {
-      return String.valueOf(strValue);
-    }
-  }
-
   @Getter
   @EqualsAndHashCode(of = {"name", "value"})
   public static class BfStatParam {
@@ -160,10 +149,7 @@ public class BfRoundStats {
     private String value;
 
     void afterUnmarshal(Unmarshaller u, Object parent) {
-      String value = mixedContent.stream()
-          .map(Object::toString)
-          .collect(Collectors.joining());
-      this.value = value.replace("\n", "").replace("\r", ""); //.replace(" ", "");
+      this.value = BfNonPrint.mixedContentToString(mixedContent);
     }
 
     public String toString() {
