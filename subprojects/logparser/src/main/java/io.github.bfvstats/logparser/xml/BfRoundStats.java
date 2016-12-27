@@ -4,12 +4,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @XmlRootElement(name = "roundstats", namespace = BfLog.NAMESPACE)
 @ToString(of = {"timestamp", "winningTeam", "victoryType", "teamTicketses"})
@@ -64,7 +64,18 @@ public class BfRoundStats {
     <bf:statparam name="defences">0</bf:statparam>
      */
     @XmlElement(name = "statparam")
-    public Set<BfStatParam> statParams;
+    private Set<BfStatParam> statParams;
+
+    @XmlTransient
+    private Map<String, String> parameters;
+
+    // specially named method afterUnmarshal is called by JAXB
+    void afterUnmarshal(Unmarshaller u, Object parent) {
+      Map<String, String> keyValue = getStatParams().stream()
+          .collect(Collectors.toMap(BfStatParam::getName, BfStatParam::getValue));
+
+      this.parameters = keyValue;
+    }
   }
 
   @Getter
