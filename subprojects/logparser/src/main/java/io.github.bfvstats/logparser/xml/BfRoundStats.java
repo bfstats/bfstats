@@ -1,5 +1,6 @@
 package io.github.bfvstats.logparser.xml;
 
+import io.github.bfvstats.logparser.xml.enums.Team;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -29,6 +30,10 @@ public class BfRoundStats {
 
   @XmlElement(name = "playerstat")
   public List<BfPlayerStat> playerStats;
+
+  public Integer getTicketsForTeam(Team team) {
+    return getTicketsForTeam(team.value());
+  }
 
   public Integer getTicketsForTeam(int team) {
     return teamTicketses.stream()
