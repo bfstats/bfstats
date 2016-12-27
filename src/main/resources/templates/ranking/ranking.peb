@@ -39,8 +39,8 @@ There are no players.
     #}
     <th title="Average score per round">{{sortableLink('S/R','averageScore',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Score','score',sortingColumn,sortingOrder)}}</th>
-    <th>{{sortableLink('Kills','kills',sortingColumn,sortingOrder)}}</th>
-    <th>{{sortableLink('Deaths','deaths',sortingColumn,sortingOrder)}}</th>
+    <th title="Kills">{{sortableLink('K','kills',sortingColumn,sortingOrder)}}</th>
+    <th title="Deaths">{{sortableLink('D','deaths',sortingColumn,sortingOrder)}}</th>
     <th title="Kill/death ratio">{{sortableLink('K/D','kdrate',sortingColumn,sortingOrder)}}</th>
     <th title="Number of gold medals" class="medals gold_medals">{{sortableLink('Gold','first',sortingColumn,sortingOrder)}}</th>
     <th title="Number of silver medals" class="medals silver_medals">{{sortableLink('Silver','second',sortingColumn,sortingOrder)}}</th>

@@ -1,2 +1,3 @@
 rootProject.name = 'bfvstats'
 
+include 'subprojects/logparser'
