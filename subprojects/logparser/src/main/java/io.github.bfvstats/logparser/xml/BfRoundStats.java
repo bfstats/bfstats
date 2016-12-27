@@ -119,6 +119,25 @@ public class BfRoundStats {
     }
   }
 
+  @XmlRootElement(name = "nonprint", namespace = BfLog.NAMESPACE)
+  @Getter
+  public static class BfNonPrint {
+    @XmlValue
+    int value;
+
+    @XmlTransient
+    private String strValue;
+
+    void afterUnmarshal(Unmarshaller u, Object parent) {
+      char charValue = (char) this.value;
+      this.strValue = Character.toString(charValue);
+    }
+
+    public String toString() {
+      return String.valueOf(strValue);
+    }
+  }
+
   @Getter
   @EqualsAndHashCode(of = {"name", "value"})
   public static class BfStatParam {
@@ -126,8 +145,19 @@ public class BfRoundStats {
     private String name;
 
     // can also contain just bf:nonprint children
-    @XmlValue
+    @XmlElementRef(name = "root", type = BfNonPrint.class)
+    @XmlMixed
+    private List<Object> mixedContent;
+
+    @XmlTransient
     private String value;
+
+    void afterUnmarshal(Unmarshaller u, Object parent) {
+      String value = mixedContent.stream()
+          .map(Object::toString)
+          .collect(Collectors.joining());
+      this.value = value.replace("\n", "").replace("\r", "").replace(" ", "");
+    }
 
     public String toString() {
       return name + "=" + value;
