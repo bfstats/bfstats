@@ -1,5 +1,6 @@
 package io.github.bfvstats.logparser.xml;
 
+import lombok.Getter;
 import lombok.ToString;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @ToString(of = {"timestamp"})
 @XmlRootElement(name = "round", namespace = BfLog.NAMESPACE)
+@Getter
 public class BfRound {
   @XmlAttribute(name = "timestamp", required = true)
   private String timestamp; // 9.143

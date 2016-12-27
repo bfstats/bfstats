@@ -1,15 +1,19 @@
 package io.github.bfvstats.logparser.xml;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @XmlRootElement(name = "roundstats", namespace = BfLog.NAMESPACE)
 @ToString(of = {"timestamp", "winningTeam", "victoryType", "teamTicketses"})
+@Getter
 public class BfRoundStats {
   @XmlAttribute(name = "timestamp", required = true)
   private String timestamp; // 3977.77
@@ -21,10 +25,10 @@ public class BfRoundStats {
   private int victoryType; // 1 or ...?
 
   @XmlElement(name = "teamtickets")
-  public Collection<BfTeamTickets> teamTicketses;
+  public List<BfTeamTickets> teamTicketses;
 
   @XmlElement(name = "playerstat")
-  public Collection<BfPlayerStat> playerStats;
+  public List<BfPlayerStat> playerStats;
 
   private static class BfTeamTickets {
     @XmlAttribute(name = "team", required = true)
@@ -38,8 +42,9 @@ public class BfRoundStats {
     }
   }
 
+  @Getter
   @ToString(of = {"playerId", "statParams"})
-  private static class BfPlayerStat {
+  public static class BfPlayerStat {
     @XmlAttribute(name = "playerid", required = true)
     private int playerId;
     /*
@@ -59,14 +64,16 @@ public class BfRoundStats {
     <bf:statparam name="defences">0</bf:statparam>
      */
     @XmlElement(name = "statparam")
-    public Collection<BfStatParam> statParams;
+    public Set<BfStatParam> statParams;
   }
 
-  private static class BfStatParam {
+  @Getter
+  @EqualsAndHashCode(of = {"name", "value"})
+  public static class BfStatParam {
     @XmlAttribute(name = "name", required = true)
-    // can also contains just bf:nonprint children
     private String name;
 
+    // can also contain just bf:nonprint children
     @XmlValue
     private String value;
 
@@ -74,5 +81,6 @@ public class BfRoundStats {
       return name + "=" + value;
     }
   }
+
 }
 
