@@ -11,7 +11,7 @@ import java.util.List;
 @XmlRootElement(name = "param", namespace = BfLog.NAMESPACE)
 @EqualsAndHashCode(of = {"name", "value"})
 @Getter
-public class BfParam {
+public class BfEventParam {
   @XmlAttribute(name = "type", required = true)
   private String type; // "string", "int", "vec3"
 

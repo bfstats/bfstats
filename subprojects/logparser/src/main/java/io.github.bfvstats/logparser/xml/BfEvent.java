@@ -20,8 +20,8 @@ public class BfEvent {
   @XmlAttribute(name = "timestamp", required = true)
   private String timestamp; // 9.143
 
-  @XmlElement(name = "param", type = BfParam.class, namespace = BfLog.NAMESPACE)
-  private List<BfParam> params;
+  @XmlElement(name = "param", type = BfEventParam.class, namespace = BfLog.NAMESPACE)
+  private List<BfEventParam> params;
 
   @XmlTransient
   private Map<String, Object> typeConvertedParameters;
@@ -29,7 +29,7 @@ public class BfEvent {
   // specially named method afterUnmarshal is called by JAXB
   void afterUnmarshal(Unmarshaller u, Object parent) {
     this.typeConvertedParameters = getParams().stream()
-        .collect(Collectors.toMap(BfParam::getName, BfParam::getTypeAwareValue));
+        .collect(Collectors.toMap(BfEventParam::getName, BfEventParam::getTypeAwareValue));
   }
 
   public Object getTypedParamValueByName(String paramName) {
