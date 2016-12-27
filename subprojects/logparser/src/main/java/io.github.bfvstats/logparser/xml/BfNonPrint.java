@@ -19,8 +19,17 @@ public class BfNonPrint {
   private String strValue;
 
   void afterUnmarshal(Unmarshaller u, Object parent) {
+    this.strValue = valueAsString();
+  }
+
+  private String valueAsString() {
+    // 128 seems to be used for space, at least in sayAll event
+    // char code references something else for some reason :S
+    if (value == 128) {
+      return " ";
+    }
     char charValue = (char) this.value;
-    this.strValue = Character.toString(charValue);
+    return Character.toString(charValue);
   }
 
   public String toString() {
