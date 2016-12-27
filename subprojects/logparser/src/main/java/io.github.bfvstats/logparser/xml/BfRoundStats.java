@@ -163,13 +163,11 @@ public class BfRoundStats {
       String value = mixedContent.stream()
           .map(Object::toString)
           .collect(Collectors.joining());
-      this.value = value.replace("\n", "").replace("\r", "").replace(" ", "");
+      this.value = value.replace("\n", "").replace("\r", ""); //.replace(" ", "");
     }
 
     public String toString() {
       return name + "=" + value;
     }
   }
-
 }
-

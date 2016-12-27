@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
+// similar to BfStatParam, but with type
 @XmlRootElement(name = "param", namespace = BfLog.NAMESPACE)
 @Getter
 public class BfParam {

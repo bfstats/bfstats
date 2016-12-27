@@ -23,7 +23,6 @@ public class BfRound {
   @XmlElement(name = "event", namespace = BfLog.NAMESPACE)
   private List<BfEvent> events;
 
-
   @XmlElement(name = "roundstats", namespace = BfLog.NAMESPACE)
   private BfRoundStats roundStats;
 }
