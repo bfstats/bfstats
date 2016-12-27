@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Map;
+import java.util.List;
 
 public class XmlParser {
   public static void main(String[] args) throws JAXBException, FileNotFoundException {
@@ -19,9 +19,8 @@ public class XmlParser {
     System.out.println();
     System.out.println("Output from our XML File: ");
     BfLog bfLog = (BfLog) um.unmarshal(new FileReader("D:\\Projects\\bfvstats\\example.xml"));
-    String engine = bfLog.getEngine();
-    BfRoundStats.BfPlayerStat bfPlayerStat = bfLog.getRounds().get(0).getRoundStats().getPlayerStats().get(0);
-    Map<String, String> parameters = bfPlayerStat.getParameters();
+    List<BfRoundStats.BfPlayerStat> playerStats = bfLog.getRounds().get(0).getRoundStats().getPlayerStats();
+    playerStats.forEach(bfPlayerStat -> System.out.println(bfPlayerStat.getPlayerName() + " bot? " + bfPlayerStat.isAi()));
     System.out.println("ok");
   }
 }

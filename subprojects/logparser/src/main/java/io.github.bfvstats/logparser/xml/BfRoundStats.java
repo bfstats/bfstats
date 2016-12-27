@@ -69,6 +69,47 @@ public class BfRoundStats {
     @XmlTransient
     private Map<String, String> parameters;
 
+    public String getPlayerName() {
+      return getParameters().get("player_name");
+    }
+
+    public boolean isAi() {
+      return getParameters().get("is_ai").equals("1");
+    }
+
+    // 1 for NVA, 2 for USA
+    public int getTeam() {
+      return Integer.valueOf(getParameters().get("team"));
+    }
+
+    public int getScore() {
+      return Integer.valueOf(getParameters().get("score"));
+    }
+
+    public int getKills() {
+      return Integer.valueOf(getParameters().get("kills"));
+    }
+
+    public int getDeaths() {
+      return Integer.valueOf(getParameters().get("deaths"));
+    }
+
+    public int getTks() {
+      return Integer.valueOf(getParameters().get("tks"));
+    }
+
+    public int getCaptures() {
+      return Integer.valueOf(getParameters().get("captures"));
+    }
+
+    public int getAttacks() {
+      return Integer.valueOf(getParameters().get("attacks"));
+    }
+
+    public int getDefences() {
+      return Integer.valueOf(getParameters().get("defences"));
+    }
+
     // specially named method afterUnmarshal is called by JAXB
     void afterUnmarshal(Unmarshaller u, Object parent) {
       Map<String, String> keyValue = getStatParams().stream()
