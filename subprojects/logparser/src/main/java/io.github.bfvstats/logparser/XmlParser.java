@@ -13,11 +13,7 @@ import java.util.List;
 public class XmlParser {
   public static void main(String[] args) throws JAXBException, FileNotFoundException {
     JAXBContext context = JAXBContext.newInstance(BfLog.class);
-
     Unmarshaller um = context.createUnmarshaller();
-
-    System.out.println();
-    System.out.println("Output from our XML File: ");
     BfLog bfLog = (BfLog) um.unmarshal(new FileReader("D:\\Projects\\bfvstats\\example.xml"));
     List<BfRoundStats.BfPlayerStat> playerStats = bfLog.getRounds().get(0).getRoundStats().getPlayerStats();
     playerStats.forEach(bfPlayerStat -> System.out.println(bfPlayerStat.getPlayerName() + " bot? " + bfPlayerStat.isAi()));

@@ -1,11 +1,14 @@
 package io.github.bfvstats.logparser.xml;
 
+import lombok.Getter;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement(name = "event", namespace = BfLog.NAMESPACE)
+@Getter
 public class BfEvent {
   @XmlAttribute(name = "name", required = true)
   private String name; // createVehicle

@@ -30,6 +30,15 @@ public class BfRoundStats {
   @XmlElement(name = "playerstat")
   public List<BfPlayerStat> playerStats;
 
+  public Integer getTicketsForTeam(int team) {
+    return teamTicketses.stream()
+        .filter(tt -> tt.getTeam() == team)
+        .findFirst()
+        .map(BfTeamTickets::getValue)
+        .orElse(null);
+  }
+
+  @Getter
   private static class BfTeamTickets {
     @XmlAttribute(name = "team", required = true)
     private int team;
@@ -112,10 +121,8 @@ public class BfRoundStats {
 
     // specially named method afterUnmarshal is called by JAXB
     void afterUnmarshal(Unmarshaller u, Object parent) {
-      Map<String, String> keyValue = getStatParams().stream()
+      this.parameters = getStatParams().stream()
           .collect(Collectors.toMap(BfStatParam::getName, BfStatParam::getValue));
-
-      this.parameters = keyValue;
     }
   }
 

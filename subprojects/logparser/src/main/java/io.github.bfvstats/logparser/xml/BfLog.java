@@ -21,7 +21,6 @@ public class BfLog {
   @XmlAttribute(name = "timestamp", required = true)
   private String timestamp; // 20161224_0825 // YYYYMMDD_HHMM
 
-  @XmlTransient
   public LocalDateTime getTimestampAsDate() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
     return LocalDateTime.parse(timestamp, formatter);

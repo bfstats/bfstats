@@ -1,11 +1,13 @@
 package io.github.bfvstats.logparser.xml;
 
+import lombok.Getter;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 
 @XmlRootElement(name = "param", namespace = BfLog.NAMESPACE)
+@Getter
 public class BfParam {
   @XmlAttribute(name = "type", required = true)
   private String type; // "string", "int", "vec3"
@@ -16,7 +18,6 @@ public class BfParam {
   @XmlValue
   private String value; // "T54", "1", "498.28/56.171/406.15"
 
-  @XmlTransient
   public Object getTypeAwareValue() {
     switch (type) {
       case "string":
