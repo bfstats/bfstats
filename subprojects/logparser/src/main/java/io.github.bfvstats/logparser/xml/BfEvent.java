@@ -39,6 +39,18 @@ public class BfEvent {
         .collect(Collectors.toMap(BfEventParam::getName, BfEventParam::getTypeAwareValue));
   }
 
+  public String getStringParamValueByName(String paramName) {
+    return (String) getTypedParamValueByName(paramName);
+  }
+
+  public Integer getIntegerParamValueByName(String paramName) {
+    return (Integer) getTypedParamValueByName(paramName);
+  }
+
+  public String[] getVector3ParamValueByName(String paramName) {
+    return (String[]) getTypedParamValueByName(paramName);
+  }
+
   public Object getTypedParamValueByName(String paramName) {
     return typeConvertedParameters.get(paramName);
   }
