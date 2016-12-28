@@ -27,6 +27,10 @@ public class BfEventParam {
   private String value; // "T54", "1", "498.28/56.171/406.15"
 
   public Object getTypeAwareValue() {
+    if (value == null) {
+      return null;
+    }
+
     switch (type) {
       case "string":
         return value;
