@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.time.Duration;
 import java.util.List;
 
 public class XmlParser {
@@ -17,6 +18,11 @@ public class XmlParser {
     BfLog bfLog = (BfLog) um.unmarshal(new FileReader("D:\\Projects\\bfvstats\\example.xml"));
     List<BfRoundStats.BfPlayerStat> playerStats = bfLog.getRounds().get(0).getRoundStats().getPlayerStats();
     playerStats.forEach(bfPlayerStat -> System.out.println(bfPlayerStat.getPlayerName() + " bot? " + bfPlayerStat.isAi()));
+    Duration durationSinceRoundStart = bfLog.getRounds().get(0).getDurationSinceLogStart();
+    System.out.println(durationSinceRoundStart);
+    System.out.println("seconds: " + durationSinceRoundStart.getSeconds());
+    System.out.println("nanos: " + durationSinceRoundStart.getNano());
+    // 10.1008
     System.out.println("ok");
   }
 }

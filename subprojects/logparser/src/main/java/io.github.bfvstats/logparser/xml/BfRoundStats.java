@@ -7,10 +7,13 @@ import lombok.ToString;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static io.github.bfvstats.logparser.xml.Helpers.toDuration;
 
 @XmlRootElement(name = "roundstats", namespace = BfLog.NAMESPACE)
 @ToString(of = {"timestamp", "winningTeam", "victoryType", "teamTicketses"})
@@ -18,6 +21,10 @@ import java.util.stream.Collectors;
 public class BfRoundStats {
   @XmlAttribute(name = "timestamp", required = true)
   private String timestamp; // 3977.77
+
+  public Duration getDurationSinceLogStart() {
+    return toDuration(timestamp);
+  }
 
   @XmlElement(name = "winningteam")
   private int winningTeam; // 1 or 2

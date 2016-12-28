@@ -7,9 +7,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static io.github.bfvstats.logparser.xml.Helpers.toDuration;
 
 @XmlRootElement(name = "event", namespace = BfLog.NAMESPACE)
 @Getter
@@ -19,6 +22,10 @@ public class BfEvent {
 
   @XmlAttribute(name = "timestamp", required = true)
   private String timestamp; // 9.143
+
+  public Duration getDurationSinceLogStart() {
+    return toDuration(timestamp);
+  }
 
   @XmlElement(name = "param", type = BfEventParam.class, namespace = BfLog.NAMESPACE)
   private List<BfEventParam> params;
