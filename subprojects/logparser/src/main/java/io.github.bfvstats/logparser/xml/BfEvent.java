@@ -58,4 +58,14 @@ public class BfEvent {
   public String toString() {
     return timestamp + " " + name + "(" + params + ")";
   }
+
+  // nullable
+  public Integer getPlayerId() {
+    return getIntegerParamValueByName("player_id");
+  }
+
+  // nullable
+  public String[] getPlayerLocation() {
+    return getVector3ParamValueByName("player_location");
+  }
 }
