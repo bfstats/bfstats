@@ -1,5 +1,6 @@
 package io.github.bfvstats.logparser.xml;
 
+import io.github.bfvstats.logparser.xml.enums.EventName;
 import lombok.Getter;
 
 import javax.xml.bind.Unmarshaller;
@@ -57,6 +58,10 @@ public class BfEvent {
 
   public String toString() {
     return timestamp + " " + name + "(" + params + ")";
+  }
+
+  public boolean isEvent(EventName eventName) {
+    return getName().equals(eventName.name());
   }
 
   // nullable
