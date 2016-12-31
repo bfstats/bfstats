@@ -2,3 +2,4 @@ rootProject.name = 'bfvstats'
 
 include 'subprojects/logparser'
 include 'subprojects/dbfiller'
+include 'subprojects/dbstats'

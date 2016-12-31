@@ -38,4 +38,5 @@ dependencies {
 
   compile project(':subprojects/logparser')
   compile project(':subprojects/dbfiller')
+  compile project(':subprojects/dbstats')
 }

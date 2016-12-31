@@ -8,6 +8,4 @@ repositories {
 
 dependencies {
   compileOnly "org.projectlombok:lombok:1.16.12"
-  compile project(':subprojects/logparser')
-  compile project(':subprojects/dbstats')
 }
