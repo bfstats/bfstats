@@ -27,6 +27,7 @@ public class BasicApplication extends ControllerApplication {
     GET("/players/json", PlayerController.class, "jsonRandom");
     GET("/players(/?)", PlayerController.class, "list");
     GET("/players/{id}", PlayerController.class, "details");
+    GET("/players/{id}/map/{mapCode}", PlayerController.class, "mapStats");
 
     GET("/ranking(/?)", RankingController.class, "ranking");
 

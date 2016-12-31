@@ -1,6 +1,5 @@
 package io.github.bfvstats.service;
 
-
 import io.github.bfvstats.Player;
 import io.github.bfvstats.jpa.tables.records.SelectbfDrivesRecord;
 import io.github.bfvstats.jpa.tables.records.SelectbfKillsWeaponRecord;

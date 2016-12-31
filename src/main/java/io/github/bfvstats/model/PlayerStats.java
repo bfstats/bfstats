@@ -14,7 +14,7 @@ public class PlayerStats {
   int score;
   int kills;
   int deaths;
-  double killDeathRatio;
+  Double killDeathRatio;
   int goldCount;
   int silverCount;
   int bronzeCount;

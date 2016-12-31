@@ -1,10 +1,8 @@
 package io.github.bfvstats.controller;
 
 import io.github.bfvstats.Player;
-import io.github.bfvstats.model.MapUsage;
-import io.github.bfvstats.model.NicknameUsage;
-import io.github.bfvstats.model.VehicleUsage;
-import io.github.bfvstats.model.WeaponUsage;
+import io.github.bfvstats.model.*;
+import io.github.bfvstats.service.MapService;
 import io.github.bfvstats.service.PlayerService;
 import ro.pippo.controller.Controller;
 import ro.pippo.core.Param;
@@ -16,10 +14,12 @@ import java.util.stream.Collectors;
 public class PlayerController extends Controller {
 
   private PlayerService playerService;
+  private MapService mapService;
 
   @Inject
-  public PlayerController(PlayerService playerService) {
+  public PlayerController(PlayerService playerService, MapService mapService) {
     this.playerService = playerService;
+    this.mapService = mapService;
   }
 
   public void list() {
@@ -27,13 +27,13 @@ public class PlayerController extends Controller {
     getResponse().bind("players", players).render("players/list");
   }
 
-  public void details(@Param("id") int id) {
-    Player player = playerService.getPlayer(id);
-    List<NicknameUsage> otherNicknames = playerService.getNicknameUsages(id).stream()
+  public void details(@Param("id") int playerId) {
+    Player player = playerService.getPlayer(playerId);
+    List<NicknameUsage> otherNicknames = playerService.getNicknameUsages(playerId).stream()
         .filter(nu -> !nu.getName().equals(player.getName())).collect(Collectors.toList());
-    List<WeaponUsage> weapons = playerService.getWeaponUsages(id);
-    List<VehicleUsage> vehicles = playerService.getVehicleUsages(id);
-    List<MapUsage> maps = playerService.getMapUsages(id);
+    List<WeaponUsage> weapons = playerService.getWeaponUsages(playerId);
+    List<VehicleUsage> vehicles = playerService.getVehicleUsages(playerId);
+    List<MapUsage> maps = playerService.getMapUsages(playerId);
 
     getResponse()
         .bind("player", player)
@@ -43,6 +43,18 @@ public class PlayerController extends Controller {
         .bind("maps", maps)
         .render("players/details");
   }
+
+  public void mapStats(@Param("id") int playerId, @Param("mapCode") String mapCode) {
+    Player player = playerService.getPlayer(playerId);
+
+    MapStatsInfo mapStatsInfo = mapService.getMapStatsInfoForPlayer(mapCode, playerId);
+
+    getResponse()
+        .bind("player", player)
+        .bind("mapInfo", mapStatsInfo)
+        .render("players/map");
+  }
+
 
   public void jsonRandom() {
     Player player = createPlayer();

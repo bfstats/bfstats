@@ -44,10 +44,10 @@ public class XmlParser {
       System.out.println("Player " + playerId);
       for (String[] coordinates : listOfCoordinates) {
         String x = coordinates[0];
-        String z = coordinates[1];
-        String y = coordinates[2];
+        String y = coordinates[1];
+        String z = coordinates[2];
 
-        System.out.println("(" + x + ", " + y + ")");
+        System.out.println("(" + x + ", " + y + ", " + z + ")");
         System.out.println("(" + Float.parseFloat(x) + ", " + Float.parseFloat(y) + ")");
         System.out.println("--");
       }

@@ -12,7 +12,7 @@
   {% for map in maps %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td>{{ map.name }}</td>
+    <td><a href="/players/{{ player.id }}/map/{{ map.name }}">{{ map.name }}</a></td>
     <td>{{ map.score }}</td>
     <td>{{ map.percentage }}</td>
     <td>

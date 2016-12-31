@@ -2,6 +2,7 @@ package io.github.bfvstats;
 
 import com.google.inject.AbstractModule;
 import io.github.bfvstats.service.ChatService;
+import io.github.bfvstats.service.MapService;
 import io.github.bfvstats.service.PlayerService;
 import io.github.bfvstats.service.RankingService;
 import ro.pippo.core.Application;
@@ -10,6 +11,7 @@ public class InjectionModule extends AbstractModule {
 
   @Override
   protected void configure() {
+    bind(MapService.class).asEagerSingleton();
     bind(PlayerService.class).asEagerSingleton();
     bind(RankingService.class).asEagerSingleton();
     bind(ChatService.class).asEagerSingleton();

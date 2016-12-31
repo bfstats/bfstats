@@ -1,6 +1,5 @@
 package io.github.bfvstats.service;
 
-
 import io.github.bfvstats.model.ChatMessage;
 import org.jooq.Record;
 import org.jooq.Record5;
