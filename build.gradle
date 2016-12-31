@@ -37,4 +37,5 @@ dependencies {
   compile "org.xerial:sqlite-jdbc:3.15.1"
 
   compile project(':subprojects/logparser')
+  compile project(':subprojects/dbfiller')
 }

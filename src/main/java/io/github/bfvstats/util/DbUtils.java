@@ -10,7 +10,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DbUtils {
-  private static final String url = "jdbc:sqlite:test.db";
+  private static final String url = "jdbc:sqlite:baas.db";
   private static final String username = "";
   private static final String password = "";
 
