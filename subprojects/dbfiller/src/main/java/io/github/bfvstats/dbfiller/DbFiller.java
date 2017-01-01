@@ -1,13 +1,16 @@
 package io.github.bfvstats.dbfiller;
 
-import io.github.bfvstats.game.jooq.tables.records.PlayerRecord;
-import io.github.bfvstats.game.jooq.tables.records.RoundChatLogRecord;
-import io.github.bfvstats.game.jooq.tables.records.RoundRecord;
+import io.github.bfvstats.game.jooq.tables.records.*;
 import io.github.bfvstats.logparser.XmlParser;
 import io.github.bfvstats.logparser.xml.BfEvent;
 import io.github.bfvstats.logparser.xml.BfLog;
 import io.github.bfvstats.logparser.xml.BfRound;
+import io.github.bfvstats.logparser.xml.BfRoundStats;
 import io.github.bfvstats.logparser.xml.enums.EventName;
+import io.github.bfvstats.logparser.xml.enums.event.ChatEventParams;
+import io.github.bfvstats.logparser.xml.enums.event.CreatePlayerParams;
+import io.github.bfvstats.logparser.xml.enums.event.PlayerKeyHashParams;
+import io.github.bfvstats.logparser.xml.enums.event.RoundInitParams;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -58,26 +61,34 @@ public class DbFiller {
           }
           RoundPlayer roundPlayer = new RoundPlayer()
               .setRoundPlayerId(e.getPlayerId())
-              .setName(e.getStringParamValueByName("name"))
+              .setName(e.getStringParamValueByName(CreatePlayerParams.name.name()))
               .setKeyhash(null);
           activePlayersByRoundPlayerId.put(e.getPlayerId(), roundPlayer);
           System.out.println("added round-player " + e.getPlayerId());
         } else if (e.getEventName() == EventName.playerKeyHash) {
           RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
-          roundPlayer.setKeyhash(e.getStringParamValueByName("keyhash"));
+          roundPlayer.setKeyhash(e.getStringParamValueByName(PlayerKeyHashParams.keyhash.name()));
           PlayerRecord playerRecord = addPlayerOrNickName(roundPlayer.getName(), roundPlayer.getKeyhash());
           roundPlayer.setPlayerId(playerRecord.getId());
         } else if (e.getEventName() == EventName.destroyPlayer) {
           activePlayersByRoundPlayerId.remove(e.getPlayerId());
           System.out.println("removed round-player " + e.getPlayerId());
         } else if (e.getEventName() == EventName.chat) {
-          requireNonNull(roundId);
           RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
           Integer playerId = roundPlayer.getPlayerId();
           requireNonNull(playerId);
           addChatMessage(logStartTime, roundId, playerId, e);
         }
       }
+
+      if (bfRound.getRoundStats() != null) {
+        BfRoundStats roundStats = bfRound.getRoundStats();
+        RoundEndStatsRecord roundEndStatsRecord = addRoundEndStats(logStartTime, roundId, roundStats);
+        for (BfRoundStats.BfPlayerStat bfPlayerStat : roundStats.getPlayerStats()) {
+          addRoundEndStatsPlayer(roundId, bfPlayerStat);
+        }
+      }
+
     }
 
     closeDslContext();
@@ -93,8 +104,42 @@ public class DbFiller {
     String keyhash;
   }
 
+  private RoundEndStatsPlayerRecord addRoundEndStatsPlayer(Integer roundId, BfRoundStats.BfPlayerStat bfPlayerStat) {
+    RoundEndStatsPlayerRecord roundEndStatsRecord = getDslContext().newRecord(ROUND_END_STATS_PLAYER);
+    roundEndStatsRecord.setRoundId(roundId);
+    roundEndStatsRecord.setPlayerId(bfPlayerStat.getPlayerId());
+    roundEndStatsRecord.setPlayerName(bfPlayerStat.getPlayerName());
+    roundEndStatsRecord.setIsAi(bfPlayerStat.isAi() ? 1 : 0);
+    roundEndStatsRecord.setTeam(bfPlayerStat.getTeam());
+    roundEndStatsRecord.setScore(bfPlayerStat.getScore());
+    roundEndStatsRecord.setKills(bfPlayerStat.getKills());
+    roundEndStatsRecord.setDeaths(bfPlayerStat.getDeaths());
+    roundEndStatsRecord.setTks(bfPlayerStat.getTks());
+    roundEndStatsRecord.setCaptures(bfPlayerStat.getCaptures());
+    roundEndStatsRecord.setAttacks(bfPlayerStat.getAttacks());
+    roundEndStatsRecord.setDefences(bfPlayerStat.getDefences());
+
+    roundEndStatsRecord.insert();
+    return roundEndStatsRecord;
+  }
+
+  private RoundEndStatsRecord addRoundEndStats(LocalDateTime logStartTime, Integer roundId, BfRoundStats bfRoundStats) {
+    LocalDateTime roundEndTime = logStartTime.plus(bfRoundStats.getDurationSinceLogStart());
+
+    RoundEndStatsRecord roundEndStatsRecord = getDslContext().newRecord(ROUND_END_STATS);
+    roundEndStatsRecord.setRoundId(roundId);
+    roundEndStatsRecord.setEndTime(Timestamp.valueOf(roundEndTime));
+    roundEndStatsRecord.setWinningTeam(bfRoundStats.getWinningTeam());
+    roundEndStatsRecord.setVictoryType(bfRoundStats.getVictoryType());
+    roundEndStatsRecord.setEndTicketsTeam_1(bfRoundStats.getTicketsForTeam1());
+    roundEndStatsRecord.setEndTicketsTeam_2(bfRoundStats.getTicketsForTeam2());
+
+    roundEndStatsRecord.insert();
+    return roundEndStatsRecord;
+  }
+
   private RoundChatLogRecord addChatMessage(LocalDateTime logStartTime, Integer roundId, Integer playerId, BfEvent bfEvent) {
-    String message = bfEvent.getStringParamValueByName("text");
+    String message = bfEvent.getStringParamValueByName(ChatEventParams.text.name());
     LocalDateTime eventTime = logStartTime.plus(bfEvent.getDurationSinceLogStart());
 
     RoundChatLogRecord roundChatLogRecord = getDslContext().newRecord(ROUND_CHAT_LOG);
@@ -108,7 +153,7 @@ public class DbFiller {
     }
 
 
-    roundChatLogRecord.setTeam(bfEvent.getIntegerParamValueByName("team"));
+    roundChatLogRecord.setTeam(bfEvent.getIntegerParamValueByName(ChatEventParams.team.name()));
     roundChatLogRecord.setMessage(message);
     roundChatLogRecord.setEventTime(Timestamp.valueOf(eventTime));
 
@@ -132,8 +177,8 @@ public class DbFiller {
   }
 
   private RoundRecord addRound(LocalDateTime logStartTime, BfRound bfRound, BfEvent roundInitEvent) {
-    Integer ticketsTeam1 = roundInitEvent.getIntegerParamValueByName("tickets_team1");
-    Integer ticketsTeam2 = roundInitEvent.getIntegerParamValueByName("tickets_team2");
+    Integer ticketsTeam1 = roundInitEvent.getIntegerParamValueByName(RoundInitParams.tickets_team1.name());
+    Integer ticketsTeam2 = roundInitEvent.getIntegerParamValueByName(RoundInitParams.tickets_team2.name());
 
     // Create a new record
     RoundRecord round = getDslContext().newRecord(ROUND);
