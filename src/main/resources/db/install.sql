@@ -60,9 +60,11 @@ CREATE TABLE IF NOT EXISTS round_chat_log (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   round_id INTEGER NOT NULL,
   player_id INTEGER NOT NULL,
-  player_location_x REAL, -- hesitated to put NOT NULL, because player can chat while dead or spectator
-  player_location_y REAL,
-  player_location_z REAL,
+  -- hesitated to put location NOT NULL, because player can chat while dead or spectator
+  -- DECIMAL(4,4) because maps are usually 2000x2000, and logged with precision up to 4 digits after decimal point
+  player_location_x DECIMAL(4,4),
+  player_location_y DECIMAL(4,4),
+  player_location_z DECIMAL(4,4),
   team INTEGER NOT NULL, -- 0 is all, maybe: 1 (NVA) or 2 (USA)
   message VARCHAR(50) NOT NULL,
   event_time DATETIME NOT NULL,
@@ -74,9 +76,9 @@ CREATE TABLE IF NOT EXISTS round_player_score_event (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   round_id INTEGER NOT NULL,
   player_id INTEGER NOT NULL,
-  player_location_x REAL NOT NULL,
-  player_location_y REAL NOT NULL,
-  player_location_z REAL NOT NULL,
+  player_location_x DECIMAL(4,4) NOT NULL,
+  player_location_y DECIMAL(4,4) NOT NULL,
+  player_location_z DECIMAL(4,4) NOT NULL,
   event_time DATETIME NOT NULL,
   score_type VARCHAR(30) NOT NULL, -- Kill, TK,  Death, DeathNoMsg,  FlagCapture, Defence
   victim_id INTEGER, -- if type is TK or Kill
