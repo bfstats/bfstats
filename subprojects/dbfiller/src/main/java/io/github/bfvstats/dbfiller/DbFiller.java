@@ -10,6 +10,8 @@ import io.github.bfvstats.logparser.xml.enums.EventName;
 import io.github.bfvstats.logparser.xml.enums.event.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
@@ -17,20 +19,37 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.InflaterInputStream;
 
-import static io.github.bfvstats.dbfiller.DbUtil.closeDslContext;
-import static io.github.bfvstats.dbfiller.DbUtil.getDslContext;
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static java.util.Objects.requireNonNull;
 
 public class DbFiller {
+  private final DSLContext dslContext;
+  private DSLContext transactionDslContext;
+
+  public DbFiller() {
+    try {
+      Connection connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
+      this.dslContext = DSL.using(connection);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public DSLContext transaction() {
+    return transactionDslContext;
+  }
+
   public static void main(String[] args) throws JAXBException, FileNotFoundException {
-    String logDirPath = "D:\\Projects\\bfvstats\\example\\";
+    String logDirPath = "D:\\bflogs\\";
     parseAllInDir(logDirPath);
   }
 
@@ -43,7 +62,7 @@ public class DbFiller {
         Path checkablePath = Paths.get(filePath.substring(0, filePath.length() - 4) + ".zxml");
         boolean hasZxmlCounterpart = Files.exists(checkablePath);
         if (hasZxmlCounterpart) {
-          System.out.println(checkablePath);
+          System.out.println("skipping " + checkablePath);
           // skipping xml, as zxml also exists, so will wait for unzipping that again
           continue;
         }
@@ -51,6 +70,7 @@ public class DbFiller {
         try {
           filePath = unzip(filePath); // replace with .xml counterpart
         } catch (IOException e) {
+          System.out.println("problem extracting " + filePath);
           e.printStackTrace();
         }
       }
@@ -81,15 +101,25 @@ public class DbFiller {
   }
 
   private void fillDb(BfLog bfLog) {
-    PlayerRecord botPlayerRecord = addPlayerOrNickName("FAKE_BOT", "FAKE_BOT");
-    Integer botPlayerId = botPlayerRecord.getId();
-    RoundPlayer botRoundPlayer = new RoundPlayer()
-        .setRoundPlayerId(-1)
-        .setPlayerId(botPlayerId)
-        .setName("FAKE_BOT")
-        .setKeyhash("FAKE_BOT");
-    int botRoundPlayerId = botRoundPlayer.getRoundPlayerId();
+    dslContext.transaction(configuration -> {
+      this.transactionDslContext = DSL.using(configuration);
 
+      PlayerRecord botPlayerRecord = addPlayerOrNickName("FAKE_BOT", "FAKE_BOT");
+      Integer botPlayerId = botPlayerRecord.getId();
+      RoundPlayer botRoundPlayer = new RoundPlayer()
+          .setRoundPlayerId(-1)
+          .setPlayerId(botPlayerId)
+          .setName("FAKE_BOT")
+          .setKeyhash("FAKE_BOT");
+      int botRoundPlayerId = botRoundPlayer.getRoundPlayerId();
+
+      parseLog(bfLog, botRoundPlayer, botRoundPlayerId);
+    });
+
+    dslContext.close();
+  }
+
+  private void parseLog(BfLog bfLog, RoundPlayer botRoundPlayer, int botRoundPlayerId) {
     LocalDateTime logStartTime = bfLog.getTimestampAsDate();
 
     // actually not per round, but per log file
@@ -97,85 +127,124 @@ public class DbFiller {
     activePlayersByRoundPlayerId.put(botRoundPlayer.getRoundPlayerId(), botRoundPlayer);
 
     for (BfRound bfRound : bfLog.getRounds()) {
-      BfEvent roundInitEvent = bfRound.getEvents().stream()
-          .filter(e -> e.getEventName() == EventName.roundInit)
-          .findFirst().orElseThrow(() -> new IllegalStateException("roundInit event is missing"));
-      RoundRecord roundRecord = addRound(logStartTime, bfRound, roundInitEvent);
-      int roundId = roundRecord.getId();
+      parseRound(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, bfRound);
+    }
+  }
 
-      for (BfEvent e : bfRound.getEvents()) {
-        if (e.getEventName() == EventName.createPlayer) {
-          if (activePlayersByRoundPlayerId.containsKey(e.getPlayerId())) {
-            throw new IllegalStateException("destroyPlayer event should've deleted player with id " + e.getPlayerId());
-          }
-          RoundPlayer roundPlayer = new RoundPlayer()
-              .setRoundPlayerId(e.getPlayerId())
-              .setName(e.getStringParamValueByName(CreatePlayerParams.name.name()))
-              .setKeyhash(null);
-          activePlayersByRoundPlayerId.put(e.getPlayerId(), roundPlayer);
-          System.out.println("added round-player " + e.getPlayerId());
-        } else if (e.getEventName() == EventName.playerKeyHash) {
-          RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
-          roundPlayer.setKeyhash(e.getStringParamValueByName(PlayerKeyHashParams.keyhash.name()));
-          PlayerRecord playerRecord = addPlayerOrNickName(roundPlayer.getName(), roundPlayer.getKeyhash());
-          roundPlayer.setPlayerId(playerRecord.getId());
-        } else if (e.getEventName() == EventName.destroyPlayer) {
-          activePlayersByRoundPlayerId.remove(e.getPlayerId());
-          System.out.println("removed round-player " + e.getPlayerId());
-        } else if (e.getEventName() == EventName.changePlayerName) {
-          RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
-          Integer playerId = requireNonNull(roundPlayer.getPlayerId());
-          String newPlayerName = e.getStringParamValueByName("name");
-          addNickname(playerId, newPlayerName);
-        } else if (e.getEventName() == EventName.chat) {
-          RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
-          Integer playerId = requireNonNull(roundPlayer.getPlayerId());
-          addChatMessage(logStartTime, roundId, playerId, e);
-        } else if (e.getEventName() == EventName.scoreEvent) {
-          Integer roundPlayerId = e.getPlayerId();
-          if (roundPlayerId > 127) {
-            // using fake player for a bot
-            roundPlayerId = botRoundPlayerId;
-          }
-          RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(roundPlayerId);
-          Integer playerId = requireNonNull(roundPlayer.getPlayerId());
+  private void parseRound(int botRoundPlayerId, LocalDateTime logStartTime,
+                          Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, BfRound bfRound) {
+    BfEvent roundInitEvent = bfRound.getEvents().stream()
+        .filter(e -> e.getEventName() == EventName.roundInit)
+        .findFirst().orElseThrow(() -> new IllegalStateException("roundInit event is missing"));
+    RoundRecord roundRecord = addRound(logStartTime, bfRound, roundInitEvent);
+    int roundId = roundRecord.getId();
 
-          Integer victimPlayerId = null;
-          Integer victimRoundPlayerId = e.getIntegerParamValueByName(ScoreEventParams.victim_id.name());
-          if (victimRoundPlayerId != null) {
-            if (victimRoundPlayerId > 127) {
-              // using fake player for a bot
-              victimRoundPlayerId = botRoundPlayerId;
-            }
-            RoundPlayer victimRoundPlayer = activePlayersByRoundPlayerId.get(victimRoundPlayerId);
-            victimPlayerId = requireNonNull(victimRoundPlayer.getPlayerId());
-          }
-
-          addRoundPlayerScoreEvent(logStartTime, roundId, playerId, victimPlayerId, e);
+    for (BfEvent e : bfRound.getEvents()) {
+      parseRoundEvent(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, roundId, e);
+    }
+    if (bfRound.getRoundStats() != null) {
+      BfRoundStats roundStats = bfRound.getRoundStats();
+      RoundEndStatsRecord roundEndStatsRecord = addRoundEndStats(logStartTime, roundId, roundStats);
+      // in order of rank
+      int rank = 1;
+      for (BfRoundStats.BfPlayerStat bfPlayerStat : roundStats.getPlayerStats()) {
+        rank++;
+        if (bfPlayerStat.isAi()) {
+          // skip bot stats
+          continue;
         }
+        RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(bfPlayerStat.getPlayerId());
+        Integer playerId = requireNonNull(roundPlayer.getPlayerId());
+
+        addRoundEndStatsPlayer(roundId, bfPlayerStat, playerId, rank);
       }
+    }
+  }
 
-      if (bfRound.getRoundStats() != null) {
-        BfRoundStats roundStats = bfRound.getRoundStats();
-        RoundEndStatsRecord roundEndStatsRecord = addRoundEndStats(logStartTime, roundId, roundStats);
-        // in order of rank
-        int rank = 1;
-        for (BfRoundStats.BfPlayerStat bfPlayerStat : roundStats.getPlayerStats()) {
-          rank++;
-          if (bfPlayerStat.isAi()) {
-            // skip bot stats
-            continue;
-          }
-          RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(bfPlayerStat.getPlayerId());
-          Integer playerId = requireNonNull(roundPlayer.getPlayerId());
+  private void parseRoundEvent(int botRoundPlayerId, LocalDateTime logStartTime,
+                               Map<Integer, RoundPlayer> activePlayersByRoundPlayerId,
+                               int roundId, BfEvent e) {
+    switch (e.getEventName()) {
+      case createPlayer:
+        parseEventCreatePlayer(activePlayersByRoundPlayerId, e);
+        break;
+      case playerKeyHash:
+        parseEventPlayerKeyHash(activePlayersByRoundPlayerId, e);
+        break;
+      case destroyPlayer:
+        parseEventDestroyPlayer(activePlayersByRoundPlayerId, e);
+        break;
+      case changePlayerName:
+        parseEventChangePlayerName(activePlayersByRoundPlayerId, e);
+        break;
+      case chat:
+        parseEventChat(logStartTime, activePlayersByRoundPlayerId, roundId, e);
+        break;
+      case scoreEvent:
+        parseEventScoreEvent(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, roundId, e);
+        break;
+    }
+  }
 
-          addRoundEndStatsPlayer(roundId, bfPlayerStat, playerId, rank);
-        }
-      }
-
+  private void parseEventScoreEvent(int botRoundPlayerId, LocalDateTime logStartTime, Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, int roundId, BfEvent e) {
+    Integer roundPlayerId = e.getPlayerId();
+    if (roundPlayerId > 127) {
+      // using fake player for a bot
+      roundPlayerId = botRoundPlayerId;
     }
 
-    closeDslContext();
+    RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(roundPlayerId);
+    Integer playerId = requireNonNull(roundPlayer.getPlayerId());
+
+    Integer victimPlayerId = null;
+    Integer victimRoundPlayerId = e.getIntegerParamValueByName(ScoreEventParams.victim_id.name());
+    if (victimRoundPlayerId != null) {
+      if (victimRoundPlayerId > 127) {
+        // using fake player for a bot
+        victimRoundPlayerId = botRoundPlayerId;
+      }
+      RoundPlayer victimRoundPlayer = activePlayersByRoundPlayerId.get(victimRoundPlayerId);
+      victimPlayerId = requireNonNull(victimRoundPlayer.getPlayerId());
+    }
+
+    addRoundPlayerScoreEvent(logStartTime, roundId, playerId, victimPlayerId, e);
+  }
+
+  private void parseEventChat(LocalDateTime logStartTime, Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, int roundId, BfEvent e) {
+    RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
+    Integer playerId = requireNonNull(roundPlayer.getPlayerId());
+    addChatMessage(logStartTime, roundId, playerId, e);
+  }
+
+  private void parseEventChangePlayerName(Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, BfEvent e) {
+    RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
+    Integer playerId = requireNonNull(roundPlayer.getPlayerId());
+    String newPlayerName = e.getStringParamValueByName("name");
+    addNickname(playerId, newPlayerName);
+  }
+
+  private void parseEventDestroyPlayer(Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, BfEvent e) {
+    activePlayersByRoundPlayerId.remove(e.getPlayerId());
+    System.out.println("removed round-player " + e.getPlayerId());
+  }
+
+  private void parseEventPlayerKeyHash(Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, BfEvent e) {
+    RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
+    roundPlayer.setKeyhash(e.getStringParamValueByName(PlayerKeyHashParams.keyhash.name()));
+    PlayerRecord playerRecord = addPlayerOrNickName(roundPlayer.getName(), roundPlayer.getKeyhash());
+    roundPlayer.setPlayerId(playerRecord.getId());
+  }
+
+  private void parseEventCreatePlayer(Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, BfEvent e) {
+    if (activePlayersByRoundPlayerId.containsKey(e.getPlayerId())) {
+      throw new IllegalStateException("destroyPlayer event should've deleted player with id " + e.getPlayerId());
+    }
+    RoundPlayer roundPlayer = new RoundPlayer()
+        .setRoundPlayerId(e.getPlayerId())
+        .setName(e.getStringParamValueByName(CreatePlayerParams.name.name()))
+        .setKeyhash(null);
+    activePlayersByRoundPlayerId.put(e.getPlayerId(), roundPlayer);
+    System.out.println("added round-player " + e.getPlayerId());
   }
 
   private RoundPlayerScoreEventRecord addRoundPlayerScoreEvent(LocalDateTime logStartTime, int roundId, Integer playerId,
@@ -183,7 +252,7 @@ public class DbFiller {
     LocalDateTime eventTime = logStartTime.plus(e.getDurationSinceLogStart());
     String scoreType = e.getStringParamValueByName(ScoreEventParams.score_type.name());
 
-    RoundPlayerScoreEventRecord roundPlayerScoreEventRecord = getDslContext().newRecord(ROUND_PLAYER_SCORE_EVENT);
+    RoundPlayerScoreEventRecord roundPlayerScoreEventRecord = transaction().newRecord(ROUND_PLAYER_SCORE_EVENT);
     roundPlayerScoreEventRecord.setRoundId(roundId);
     roundPlayerScoreEventRecord.setPlayerId(playerId);
     if (e.getPlayerLocation() != null) {
@@ -216,7 +285,7 @@ public class DbFiller {
 
   private RoundEndStatsPlayerRecord addRoundEndStatsPlayer(Integer roundId, BfRoundStats.BfPlayerStat bfPlayerStat,
                                                            Integer playerId, int rank) {
-    RoundEndStatsPlayerRecord roundEndStatsPlayerRecord = getDslContext().newRecord(ROUND_END_STATS_PLAYER);
+    RoundEndStatsPlayerRecord roundEndStatsPlayerRecord = transaction().newRecord(ROUND_END_STATS_PLAYER);
     roundEndStatsPlayerRecord.setRoundId(roundId);
     roundEndStatsPlayerRecord.setPlayerId(playerId);
     roundEndStatsPlayerRecord.setPlayerName(bfPlayerStat.getPlayerName());
@@ -238,7 +307,7 @@ public class DbFiller {
   private RoundEndStatsRecord addRoundEndStats(LocalDateTime logStartTime, Integer roundId, BfRoundStats bfRoundStats) {
     LocalDateTime roundEndTime = logStartTime.plus(bfRoundStats.getDurationSinceLogStart());
 
-    RoundEndStatsRecord roundEndStatsRecord = getDslContext().newRecord(ROUND_END_STATS);
+    RoundEndStatsRecord roundEndStatsRecord = transaction().newRecord(ROUND_END_STATS);
     roundEndStatsRecord.setRoundId(roundId);
     roundEndStatsRecord.setEndTime(Timestamp.valueOf(roundEndTime));
     roundEndStatsRecord.setWinningTeam(bfRoundStats.getWinningTeam());
@@ -254,7 +323,7 @@ public class DbFiller {
     String message = bfEvent.getStringParamValueByName(ChatEventParams.text.name());
     LocalDateTime eventTime = logStartTime.plus(bfEvent.getDurationSinceLogStart());
 
-    RoundChatLogRecord roundChatLogRecord = getDslContext().newRecord(ROUND_CHAT_LOG);
+    RoundChatLogRecord roundChatLogRecord = transaction().newRecord(ROUND_CHAT_LOG);
     roundChatLogRecord.setRoundId(roundId);
     roundChatLogRecord.setPlayerId(playerId);
     if (bfEvent.getPlayerLocation() != null) {
@@ -273,10 +342,10 @@ public class DbFiller {
   }
 
   private PlayerRecord addPlayerOrNickName(String name, String keyHash) {
-    PlayerRecord playerRecord = getDslContext().selectFrom(PLAYER).where(PLAYER.KEYHASH.eq(keyHash)).fetchOne();
+    PlayerRecord playerRecord = transaction().selectFrom(PLAYER).where(PLAYER.KEYHASH.eq(keyHash)).fetchOne();
 
     if (playerRecord == null) {
-      playerRecord = getDslContext().newRecord(PLAYER);
+      playerRecord = transaction().newRecord(PLAYER);
       playerRecord.setName(name);
       playerRecord.setKeyhash(keyHash);
       playerRecord.insert();
@@ -288,13 +357,13 @@ public class DbFiller {
   }
 
   private PlayerNicknameRecord addNickname(int playerId, String nickname) {
-    PlayerNicknameRecord playerNicknameRecord = getDslContext().selectFrom(PLAYER_NICKNAME)
+    PlayerNicknameRecord playerNicknameRecord = transaction().selectFrom(PLAYER_NICKNAME)
         .where(PLAYER_NICKNAME.PLAYER_ID.eq(playerId))
         .and(PLAYER_NICKNAME.NICKNAME.eq(nickname))
         .fetchOne();
 
     if (playerNicknameRecord == null) {
-      playerNicknameRecord = getDslContext().newRecord(PLAYER_NICKNAME);
+      playerNicknameRecord = transaction().newRecord(PLAYER_NICKNAME);
       playerNicknameRecord.setPlayerId(playerId);
       playerNicknameRecord.setNickname(nickname);
       playerNicknameRecord.insert();
@@ -310,7 +379,7 @@ public class DbFiller {
     LocalDateTime roundStartTime = logStartTime.plus(roundInitEvent.getDurationSinceLogStart());
 
     // Create a new record
-    RoundRecord round = getDslContext().newRecord(ROUND);
+    RoundRecord round = transaction().newRecord(ROUND);
     round.setStartTime(Timestamp.valueOf(roundStartTime));
     round.setStartTicketsTeam_1(ticketsTeam1);
     round.setStartTicketsTeam_2(ticketsTeam2);
