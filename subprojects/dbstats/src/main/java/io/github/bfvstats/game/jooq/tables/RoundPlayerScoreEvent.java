@@ -8,6 +8,7 @@ import io.github.bfvstats.game.jooq.DefaultSchema;
 import io.github.bfvstats.game.jooq.Keys;
 import io.github.bfvstats.game.jooq.tables.records.RoundPlayerScoreEventRecord;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerScoreEvent extends TableImpl<RoundPlayerScoreEventRecord> {
 
-    private static final long serialVersionUID = 2077388291;
+    private static final long serialVersionUID = -2048998735;
 
     /**
      * The reference instance of <code>round_player_score_event</code>
@@ -69,17 +70,17 @@ public class RoundPlayerScoreEvent extends TableImpl<RoundPlayerScoreEventRecord
     /**
      * The column <code>round_player_score_event.player_location_x</code>.
      */
-    public final TableField<RoundPlayerScoreEventRecord, Float> PLAYER_LOCATION_X = createField("player_location_x", org.jooq.impl.SQLDataType.REAL.nullable(false), this, "");
+    public final TableField<RoundPlayerScoreEventRecord, BigDecimal> PLAYER_LOCATION_X = createField("player_location_x", org.jooq.impl.SQLDataType.NUMERIC.precision(4, 4).nullable(false), this, "");
 
     /**
      * The column <code>round_player_score_event.player_location_y</code>.
      */
-    public final TableField<RoundPlayerScoreEventRecord, Float> PLAYER_LOCATION_Y = createField("player_location_y", org.jooq.impl.SQLDataType.REAL.nullable(false), this, "");
+    public final TableField<RoundPlayerScoreEventRecord, BigDecimal> PLAYER_LOCATION_Y = createField("player_location_y", org.jooq.impl.SQLDataType.NUMERIC.precision(4, 4).nullable(false), this, "");
 
     /**
      * The column <code>round_player_score_event.player_location_z</code>.
      */
-    public final TableField<RoundPlayerScoreEventRecord, Float> PLAYER_LOCATION_Z = createField("player_location_z", org.jooq.impl.SQLDataType.REAL.nullable(false), this, "");
+    public final TableField<RoundPlayerScoreEventRecord, BigDecimal> PLAYER_LOCATION_Z = createField("player_location_z", org.jooq.impl.SQLDataType.NUMERIC.precision(4, 4).nullable(false), this, "");
 
     /**
      * The column <code>round_player_score_event.event_time</code>.

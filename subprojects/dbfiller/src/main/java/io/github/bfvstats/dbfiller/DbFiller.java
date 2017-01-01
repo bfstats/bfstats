@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -50,9 +51,7 @@ public class DbFiller {
     Map<Integer, RoundPlayer> activePlayersByRoundPlayerId = new HashMap<>();
     activePlayersByRoundPlayerId.put(botRoundPlayer.getRoundPlayerId(), botRoundPlayer);
 
-    int i = 0;
     for (BfRound bfRound : bfLog.getRounds()) {
-      i++;
       BfEvent roundInitEvent = bfRound.getEvents().stream()
           .filter(e -> e.getEventName() == EventName.roundInit)
           .findFirst().orElseThrow(() -> new IllegalStateException("roundInit event is missing"));
@@ -109,7 +108,10 @@ public class DbFiller {
       if (bfRound.getRoundStats() != null) {
         BfRoundStats roundStats = bfRound.getRoundStats();
         RoundEndStatsRecord roundEndStatsRecord = addRoundEndStats(logStartTime, roundId, roundStats);
+        // in order of rank
+        int rank = 1;
         for (BfRoundStats.BfPlayerStat bfPlayerStat : roundStats.getPlayerStats()) {
+          rank++;
           if (bfPlayerStat.isAi()) {
             // skip bot stats
             continue;
@@ -117,7 +119,7 @@ public class DbFiller {
           RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(bfPlayerStat.getPlayerId());
           Integer playerId = requireNonNull(roundPlayer.getPlayerId());
 
-          addRoundEndStatsPlayer(roundId, bfPlayerStat, playerId);
+          addRoundEndStatsPlayer(roundId, bfPlayerStat, playerId, rank);
         }
       }
 
@@ -135,9 +137,9 @@ public class DbFiller {
     roundPlayerScoreEventRecord.setPlayerId(playerId);
     if (e.getPlayerLocation() != null) {
       String[] playerLocation = e.getPlayerLocation();
-      roundPlayerScoreEventRecord.setPlayerLocationX(Float.parseFloat(playerLocation[0]));
-      roundPlayerScoreEventRecord.setPlayerLocationY(Float.parseFloat(playerLocation[1]));
-      roundPlayerScoreEventRecord.setPlayerLocationZ(Float.parseFloat(playerLocation[2]));
+      roundPlayerScoreEventRecord.setPlayerLocationX(new BigDecimal(playerLocation[0]));
+      roundPlayerScoreEventRecord.setPlayerLocationY(new BigDecimal(playerLocation[1]));
+      roundPlayerScoreEventRecord.setPlayerLocationZ(new BigDecimal(playerLocation[2]));
     }
     roundPlayerScoreEventRecord.setEventTime(Timestamp.valueOf(eventTime));
     roundPlayerScoreEventRecord.setScoreType(scoreType);
@@ -161,23 +163,25 @@ public class DbFiller {
     String keyhash;
   }
 
-  private RoundEndStatsPlayerRecord addRoundEndStatsPlayer(Integer roundId, BfRoundStats.BfPlayerStat bfPlayerStat, Integer playerId) {
-    RoundEndStatsPlayerRecord roundEndStatsRecord = getDslContext().newRecord(ROUND_END_STATS_PLAYER);
-    roundEndStatsRecord.setRoundId(roundId);
-    roundEndStatsRecord.setPlayerId(playerId);
-    roundEndStatsRecord.setPlayerName(bfPlayerStat.getPlayerName());
-    roundEndStatsRecord.setIsAi(bfPlayerStat.isAi() ? 1 : 0);
-    roundEndStatsRecord.setTeam(bfPlayerStat.getTeam());
-    roundEndStatsRecord.setScore(bfPlayerStat.getScore());
-    roundEndStatsRecord.setKills(bfPlayerStat.getKills());
-    roundEndStatsRecord.setDeaths(bfPlayerStat.getDeaths());
-    roundEndStatsRecord.setTks(bfPlayerStat.getTks());
-    roundEndStatsRecord.setCaptures(bfPlayerStat.getCaptures());
-    roundEndStatsRecord.setAttacks(bfPlayerStat.getAttacks());
-    roundEndStatsRecord.setDefences(bfPlayerStat.getDefences());
+  private RoundEndStatsPlayerRecord addRoundEndStatsPlayer(Integer roundId, BfRoundStats.BfPlayerStat bfPlayerStat,
+                                                           Integer playerId, int rank) {
+    RoundEndStatsPlayerRecord roundEndStatsPlayerRecord = getDslContext().newRecord(ROUND_END_STATS_PLAYER);
+    roundEndStatsPlayerRecord.setRoundId(roundId);
+    roundEndStatsPlayerRecord.setPlayerId(playerId);
+    roundEndStatsPlayerRecord.setPlayerName(bfPlayerStat.getPlayerName());
+    roundEndStatsPlayerRecord.setIsAi(bfPlayerStat.isAi() ? 1 : 0);
+    roundEndStatsPlayerRecord.setRank(rank);
+    roundEndStatsPlayerRecord.setTeam(bfPlayerStat.getTeam());
+    roundEndStatsPlayerRecord.setScore(bfPlayerStat.getScore());
+    roundEndStatsPlayerRecord.setKills(bfPlayerStat.getKills());
+    roundEndStatsPlayerRecord.setDeaths(bfPlayerStat.getDeaths());
+    roundEndStatsPlayerRecord.setTks(bfPlayerStat.getTks());
+    roundEndStatsPlayerRecord.setCaptures(bfPlayerStat.getCaptures());
+    roundEndStatsPlayerRecord.setAttacks(bfPlayerStat.getAttacks());
+    roundEndStatsPlayerRecord.setDefences(bfPlayerStat.getDefences());
 
-    roundEndStatsRecord.insert();
-    return roundEndStatsRecord;
+    roundEndStatsPlayerRecord.insert();
+    return roundEndStatsPlayerRecord;
   }
 
   private RoundEndStatsRecord addRoundEndStats(LocalDateTime logStartTime, Integer roundId, BfRoundStats bfRoundStats) {
@@ -204,11 +208,10 @@ public class DbFiller {
     roundChatLogRecord.setPlayerId(playerId);
     if (bfEvent.getPlayerLocation() != null) {
       String[] playerLocation = bfEvent.getPlayerLocation();
-      roundChatLogRecord.setPlayerLocationX(Float.parseFloat(playerLocation[0]));
-      roundChatLogRecord.setPlayerLocationY(Float.parseFloat(playerLocation[1]));
-      roundChatLogRecord.setPlayerLocationZ(Float.parseFloat(playerLocation[2]));
+      roundChatLogRecord.setPlayerLocationX(new BigDecimal(playerLocation[0]));
+      roundChatLogRecord.setPlayerLocationY(new BigDecimal(playerLocation[1]));
+      roundChatLogRecord.setPlayerLocationZ(new BigDecimal(playerLocation[2]));
     }
-
 
     roundChatLogRecord.setTeam(bfEvent.getIntegerParamValueByName(ChatEventParams.team.name()));
     roundChatLogRecord.setMessage(message);

@@ -8,6 +8,7 @@ import io.github.bfvstats.game.jooq.DefaultSchema;
 import io.github.bfvstats.game.jooq.Keys;
 import io.github.bfvstats.game.jooq.tables.records.RoundChatLogRecord;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundChatLog extends TableImpl<RoundChatLogRecord> {
 
-    private static final long serialVersionUID = 154061903;
+    private static final long serialVersionUID = -1198055915;
 
     /**
      * The reference instance of <code>round_chat_log</code>
@@ -69,17 +70,17 @@ public class RoundChatLog extends TableImpl<RoundChatLogRecord> {
     /**
      * The column <code>round_chat_log.player_location_x</code>.
      */
-    public final TableField<RoundChatLogRecord, Float> PLAYER_LOCATION_X = createField("player_location_x", org.jooq.impl.SQLDataType.REAL, this, "");
+    public final TableField<RoundChatLogRecord, BigDecimal> PLAYER_LOCATION_X = createField("player_location_x", org.jooq.impl.SQLDataType.NUMERIC.precision(4, 4), this, "");
 
     /**
      * The column <code>round_chat_log.player_location_y</code>.
      */
-    public final TableField<RoundChatLogRecord, Float> PLAYER_LOCATION_Y = createField("player_location_y", org.jooq.impl.SQLDataType.REAL, this, "");
+    public final TableField<RoundChatLogRecord, BigDecimal> PLAYER_LOCATION_Y = createField("player_location_y", org.jooq.impl.SQLDataType.NUMERIC.precision(4, 4), this, "");
 
     /**
      * The column <code>round_chat_log.player_location_z</code>.
      */
-    public final TableField<RoundChatLogRecord, Float> PLAYER_LOCATION_Z = createField("player_location_z", org.jooq.impl.SQLDataType.REAL, this, "");
+    public final TableField<RoundChatLogRecord, BigDecimal> PLAYER_LOCATION_Z = createField("player_location_z", org.jooq.impl.SQLDataType.NUMERIC.precision(4, 4), this, "");
 
     /**
      * The column <code>round_chat_log.team</code>.

@@ -35,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundEndStatsPlayer extends TableImpl<RoundEndStatsPlayerRecord> {
 
-    private static final long serialVersionUID = 664067049;
+    private static final long serialVersionUID = -1571196541;
 
     /**
      * The reference instance of <code>round_end_stats_player</code>
@@ -69,6 +69,11 @@ public class RoundEndStatsPlayer extends TableImpl<RoundEndStatsPlayerRecord> {
      * The column <code>round_end_stats_player.player_name</code>.
      */
     public final TableField<RoundEndStatsPlayerRecord, String> PLAYER_NAME = createField("player_name", org.jooq.impl.SQLDataType.VARCHAR.length(150).nullable(false), this, "");
+
+    /**
+     * The column <code>round_end_stats_player.rank</code>.
+     */
+    public final TableField<RoundEndStatsPlayerRecord, Integer> RANK = createField("rank", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>round_end_stats_player.is_ai</code>.

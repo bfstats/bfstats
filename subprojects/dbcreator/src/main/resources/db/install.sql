@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS round_end_stats_player (
   round_id INTEGER NOT NULL,
   player_id INTEGER NOT NULL,
   player_name VARCHAR(150) NOT NULL,
+  rank INTEGER NOT NULL,
   is_ai INTEGER NOT NULL,
   team INTEGER NOT NULL, -- 1 (NVA) or 2 (USA)
   score INTEGER NOT NULL,

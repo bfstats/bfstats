@@ -36,6 +36,7 @@ dependencies {
 
   compile "org.xerial:sqlite-jdbc:3.15.1"
 
+  compile project(':subprojects/dbcreator')
   compile project(':subprojects/logparser')
   compile project(':subprojects/dbfiller')
   compile project(':subprojects/dbstats')

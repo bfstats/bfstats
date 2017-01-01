@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class DBCreator {
 
   public static void main(String[] args) throws FileNotFoundException, SQLException {
-    InputStream is = new FileInputStream("D:\\Projects\\bfvstats\\src\\main\\resources\\db\\install.sql");
+    InputStream is = new FileInputStream("D:\\Projects\\bfvstats\\subprojects\\dbcreator\\src\\main\\resources\\db\\install.sql");
 
     DriverManager.registerDriver(new org.sqlite.JDBC());
     Connection connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
