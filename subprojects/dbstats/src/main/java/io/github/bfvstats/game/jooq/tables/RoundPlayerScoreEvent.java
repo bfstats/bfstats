@@ -17,6 +17,7 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -37,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerScoreEvent extends TableImpl<RoundPlayerScoreEventRecord> {
 
-    private static final long serialVersionUID = -2048998735;
+    private static final long serialVersionUID = -25629535;
 
     /**
      * The reference instance of <code>round_player_score_event</code>
@@ -130,6 +131,14 @@ public class RoundPlayerScoreEvent extends TableImpl<RoundPlayerScoreEventRecord
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Identity<RoundPlayerScoreEventRecord, Integer> getIdentity() {
+        return Keys.IDENTITY_ROUND_PLAYER_SCORE_EVENT;
     }
 
     /**

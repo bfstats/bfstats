@@ -77,6 +77,11 @@ public class DbFiller {
         } else if (e.getEventName() == EventName.destroyPlayer) {
           activePlayersByRoundPlayerId.remove(e.getPlayerId());
           System.out.println("removed round-player " + e.getPlayerId());
+        } else if (e.getEventName() == EventName.changePlayerName) {
+          RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
+          Integer playerId = requireNonNull(roundPlayer.getPlayerId());
+          String newPlayerName = e.getStringParamValueByName("name");
+          addNickname(playerId, newPlayerName);
         } else if (e.getEventName() == EventName.chat) {
           RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
           Integer playerId = requireNonNull(roundPlayer.getPlayerId());
@@ -231,10 +236,26 @@ public class DbFiller {
       playerRecord.setKeyhash(keyHash);
       playerRecord.insert();
     } else if (!playerRecord.getName().equals(name)) {
-      // add to alternative nicknames
+      addNickname(playerRecord.getId(), name);
     }
 
     return playerRecord;
+  }
+
+  private PlayerNicknameRecord addNickname(int playerId, String nickname) {
+    PlayerNicknameRecord playerNicknameRecord = getDslContext().selectFrom(PLAYER_NICKNAME)
+        .where(PLAYER_NICKNAME.PLAYER_ID.eq(playerId))
+        .and(PLAYER_NICKNAME.NICKNAME.eq(nickname))
+        .fetchOne();
+
+    if (playerNicknameRecord == null) {
+      playerNicknameRecord = getDslContext().newRecord(PLAYER_NICKNAME);
+      playerNicknameRecord.setPlayerId(playerId);
+      playerNicknameRecord.setNickname(nickname);
+      playerNicknameRecord.insert();
+    }
+
+    return playerNicknameRecord;
   }
 
   private RoundRecord addRound(LocalDateTime logStartTime, BfRound bfRound, BfEvent roundInitEvent) {

@@ -5,6 +5,7 @@ package io.github.bfvstats.game.jooq;
 
 
 import io.github.bfvstats.game.jooq.tables.Player;
+import io.github.bfvstats.game.jooq.tables.PlayerNickname;
 import io.github.bfvstats.game.jooq.tables.Round;
 import io.github.bfvstats.game.jooq.tables.RoundChatLog;
 import io.github.bfvstats.game.jooq.tables.RoundEndStats;
@@ -36,7 +37,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 920611895;
+    private static final long serialVersionUID = -689615400;
 
     /**
      * The reference instance of <code></code>
@@ -47,6 +48,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>player</code>.
      */
     public final Player PLAYER = io.github.bfvstats.game.jooq.tables.Player.PLAYER;
+
+    /**
+     * The table <code>player_nickname</code>.
+     */
+    public final PlayerNickname PLAYER_NICKNAME = io.github.bfvstats.game.jooq.tables.PlayerNickname.PLAYER_NICKNAME;
 
     /**
      * The table <code>round</code>.
@@ -104,6 +110,7 @@ public class DefaultSchema extends SchemaImpl {
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
             Player.PLAYER,
+            PlayerNickname.PLAYER_NICKNAME,
             Round.ROUND,
             RoundChatLog.ROUND_CHAT_LOG,
             RoundEndStats.ROUND_END_STATS,
