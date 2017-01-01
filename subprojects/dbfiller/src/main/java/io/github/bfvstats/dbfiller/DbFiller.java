@@ -7,10 +7,7 @@ import io.github.bfvstats.logparser.xml.BfLog;
 import io.github.bfvstats.logparser.xml.BfRound;
 import io.github.bfvstats.logparser.xml.BfRoundStats;
 import io.github.bfvstats.logparser.xml.enums.EventName;
-import io.github.bfvstats.logparser.xml.enums.event.ChatEventParams;
-import io.github.bfvstats.logparser.xml.enums.event.CreatePlayerParams;
-import io.github.bfvstats.logparser.xml.enums.event.PlayerKeyHashParams;
-import io.github.bfvstats.logparser.xml.enums.event.RoundInitParams;
+import io.github.bfvstats.logparser.xml.enums.event.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -38,12 +35,20 @@ public class DbFiller {
   }
 
   private void fillDb(BfLog bfLog) {
-    addPlayerOrNickName("FAKE_BOT", "FAKE_BOT");
+    PlayerRecord botPlayerRecord = addPlayerOrNickName("FAKE_BOT", "FAKE_BOT");
+    Integer botPlayerId = botPlayerRecord.getId();
+    RoundPlayer botRoundPlayer = new RoundPlayer()
+        .setRoundPlayerId(-1)
+        .setPlayerId(botPlayerId)
+        .setName("FAKE_BOT")
+        .setKeyhash("FAKE_BOT");
+    int botRoundPlayerId = botRoundPlayer.getRoundPlayerId();
 
     LocalDateTime logStartTime = bfLog.getTimestampAsDate();
 
     // actually not per round, but per log file
     Map<Integer, RoundPlayer> activePlayersByRoundPlayerId = new HashMap<>();
+    activePlayersByRoundPlayerId.put(botRoundPlayer.getRoundPlayerId(), botRoundPlayer);
 
     int i = 0;
     for (BfRound bfRound : bfLog.getRounds()) {
@@ -75,9 +80,29 @@ public class DbFiller {
           System.out.println("removed round-player " + e.getPlayerId());
         } else if (e.getEventName() == EventName.chat) {
           RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
-          Integer playerId = roundPlayer.getPlayerId();
-          requireNonNull(playerId);
+          Integer playerId = requireNonNull(roundPlayer.getPlayerId());
           addChatMessage(logStartTime, roundId, playerId, e);
+        } else if (e.getEventName() == EventName.scoreEvent) {
+          Integer roundPlayerId = e.getPlayerId();
+          if (roundPlayerId > 127) {
+            // using fake player for a bot
+            roundPlayerId = botRoundPlayerId;
+          }
+          RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(roundPlayerId);
+          Integer playerId = requireNonNull(roundPlayer.getPlayerId());
+
+          Integer victimPlayerId = null;
+          Integer victimRoundPlayerId = e.getIntegerParamValueByName(ScoreEventParams.victim_id.name());
+          if (victimRoundPlayerId != null) {
+            if (victimRoundPlayerId > 127) {
+              // using fake player for a bot
+              victimRoundPlayerId = botRoundPlayerId;
+            }
+            RoundPlayer victimRoundPlayer = activePlayersByRoundPlayerId.get(victimRoundPlayerId);
+            victimPlayerId = requireNonNull(victimRoundPlayer.getPlayerId());
+          }
+
+          addRoundPlayerScoreEvent(logStartTime, roundId, playerId, victimPlayerId, e);
         }
       }
 
@@ -94,6 +119,27 @@ public class DbFiller {
     closeDslContext();
   }
 
+  private RoundPlayerScoreEventRecord addRoundPlayerScoreEvent(LocalDateTime logStartTime, int roundId, Integer playerId, Integer victimPlayerId, BfEvent e) {
+    LocalDateTime eventTime = logStartTime.plus(e.getDurationSinceLogStart());
+    String scoreType = e.getStringParamValueByName(ScoreEventParams.score_type.name());
+
+    RoundPlayerScoreEventRecord roundPlayerScoreEventRecord = getDslContext().newRecord(ROUND_PLAYER_SCORE_EVENT);
+    roundPlayerScoreEventRecord.setRoundId(roundId);
+    roundPlayerScoreEventRecord.setPlayerId(playerId);
+    if (e.getPlayerLocation() != null) {
+      String[] playerLocation = e.getPlayerLocation();
+      roundPlayerScoreEventRecord.setPlayerLocationX(Float.parseFloat(playerLocation[0]));
+      roundPlayerScoreEventRecord.setPlayerLocationY(Float.parseFloat(playerLocation[1]));
+      roundPlayerScoreEventRecord.setPlayerLocationZ(Float.parseFloat(playerLocation[2]));
+    }
+    roundPlayerScoreEventRecord.setEventTime(Timestamp.valueOf(eventTime));
+    roundPlayerScoreEventRecord.setScoreType(scoreType);
+    roundPlayerScoreEventRecord.setVictimId(victimPlayerId);
+    roundPlayerScoreEventRecord.setWeapon(e.getStringParamValueByName(ScoreEventParams.weapon.name()));
+
+    roundPlayerScoreEventRecord.insert();
+    return roundPlayerScoreEventRecord;
+  }
 
   @Data
   @Accessors(chain = true)
