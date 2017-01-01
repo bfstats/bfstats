@@ -142,7 +142,11 @@ public class DbFiller {
     roundPlayerScoreEventRecord.setEventTime(Timestamp.valueOf(eventTime));
     roundPlayerScoreEventRecord.setScoreType(scoreType);
     roundPlayerScoreEventRecord.setVictimId(victimPlayerId);
-    roundPlayerScoreEventRecord.setWeapon(e.getStringParamValueByName(ScoreEventParams.weapon.name()));
+    String weapon = e.getStringParamValueByName(ScoreEventParams.weapon.name());
+    if ("(none)".equals(weapon)) {
+      weapon = null;
+    }
+    roundPlayerScoreEventRecord.setWeapon(weapon);
 
     roundPlayerScoreEventRecord.insert();
     return roundPlayerScoreEventRecord;
