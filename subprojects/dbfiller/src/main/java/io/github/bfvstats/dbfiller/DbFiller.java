@@ -226,10 +226,11 @@ public class DbFiller {
     Integer ticketsTeam1 = roundInitEvent.getIntegerParamValueByName(RoundInitParams.tickets_team1.name());
     Integer ticketsTeam2 = roundInitEvent.getIntegerParamValueByName(RoundInitParams.tickets_team2.name());
 
+    LocalDateTime roundStartTime = logStartTime.plus(roundInitEvent.getDurationSinceLogStart());
+
     // Create a new record
     RoundRecord round = getDslContext().newRecord(ROUND);
-    LocalDateTime startTime = logStartTime.plus(bfRound.getDurationSinceLogStart());
-    round.setStartTime(Timestamp.valueOf(startTime));
+    round.setStartTime(Timestamp.valueOf(roundStartTime));
     round.setStartTicketsTeam_1(ticketsTeam1);
     round.setStartTicketsTeam_2(ticketsTeam2);
     round.setServerName(bfRound.getServerName());
