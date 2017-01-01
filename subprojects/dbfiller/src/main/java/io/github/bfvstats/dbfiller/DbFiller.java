@@ -110,7 +110,14 @@ public class DbFiller {
         BfRoundStats roundStats = bfRound.getRoundStats();
         RoundEndStatsRecord roundEndStatsRecord = addRoundEndStats(logStartTime, roundId, roundStats);
         for (BfRoundStats.BfPlayerStat bfPlayerStat : roundStats.getPlayerStats()) {
-          addRoundEndStatsPlayer(roundId, bfPlayerStat);
+          if (bfPlayerStat.isAi()) {
+            // skip bot stats
+            continue;
+          }
+          RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(bfPlayerStat.getPlayerId());
+          Integer playerId = requireNonNull(roundPlayer.getPlayerId());
+
+          addRoundEndStatsPlayer(roundId, bfPlayerStat, playerId);
         }
       }
 
@@ -150,10 +157,10 @@ public class DbFiller {
     String keyhash;
   }
 
-  private RoundEndStatsPlayerRecord addRoundEndStatsPlayer(Integer roundId, BfRoundStats.BfPlayerStat bfPlayerStat) {
+  private RoundEndStatsPlayerRecord addRoundEndStatsPlayer(Integer roundId, BfRoundStats.BfPlayerStat bfPlayerStat, Integer playerId) {
     RoundEndStatsPlayerRecord roundEndStatsRecord = getDslContext().newRecord(ROUND_END_STATS_PLAYER);
     roundEndStatsRecord.setRoundId(roundId);
-    roundEndStatsRecord.setPlayerId(bfPlayerStat.getPlayerId());
+    roundEndStatsRecord.setPlayerId(playerId);
     roundEndStatsRecord.setPlayerName(bfPlayerStat.getPlayerName());
     roundEndStatsRecord.setIsAi(bfPlayerStat.isAi() ? 1 : 0);
     roundEndStatsRecord.setTeam(bfPlayerStat.getTeam());
