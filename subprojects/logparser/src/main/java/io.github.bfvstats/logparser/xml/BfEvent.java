@@ -60,6 +60,14 @@ public class BfEvent {
     return timestamp + " " + name + "(" + params + ")";
   }
 
+  public EventName getEventName() {
+    try {
+      return EventName.valueOf(getName());
+    } catch (IllegalArgumentException e) {
+      return EventName.UNKNOWN_EVENT;
+    }
+  }
+
   public boolean isEvent(EventName eventName) {
     return getName().equals(eventName.name());
   }

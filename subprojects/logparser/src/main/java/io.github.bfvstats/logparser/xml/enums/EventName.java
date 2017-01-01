@@ -1,6 +1,8 @@
 package io.github.bfvstats.logparser.xml.enums;
 
 public enum EventName {
+  UNKNOWN_EVENT, // easier usage, to avoid null
+
   chat,
   createPlayer,
   createVehicle, // no playerId; not useful
