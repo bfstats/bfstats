@@ -128,7 +128,8 @@ public class DbFiller {
     closeDslContext();
   }
 
-  private RoundPlayerScoreEventRecord addRoundPlayerScoreEvent(LocalDateTime logStartTime, int roundId, Integer playerId, Integer victimPlayerId, BfEvent e) {
+  private RoundPlayerScoreEventRecord addRoundPlayerScoreEvent(LocalDateTime logStartTime, int roundId, Integer playerId,
+                                                               Integer victimPlayerId, BfEvent e) {
     LocalDateTime eventTime = logStartTime.plus(e.getDurationSinceLogStart());
     String scoreType = e.getStringParamValueByName(ScoreEventParams.score_type.name());
 

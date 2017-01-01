@@ -1,51 +1,87 @@
 package io.github.bfvstats.service;
 
+import io.github.bfvstats.game.jooq.tables.records.RoundPlayerScoreEventRecord;
+import io.github.bfvstats.logparser.xml.enums.event.ScoreType;
 import io.github.bfvstats.model.Location;
 import io.github.bfvstats.model.MapStatsInfo;
+import io.github.bfvstats.model.MapUsage;
 import org.jooq.Record;
 import org.jooq.Record2;
-import org.jooq.impl.DSL;
+import org.jooq.Result;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static io.github.bfvstats.jpa.Tables.*;
+import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class MapService {
 
   public MapStatsInfo getMapStatsInfoForPlayer(String mapCode, int playerId) {
-    Record2<BigDecimal, String> record = getDslContext().select(DSL.sum(SELECTBF_PLAYERSTATS.SCORE).as("score"),
-        SELECTBF_GAMES.MAP.cast(String.class).as("map"))
-        .from(SELECTBF_PLAYERSTATS)
-        .join(SELECTBF_ROUNDS).on(SELECTBF_ROUNDS.ID.eq(SELECTBF_PLAYERSTATS.ROUND_ID))
-        .join(SELECTBF_GAMES).on(SELECTBF_GAMES.ID.eq(SELECTBF_ROUNDS.GAME_ID))
-        .where(SELECTBF_PLAYERSTATS.PLAYER_ID.eq(playerId).and(SELECTBF_GAMES.MAP.eq(mapCode)))
-        .groupBy(SELECTBF_GAMES.MAP)
-        .having(SELECTBF_PLAYERSTATS.SCORE.notEqual(0))
-        .orderBy(SELECTBF_PLAYERSTATS.SCORE.desc())
-        .fetchOne();
+    Result<Record> records = getDslContext().select()
+        .from(ROUND_PLAYER_SCORE_EVENT)
+        .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_SCORE_EVENT.ROUND_ID))
+        .where(ROUND.MAP_CODE.eq(mapCode))
+        .and(ROUND_PLAYER_SCORE_EVENT.PLAYER_ID.eq(playerId))
+        //.and(ROUND_PLAYER_SCORE_EVENT.SCORE_TYPE.eq(ScoreType.Kill.name()))
+        .fetch();
 
-    return toMapStatsInfo(record);
+    List<RoundPlayerScoreEventRecord> roundPlayerScoreEventRecords = records.stream()
+        .map(record -> record.into(ROUND_PLAYER_SCORE_EVENT))
+        .collect(Collectors.toList());
+
+    return toMapStatsInfo(roundPlayerScoreEventRecords, mapCode);
   }
 
-  private static MapStatsInfo toMapStatsInfo(Record r) {
-    if (r == null) {
-      return null;
+  private static MapStatsInfo toMapStatsInfo(List<RoundPlayerScoreEventRecord> roundPlayerScoreEventRecords, String mapCode) {
+    Collection<Location> killLocations = new ArrayList<>();
+    Collection<Location> deathLocations = new ArrayList<>();
+
+    for (RoundPlayerScoreEventRecord roundPlayerScoreEventRecord : roundPlayerScoreEventRecords) {
+      BigDecimal x = roundPlayerScoreEventRecord.getPlayerLocationX();
+      BigDecimal y = roundPlayerScoreEventRecord.getPlayerLocationY();
+      BigDecimal z = roundPlayerScoreEventRecord.getPlayerLocationZ();
+      Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
+
+      String scoreType = roundPlayerScoreEventRecord.getScoreType();
+      if (scoreType.equals(ScoreType.Kill.name())) {
+        killLocations.add(location);
+      } else if (scoreType.equals(ScoreType.DeathNoMsg.name())) {
+        deathLocations.add(location);
+      }
     }
 
-    String map = r.get("map", String.class);
-
-    Collection<Location> killLocations = new ArrayList<>();
-    killLocations.add(new Location(537.534f, 42.5929f, 377.772f));
-    Collection<Location> deathLocations = new ArrayList<>();
     MapStatsInfo mapStatsInfo = new MapStatsInfo()
-        .setMapName(map)
-        .setMapFileName(map)
+        .setMapName(mapCode)
+        .setMapFileName(mapCode)
         .setKillLocations(killLocations)
         .setDeathLocations(deathLocations);
 
     return mapStatsInfo;
+  }
+
+  public List<MapUsage> getMapUsagesForPlayer(int playerId) {
+    Result<Record2<String, Integer>> records = getDslContext().select(ROUND.MAP_CODE, ROUND_END_STATS_PLAYER.SCORE)
+        .from(ROUND_END_STATS_PLAYER)
+        .join(ROUND).on(ROUND.ID.eq(ROUND_END_STATS_PLAYER.ROUND_ID))
+        .where(ROUND_END_STATS_PLAYER.PLAYER_ID.eq(playerId))
+        .groupBy(ROUND.MAP_CODE)
+        .fetch();
+
+    float totalMapsScore = records.stream()
+        .map(r -> r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class))
+        .reduce(0, Integer::sum);
+
+    return records.stream().map(r -> toMapUsage(r, totalMapsScore)).collect(Collectors.toList());
+  }
+
+  private static MapUsage toMapUsage(Record r, float totalMapsScore) {
+    return new MapUsage()
+        .setName(r.get(ROUND.MAP_CODE, String.class))
+        .setScore(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class))
+        .setPercentage(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class) * 100 / totalMapsScore);
   }
 }
