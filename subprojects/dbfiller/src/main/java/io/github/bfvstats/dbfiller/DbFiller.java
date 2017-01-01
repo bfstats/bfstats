@@ -12,13 +12,16 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.InflaterInputStream;
 
 import static io.github.bfvstats.dbfiller.DbUtil.closeDslContext;
 import static io.github.bfvstats.dbfiller.DbUtil.getDslContext;
@@ -27,12 +30,54 @@ import static java.util.Objects.requireNonNull;
 
 public class DbFiller {
   public static void main(String[] args) throws JAXBException, FileNotFoundException {
-    String fileName = "D:\\Projects\\bfvstats\\ev_15567-20161224_0825.xml";
-    File file = new File(fileName);
-    BfLog bfLog = XmlParser.parseXmlLogFile(file);
+    String logDirPath = "D:\\Projects\\bfvstats\\example\\";
+    parseAllInDir(logDirPath);
+  }
 
-    DbFiller dbFiller = new DbFiller();
-    dbFiller.fillDb(bfLog);
+  public static void parseAllInDir(String logDirPath) throws FileNotFoundException, JAXBException {
+    File logDir = new File(logDirPath);
+    File[] dirFiles = logDir.listFiles((dir, name) -> name.endsWith(".xml") || name.endsWith(".zxml"));
+    for (File fileI : dirFiles) {
+      String filePath = fileI.getPath();
+      if (filePath.endsWith(".xml")) {
+        Path checkablePath = Paths.get(filePath.substring(0, filePath.length() - 4) + ".zxml");
+        boolean hasZxmlCounterpart = Files.exists(checkablePath);
+        if (hasZxmlCounterpart) {
+          System.out.println(checkablePath);
+          // skipping xml, as zxml also exists, so will wait for unzipping that again
+          continue;
+        }
+      } else if (filePath.endsWith(".zxml")) {
+        try {
+          filePath = unzip(filePath); // replace with .xml counterpart
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+      File file = new File(filePath);
+      BfLog bfLog = XmlParser.parseXmlLogFile(file);
+      DbFiller dbFiller = new DbFiller();
+      dbFiller.fillDb(bfLog);
+    }
+  }
+
+  public static String unzip(String filepath) throws IOException {
+    String xmlFilePath = filepath.substring(0, filepath.length() - 5) + ".xml";
+
+    int blockSize = 8192;
+
+    try (InflaterInputStream zipin = new InflaterInputStream(new FileInputStream(filepath));
+         FileOutputStream out = new FileOutputStream(xmlFilePath)
+    ) {
+      byte[] buffer = new byte[blockSize];
+      int length;
+      while ((length = zipin.read(buffer, 0, blockSize)) > 0) {
+        out.write(buffer, 0, length);
+      }
+    }
+
+    return xmlFilePath;
   }
 
   private void fillDb(BfLog bfLog) {
