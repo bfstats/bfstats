@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS player_nickname (
 
 CREATE TABLE IF NOT EXISTS round (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  start_time DATETIME NOT NULL,
+  start_time DATETIME NOT NULL, -- from roundInit event
   start_tickets_team_1 INTEGER NOT NULL, -- from roundInit event
   start_tickets_team_2 INTEGER NOT NULL, -- from roundInit event
   server_name VARCHAR(150) NOT NULL,

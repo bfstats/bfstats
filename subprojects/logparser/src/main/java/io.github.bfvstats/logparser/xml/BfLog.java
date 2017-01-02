@@ -26,9 +26,18 @@ public class BfLog {
     return LocalDateTime.parse(timestamp, formatter);
   }
 
+  @XmlMixed
+  @XmlElementRefs({
+      @XmlElementRef(name = "event", type = BfEvent.class),
+      @XmlElementRef(name = "round", type = BfRound.class)
+  })
+  private List<Object> rootEventsAndRounds;
+
+  @Deprecated
   @XmlElement(name = "event", namespace = BfLog.NAMESPACE)
   private List<BfEvent> events;
 
+  @Deprecated
   @XmlElement(name = "round", namespace = BfLog.NAMESPACE)
   private List<BfRound> rounds;
 

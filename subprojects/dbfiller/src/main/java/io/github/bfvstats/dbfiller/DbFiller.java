@@ -10,6 +10,7 @@ import io.github.bfvstats.logparser.xml.enums.EventName;
 import io.github.bfvstats.logparser.xml.enums.event.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
@@ -31,6 +32,7 @@ import java.util.zip.InflaterInputStream;
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static java.util.Objects.requireNonNull;
 
+@Slf4j
 public class DbFiller {
   private final DSLContext dslContext;
   private DSLContext transactionDslContext;
@@ -62,7 +64,8 @@ public class DbFiller {
         Path checkablePath = Paths.get(filePath.substring(0, filePath.length() - 4) + ".zxml");
         boolean hasZxmlCounterpart = Files.exists(checkablePath);
         if (hasZxmlCounterpart) {
-          System.out.println("skipping " + checkablePath);
+          // TODO: maybe vice-versa - should ignore zxml files instead
+          log.info("skipping " + filePath + " because zxml will be extracted again");
           // skipping xml, as zxml also exists, so will wait for unzipping that again
           continue;
         }
@@ -70,11 +73,13 @@ public class DbFiller {
         try {
           filePath = unzip(filePath); // replace with .xml counterpart
         } catch (IOException e) {
-          System.out.println("problem extracting " + filePath);
+          log.warn("problem extracting " + filePath);
           e.printStackTrace();
+          continue;
         }
       }
 
+      log.info("Parsing " + filePath);
       File file = new File(filePath);
       BfLog bfLog = XmlParser.parseXmlLogFile(file);
       DbFiller dbFiller = new DbFiller();
@@ -126,22 +131,34 @@ public class DbFiller {
     Map<Integer, RoundPlayer> activePlayersByRoundPlayerId = new HashMap<>();
     activePlayersByRoundPlayerId.put(botRoundPlayer.getRoundPlayerId(), botRoundPlayer);
 
-    for (BfRound bfRound : bfLog.getRounds()) {
-      parseRound(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, bfRound);
+    int lastRoundId = -1;
+    for (Object child : bfLog.getRootEventsAndRounds()) {
+      if (child instanceof BfEvent) {
+        BfEvent bfEvent = (BfEvent) child;
+        parseRootEvent(logStartTime, activePlayersByRoundPlayerId, lastRoundId, bfEvent);
+      } else if (child instanceof BfRound) {
+        BfRound bfRound = (BfRound) child;
+        int roundId = parseRound(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, bfRound);
+        lastRoundId = roundId;
+      } else if (child instanceof String) {
+        if (!child.toString().equals("\n")) {
+          log.warn("got non-newline string child " + child.toString());
+        }
+      } else {
+        log.warn("unhandled child type" + child.toString());
+      }
     }
   }
 
-  private void parseRound(int botRoundPlayerId, LocalDateTime logStartTime,
-                          Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, BfRound bfRound) {
-    BfEvent roundInitEvent = bfRound.getEvents().stream()
-        .filter(e -> e.getEventName() == EventName.roundInit)
-        .findFirst().orElseThrow(() -> new IllegalStateException("roundInit event is missing"));
-    RoundRecord roundRecord = addRound(logStartTime, bfRound, roundInitEvent);
+  private int parseRound(int botRoundPlayerId, LocalDateTime logStartTime,
+                         Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, BfRound bfRound) {
+    RoundRecord roundRecord = addRound(logStartTime, bfRound);
     int roundId = roundRecord.getId();
 
     for (BfEvent e : bfRound.getEvents()) {
       parseRoundEvent(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, roundId, e);
     }
+
     if (bfRound.getRoundStats() != null) {
       BfRoundStats roundStats = bfRound.getRoundStats();
       RoundEndStatsRecord roundEndStatsRecord = addRoundEndStats(logStartTime, roundId, roundStats);
@@ -154,11 +171,12 @@ public class DbFiller {
           continue;
         }
         RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(bfPlayerStat.getPlayerId());
-        Integer playerId = requireNonNull(roundPlayer.getPlayerId());
+        Integer playerId = requireNonNull(roundPlayer.getPlayerId(), "round end: cant find the player " + bfPlayerStat.getPlayerId());
 
         addRoundEndStatsPlayer(roundId, bfPlayerStat, playerId, rank);
       }
     }
+    return roundId;
   }
 
   private void parseRoundEvent(int botRoundPlayerId, LocalDateTime logStartTime,
@@ -182,6 +200,29 @@ public class DbFiller {
         break;
       case scoreEvent:
         parseEventScoreEvent(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, roundId, e);
+        break;
+    }
+  }
+
+  private void parseRootEvent(LocalDateTime logStartTime, Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, Integer lastRoundId, BfEvent e) {
+    switch (e.getEventName()) {
+      case createPlayer:
+        parseEventCreatePlayer(activePlayersByRoundPlayerId, e);
+        break;
+      case playerKeyHash:
+        parseEventPlayerKeyHash(activePlayersByRoundPlayerId, e);
+        break;
+      case destroyPlayer:
+        parseEventDestroyPlayer(activePlayersByRoundPlayerId, e);
+        break;
+      case changePlayerName:
+        parseEventChangePlayerName(activePlayersByRoundPlayerId, e);
+        break;
+      case chat:
+        parseEventChat(logStartTime, activePlayersByRoundPlayerId, lastRoundId, e);
+        break;
+      case scoreEvent:
+        log.warn("score event was called out-of-round");
         break;
     }
   }
@@ -225,11 +266,13 @@ public class DbFiller {
 
   private void parseEventDestroyPlayer(Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, BfEvent e) {
     activePlayersByRoundPlayerId.remove(e.getPlayerId());
-    System.out.println("removed round-player " + e.getPlayerId());
+    log.info("removed round-player " + e.getPlayerId());
   }
 
   private void parseEventPlayerKeyHash(Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, BfEvent e) {
     RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerId());
+    requireNonNull(roundPlayer, "playerKeyHash there should've been createPlayer " + e.getPlayerId());
+
     roundPlayer.setKeyhash(e.getStringParamValueByName(PlayerKeyHashParams.keyhash.name()));
     PlayerRecord playerRecord = addPlayerOrNickName(roundPlayer.getName(), roundPlayer.getKeyhash());
     roundPlayer.setPlayerId(playerRecord.getId());
@@ -244,7 +287,7 @@ public class DbFiller {
         .setName(e.getStringParamValueByName(CreatePlayerParams.name.name()))
         .setKeyhash(null);
     activePlayersByRoundPlayerId.put(e.getPlayerId(), roundPlayer);
-    System.out.println("added round-player " + e.getPlayerId());
+    log.info("added round-player " + e.getPlayerId());
   }
 
   private RoundPlayerScoreEventRecord addRoundPlayerScoreEvent(LocalDateTime logStartTime, int roundId, Integer playerId,
@@ -372,11 +415,31 @@ public class DbFiller {
     return playerNicknameRecord;
   }
 
-  private RoundRecord addRound(LocalDateTime logStartTime, BfRound bfRound, BfEvent roundInitEvent) {
-    Integer ticketsTeam1 = roundInitEvent.getIntegerParamValueByName(RoundInitParams.tickets_team1.name());
-    Integer ticketsTeam2 = roundInitEvent.getIntegerParamValueByName(RoundInitParams.tickets_team2.name());
+  private RoundRecord addRound(LocalDateTime logStartTime, BfRound bfRound) {
+    BfEvent roundInitEvent = bfRound.getEvents().stream()
+        .filter(e -> e.getEventName() == EventName.roundInit)
+        .findFirst().orElse(null);
 
-    LocalDateTime roundStartTime = logStartTime.plus(roundInitEvent.getDurationSinceLogStart());
+    Integer ticketsTeam1;
+    Integer ticketsTeam2;
+    LocalDateTime roundStartTime;
+
+    // sometimes round ends before roundInit event is even fired
+    if (roundInitEvent == null) {
+      // chances are that these are the same as they will be in bfRound.getRoundStats() as non of the decreases
+      // but I don't think these will be useful rounds anyway, so let's just set to -1 to distinguish instead of hoping
+      // that there will be a round end event
+      ticketsTeam1 = -1;
+      ticketsTeam2 = -1;
+      // as we can't take round start time from the roundInit event, we can get a very similar time from
+      // round start time + game start delay
+      roundStartTime = logStartTime.plus(bfRound.getDurationSinceLogStart())
+          .plusSeconds(bfRound.getGameStartDelay());
+    } else {
+      ticketsTeam1 = roundInitEvent.getIntegerParamValueByName(RoundInitParams.tickets_team1.name());
+      ticketsTeam2 = roundInitEvent.getIntegerParamValueByName(RoundInitParams.tickets_team2.name());
+      roundStartTime = logStartTime.plus(roundInitEvent.getDurationSinceLogStart());
+    }
 
     // Create a new record
     RoundRecord round = transaction().newRecord(ROUND);

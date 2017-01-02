@@ -6,6 +6,7 @@ import lombok.ToString;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,7 +32,8 @@ public class BfRound {
   private Map<String, String> settingsMap;
 
   @XmlElement(name = "event", namespace = BfLog.NAMESPACE)
-  private List<BfEvent> events;
+  // initializing with non-null, because jaxb would otherwise keep it null if there are no events
+  private List<BfEvent> events = new ArrayList<>();
 
   @XmlElement(name = "roundstats", namespace = BfLog.NAMESPACE)
   private BfRoundStats roundStats;
