@@ -35,27 +35,29 @@ import static java.util.Objects.requireNonNull;
 @Slf4j
 public class DbFiller {
   private final DSLContext dslContext;
+  private final Connection connection;
+
   private DSLContext transactionDslContext;
 
   public DbFiller() {
     try {
-      Connection connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
+      this.connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
       this.dslContext = DSL.using(connection);
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public DSLContext transaction() {
+  private DSLContext transaction() {
     return transactionDslContext;
   }
 
-  public static void main(String[] args) throws JAXBException, FileNotFoundException {
+  public static void main(String[] args) throws JAXBException, FileNotFoundException, SQLException {
     String logDirPath = "D:\\bflogs\\";
     parseAllInDir(logDirPath);
   }
 
-  public static void parseAllInDir(String logDirPath) throws FileNotFoundException, JAXBException {
+  public static void parseAllInDir(String logDirPath) throws FileNotFoundException, JAXBException, SQLException {
     File logDir = new File(logDirPath);
     File[] dirFiles = logDir.listFiles((dir, name) -> name.endsWith(".xml") || name.endsWith(".zxml"));
     for (File fileI : dirFiles) {
@@ -105,7 +107,7 @@ public class DbFiller {
     return xmlFilePath;
   }
 
-  private void fillDb(BfLog bfLog) {
+  private void fillDb(BfLog bfLog) throws SQLException {
     dslContext.transaction(configuration -> {
       this.transactionDslContext = DSL.using(configuration);
 
@@ -122,6 +124,7 @@ public class DbFiller {
     });
 
     dslContext.close();
+    connection.close();
   }
 
   private void parseLog(BfLog bfLog, RoundPlayer botRoundPlayer, int botRoundPlayerId) {
