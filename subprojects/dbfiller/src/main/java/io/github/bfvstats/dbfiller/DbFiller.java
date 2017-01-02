@@ -67,7 +67,7 @@ public class DbFiller {
         boolean hasZxmlCounterpart = Files.exists(checkablePath);
         if (hasZxmlCounterpart) {
           // TODO: maybe vice-versa - should ignore zxml files instead
-          log.info("skipping " + filePath + " because zxml will be extracted again");
+          log.info("ignoring " + filePath + " because zxml will be extracted again");
           // skipping xml, as zxml also exists, so will wait for unzipping that again
           continue;
         }
@@ -75,8 +75,7 @@ public class DbFiller {
         try {
           filePath = unzip(filePath); // replace with .xml counterpart
         } catch (IOException e) {
-          log.warn("problem extracting " + filePath);
-          e.printStackTrace();
+          log.warn("looks like " + filePath + " is not complete. " + e.getMessage());
           continue;
         }
       }
