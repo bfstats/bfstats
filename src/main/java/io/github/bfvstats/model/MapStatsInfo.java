@@ -12,6 +12,7 @@ import java.util.Collection;
 public class MapStatsInfo {
   private String mapName;
   private String mapFileName;
+  private Integer mapSize;
 
   private Collection<Location> killLocations;
   private Collection<Location> deathLocations;

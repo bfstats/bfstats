@@ -1,5 +1,6 @@
 package io.github.bfvstats.service;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.bfvstats.game.jooq.tables.records.RoundPlayerScoreEventRecord;
 import io.github.bfvstats.logparser.xml.enums.event.ScoreType;
 import io.github.bfvstats.model.Location;
@@ -13,12 +14,33 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class MapService {
+  public static Map<String, Integer> mapSizesByMap = ImmutableMap.<String, Integer>builder()
+      .put("defense_of_con_thien", 2048)
+      .put("fall_of_saigon", 2048)
+      .put("ho_chi_minh_trail", 1024)
+      .put("ho_chi_minh_trail_alt", 1024)
+      .put("hue", 1024)
+      .put("hue_alt", 1024)
+      .put("ia_drang", 2048)
+      .put("khe_sahn", 2048)
+      .put("landing_zone_albany", 2048)
+      .put("lang_vei", 2048)
+      .put("operation_cedar_falls", 2048)
+      .put("operation_flaming_dart", 2048)
+      .put("operation_game_warden", 2048)
+      .put("operation_hastings", 2048)
+      .put("operation_irving", 2048)
+      .put("quang_tri", 1024)
+      .put("quang_tri_alt", 1024)
+      .put("saigon68", 1024)
+      .build();
 
   public MapStatsInfo getMapStatsInfoForPlayer(String mapCode, int playerId) {
     Result<Record> records = getDslContext().select()
@@ -54,9 +76,12 @@ public class MapService {
       }
     }
 
+    Integer mapSize = mapSizesByMap.get(mapCode);
+
     MapStatsInfo mapStatsInfo = new MapStatsInfo()
         .setMapName(mapCode)
         .setMapFileName(mapCode)
+        .setMapSize(mapSize)
         .setKillLocations(killLocations)
         .setDeathLocations(deathLocations);
 
