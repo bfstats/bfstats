@@ -9,8 +9,6 @@ import io.github.bfvstats.logparser.xml.BfRoundStats;
 import io.github.bfvstats.logparser.xml.enums.EventName;
 import io.github.bfvstats.logparser.xml.enums.event.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -49,7 +47,7 @@ public class DbFiller {
   // actually not per round, but per log file
   private Map<Integer, RoundPlayer> activePlayersByRoundPlayerId = new HashMap<>();
 
-  private BfEvent lastKillEvent;
+  private Map<Integer, BfEvent> lastKillEventByVictimId = new HashMap<>();
 
   public DbFiller(BfLog bfLog) {
     this.bfLog = bfLog;
@@ -139,6 +137,10 @@ public class DbFiller {
 
     dslContext.close();
     connection.close();
+
+    if (!lastKillEventByVictimId.isEmpty()) {
+      log.warn("last kill events is not empty in the end of the round " + lastKillEventByVictimId);
+    }
   }
 
   private void parseLog(RoundPlayer botRoundPlayer, int botRoundPlayerId) {
@@ -233,21 +235,30 @@ DeathNoMsg on Kill osapooleks
    */
 
   private void setLastKillEvent(BfEvent e) {
-    this.lastKillEvent = e;
+    Integer victimId = e.getIntegerParamValueByName("victim_id");
+
+    if (lastKillEventByVictimId.containsKey(victimId)) {
+      Integer oldKillerId = lastKillEventByVictimId.get(victimId).getPlayerId();
+      log.warn("last kill event already exists for victim " + victimId + " new killer: " +
+          e.getPlayerSlotId() + ", old killer: " + oldKillerId);
+    }
+
+    lastKillEventByVictimId.put(victimId, e);
   }
 
   private BfEvent getLastKillEventForVictim(int wantedVictimSlotId) {
-    if (lastKillEvent == null) {
+    // kill event was for specific victim_id, so safe to remove it now
+    BfEvent killEvent = lastKillEventByVictimId.remove(wantedVictimSlotId);
+    if (killEvent == null) {
+      //if (!lastKillEventByVictimId.isEmpty()) {
+      // this could happen when you kill somebody, but die yourself as well
+      // or theoretically I guess also if killing many players at once and kill-death events are somewhat out of order
+      //log.warn(logStartTime + " could not find last kill event for " + wantedVictimSlotId + ", but there are kill events in queue " + lastKillEventByVictimId);
+      //}
       return null;
     }
-    Integer victimSlotId = lastKillEvent.getIntegerParamValueByName("victim_id");
-    if (!victimSlotId.equals(wantedVictimSlotId)) {
-      log.warn("victimSlotId " + victimSlotId + " != wantedVictimSlotId " + wantedVictimSlotId);
-    }
 
-    BfEvent killOrTkEvent = lastKillEvent;
-    lastKillEvent = null;// kill event was for specific victim_id, so safe to remove it now
-    return killOrTkEvent;
+    return killEvent;
   }
 
   private void parseDeathEvent(int roundId, BfEvent e) {
@@ -259,18 +270,6 @@ DeathNoMsg on Kill osapooleks
       return;
     }
     addPlayerDeath(roundId, e, killOrTkEvent);
-  }
-
-  @EqualsAndHashCode(of = {"eventTimestamp", "victimId"})
-  @ToString
-  public static class EventTimestampAndVictimId {
-    private Duration eventTimestamp;
-    private Integer victimId; // player slot id (not player id)
-
-    public EventTimestampAndVictimId(Duration eventTimestamp, Integer victimId) {
-      this.eventTimestamp = eventTimestamp;
-      this.victimId = victimId;
-    }
   }
 
   private static boolean isSlotIdBot(int slotId) {
