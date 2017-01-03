@@ -73,11 +73,6 @@ public class BfEvent {
   }
 
   // nullable
-  public Integer getPlayerId() {
-    return getIntegerParamValueByName("player_id");
-  }
-
-  // less confusing name (TODO: remove getPlayerId())
   public Integer getPlayerSlotId() {
     return getIntegerParamValueByName("player_id");
   }

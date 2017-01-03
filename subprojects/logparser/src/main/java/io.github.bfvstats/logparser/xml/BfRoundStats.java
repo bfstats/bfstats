@@ -98,6 +98,10 @@ public class BfRoundStats {
     @XmlTransient
     private Map<String, String> parameters;
 
+    public int getPlayerSlotId() {
+      return getPlayerId();
+    }
+
     public String getPlayerName() {
       return getParameters().get("player_name");
     }
