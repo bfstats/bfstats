@@ -49,7 +49,7 @@ public class DbFiller {
   // actually not per round, but per log file
   private Map<Integer, RoundPlayer> activePlayersByRoundPlayerId = new HashMap<>();
 
-  private final Map<EventTimestampAndVictimId, BfEvent> lastKillEventsByVictimId = new HashMap<>();
+  private BfEvent lastKillEvent;
 
   public DbFiller(BfLog bfLog) {
     this.bfLog = bfLog;
@@ -139,10 +139,6 @@ public class DbFiller {
 
     dslContext.close();
     connection.close();
-
-    if (!lastKillEventsByVictimId.isEmpty()) {
-      log.warn("lastKillEventsByVictimId is not empty " + lastKillEventsByVictimId.toString());
-    }
   }
 
   private void parseLog(RoundPlayer botRoundPlayer, int botRoundPlayerId) {
@@ -219,7 +215,7 @@ public class DbFiller {
 
         // add kill event to queue until death event picks it up
         if (scoreType.equals(ScoreType.TK.name()) || scoreType.equals(ScoreType.Kill.name())) {
-          queueKillEvent(e);
+          setLastKillEvent(e);
         } else if (scoreType.equals(ScoreType.Death.name()) || scoreType.equals(ScoreType.DeathNoMsg.name())) {
           parseDeathEvent(roundId, e);
         } else {
@@ -236,14 +232,26 @@ Death on TK osapooleks või mitte millegi
 DeathNoMsg on Kill osapooleks
    */
 
-  private void queueKillEvent(BfEvent e) {
-    EventTimestampAndVictimId eventTimestampAndVictimId = new EventTimestampAndVictimId(e.getTimestamp(), e.getIntegerParamValueByName("victim_id"));
-    lastKillEventsByVictimId.put(eventTimestampAndVictimId, e);
+  private void setLastKillEvent(BfEvent e) {
+    this.lastKillEvent = e;
+  }
+
+  private BfEvent getLastKillEventForVictim(int wantedVictimSlotId) {
+    if (lastKillEvent == null) {
+      return null;
+    }
+    Integer victimSlotId = lastKillEvent.getIntegerParamValueByName("victim_id");
+    if (!victimSlotId.equals(wantedVictimSlotId)) {
+      log.warn("victimSlotId " + victimSlotId + " != wantedVictimSlotId " + wantedVictimSlotId);
+    }
+
+    BfEvent killOrTkEvent = lastKillEvent;
+    lastKillEvent = null;// kill event was for specific victim_id, so safe to remove it now
+    return killOrTkEvent;
   }
 
   private void parseDeathEvent(int roundId, BfEvent e) {
-    EventTimestampAndVictimId eventTimestampAndVictimId = new EventTimestampAndVictimId(e.getTimestamp(), e.getPlayerSlotId());
-    BfEvent killOrTkEvent = lastKillEventsByVictimId.remove(eventTimestampAndVictimId); // kill event had only one victim_id, so safe to remove it now
+    BfEvent killOrTkEvent = getLastKillEventForVictim(e.getPlayerSlotId());
     if (isSlotIdBot(e.getPlayerSlotId())) {
       return;
     }
@@ -256,10 +264,10 @@ DeathNoMsg on Kill osapooleks
   @EqualsAndHashCode(of = {"eventTimestamp", "victimId"})
   @ToString
   public static class EventTimestampAndVictimId {
-    private String eventTimestamp;
+    private Duration eventTimestamp;
     private Integer victimId; // player slot id (not player id)
 
-    public EventTimestampAndVictimId(String eventTimestamp, Integer victimId) {
+    public EventTimestampAndVictimId(Duration eventTimestamp, Integer victimId) {
       this.eventTimestamp = eventTimestamp;
       this.victimId = victimId;
     }
