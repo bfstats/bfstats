@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS player_nickname (
   nickname VARCHAR(150) NOT NULL,
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
+CREATE INDEX IF NOT EXISTS player_nickname_player_id_idx ON player_nickname(player_id);
 
 CREATE TABLE IF NOT EXISTS round (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,6 +45,7 @@ CREATE TABLE IF NOT EXISTS round_end_stats (
   end_tickets_team_2 INTEGER NOT NULL,
   FOREIGN KEY (round_id) REFERENCES round(id)
 );
+CREATE INDEX IF NOT EXISTS round_end_stats_round_id_idx ON round_end_stats(round_id);
 
 CREATE TABLE IF NOT EXISTS round_end_stats_player (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,6 +65,8 @@ CREATE TABLE IF NOT EXISTS round_end_stats_player (
   FOREIGN KEY (round_id) REFERENCES round_end_stats(round_id),
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
+CREATE INDEX IF NOT EXISTS round_end_stats_player_round_id_idx ON round_end_stats_player(round_id);
+CREATE INDEX IF NOT EXISTS round_end_stats_player_player_id_idx ON round_end_stats_player(player_id);
 
 CREATE TABLE IF NOT EXISTS round_chat_log (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -79,6 +83,8 @@ CREATE TABLE IF NOT EXISTS round_chat_log (
   FOREIGN KEY (round_id) REFERENCES round(round_id),
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
+CREATE INDEX IF NOT EXISTS round_chat_log_round_id_idx ON round_chat_log(round_id);
+CREATE INDEX IF NOT EXISTS round_chat_log_player_id_idx ON round_chat_log(player_id);
 
 CREATE TABLE IF NOT EXISTS round_player_score_event (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,13 +95,12 @@ CREATE TABLE IF NOT EXISTS round_player_score_event (
   player_location_z DECIMAL(4,4) NOT NULL,
   event_time DATETIME NOT NULL,
   score_type VARCHAR(30) NOT NULL, -- FlagCapture, Defence
-  victim_id INTEGER, -- if type is TK or Kill
-  weapon VARCHAR(50),
   FOREIGN KEY (round_id) REFERENCES round(round_id),
-  FOREIGN KEY (player_id) REFERENCES player(id),
-  FOREIGN KEY (victim_id) REFERENCES player(id)
+  FOREIGN KEY (player_id) REFERENCES player(id)
 );
-
+CREATE INDEX IF NOT EXISTS round_player_score_round_id_idx ON round_player_score_event(round_id);
+CREATE INDEX IF NOT EXISTS round_player_score_player_id_idx ON round_player_score_event(player_id);
+CREATE INDEX IF NOT EXISTS round_player_score_type_idx ON round_player_score_event(score_type);
 
 CREATE TABLE IF NOT EXISTS round_player_death (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -115,3 +120,6 @@ CREATE TABLE IF NOT EXISTS round_player_death (
   FOREIGN KEY (player_id) REFERENCES player(id),
   FOREIGN KEY (killer_player_id) REFERENCES player(id)
 );
+CREATE INDEX IF NOT EXISTS round_player_death_round_id_idx ON round_player_death(round_id);
+CREATE INDEX IF NOT EXISTS round_player_death_player_id_idx ON round_player_death(player_id);
+CREATE INDEX IF NOT EXISTS round_player_killer_player_id_idx ON round_player_death(killer_player_id) ;

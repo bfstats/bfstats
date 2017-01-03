@@ -37,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerScoreEvent extends TableImpl<RoundPlayerScoreEventRecord> {
 
-    private static final long serialVersionUID = -2048998735;
+    private static final long serialVersionUID = 568821684;
 
     /**
      * The reference instance of <code>round_player_score_event</code>
@@ -93,16 +93,6 @@ public class RoundPlayerScoreEvent extends TableImpl<RoundPlayerScoreEventRecord
     public final TableField<RoundPlayerScoreEventRecord, String> SCORE_TYPE = createField("score_type", org.jooq.impl.SQLDataType.VARCHAR.length(30).nullable(false), this, "");
 
     /**
-     * The column <code>round_player_score_event.victim_id</code>.
-     */
-    public final TableField<RoundPlayerScoreEventRecord, Integer> VICTIM_ID = createField("victim_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
-
-    /**
-     * The column <code>round_player_score_event.weapon</code>.
-     */
-    public final TableField<RoundPlayerScoreEventRecord, String> WEAPON = createField("weapon", org.jooq.impl.SQLDataType.VARCHAR.length(50), this, "");
-
-    /**
      * Create a <code>round_player_score_event</code> table reference
      */
     public RoundPlayerScoreEvent() {
@@ -153,7 +143,7 @@ public class RoundPlayerScoreEvent extends TableImpl<RoundPlayerScoreEventRecord
      */
     @Override
     public List<ForeignKey<RoundPlayerScoreEventRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<RoundPlayerScoreEventRecord, ?>>asList(Keys.FK_ROUND_PLAYER_SCORE_EVENT_ROUND_1, Keys.FK_ROUND_PLAYER_SCORE_EVENT_PLAYER_2, Keys.FK_ROUND_PLAYER_SCORE_EVENT_PLAYER_1);
+        return Arrays.<ForeignKey<RoundPlayerScoreEventRecord, ?>>asList(Keys.FK_ROUND_PLAYER_SCORE_EVENT_ROUND_1, Keys.FK_ROUND_PLAYER_SCORE_EVENT_PLAYER_1);
     }
 
     /**
