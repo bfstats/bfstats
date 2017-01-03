@@ -2,7 +2,7 @@ package io.github.bfvstats.logparser.xml.enums;
 
 public enum EventName {
   UNKNOWN_EVENT, // easier usage, to avoid null
-
+  changePlayerName,
   chat,
   createPlayer,
   createVehicle, // no playerId; not useful
@@ -23,5 +23,8 @@ public enum EventName {
   spawnEvent,
 
   // not yet validated if these are in bfv:
-  beginMedPack, endMedPack, beginRepair, endRepair, changePlayerName
+  beginMedPack, endMedPack,
+  beginRepair, endRepair
 }
+
+// Maybe these exist as well: connectPlayer, pickupFlag, reSpawnEvent

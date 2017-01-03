@@ -137,7 +137,7 @@ public class DbFiller {
     for (Object child : bfLog.getRootEventsAndRounds()) {
       if (child instanceof BfEvent) {
         BfEvent bfEvent = (BfEvent) child;
-        parseRootEvent(logStartTime, activePlayersByRoundPlayerId, lastRoundId, bfEvent);
+        parseEvent(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, lastRoundId, bfEvent);
       } else if (child instanceof BfRound) {
         BfRound bfRound = (BfRound) child;
         int roundId = parseRound(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, bfRound);
@@ -158,7 +158,7 @@ public class DbFiller {
     int roundId = roundRecord.getId();
 
     for (BfEvent e : bfRound.getEvents()) {
-      parseRoundEvent(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, roundId, e);
+      parseEvent(botRoundPlayerId, logStartTime, activePlayersByRoundPlayerId, roundId, e);
     }
 
     if (bfRound.getRoundStats() != null) {
@@ -181,9 +181,8 @@ public class DbFiller {
     return roundId;
   }
 
-  private void parseRoundEvent(int botRoundPlayerId, LocalDateTime logStartTime,
-                               Map<Integer, RoundPlayer> activePlayersByRoundPlayerId,
-                               int roundId, BfEvent e) {
+  private void parseEvent(int botRoundPlayerId, LocalDateTime logStartTime, Map<Integer, RoundPlayer> activePlayersByRoundPlayerId,
+                          Integer roundId, BfEvent e) {
     switch (e.getEventName()) {
       case createPlayer:
         parseEventCreatePlayer(activePlayersByRoundPlayerId, e);
@@ -206,29 +205,17 @@ public class DbFiller {
     }
   }
 
-  private void parseRootEvent(LocalDateTime logStartTime, Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, Integer lastRoundId, BfEvent e) {
-    switch (e.getEventName()) {
-      case createPlayer:
-        parseEventCreatePlayer(activePlayersByRoundPlayerId, e);
-        break;
-      case playerKeyHash:
-        parseEventPlayerKeyHash(activePlayersByRoundPlayerId, e);
-        break;
-      case destroyPlayer:
-        parseEventDestroyPlayer(activePlayersByRoundPlayerId, e);
-        break;
-      case changePlayerName:
-        parseEventChangePlayerName(activePlayersByRoundPlayerId, e);
-        break;
-      case chat:
-        parseEventChat(logStartTime, activePlayersByRoundPlayerId, lastRoundId, e);
-        break;
-      case scoreEvent:
-        log.warn("score event was called out-of-round");
-        break;
-    }
-  }
+  /*
+  -- Death-TK 168; DeathNoMsg-Kill 195
+  -- aga on ka deathe (või ka deathnomsgeid) ilma killita
 
+  select kill_event.player_location_x, kill_event.event_time, kill_event.victim_id, death_event.event_time, death_event.player_location_x from round_player_score_event as kill_event
+INNER join round_player_score_event as death_event ON death_event.player_id != 1 and death_event.victim_id is null and death_event.score_type in ('Death', 'DeathNoMsg')
+and death_event.player_id = kill_event.victim_id and
+strftime('%s',death_event.event_time) = strftime('%s',kill_event.event_time)
+WHERE kill_event.victim_id is not null and kill_event.victim_id != 1 and kill_event.score_type in ('Kill', 'TK');
+
+   */
   private void parseEventScoreEvent(int botRoundPlayerId, LocalDateTime logStartTime, Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, int roundId, BfEvent e) {
     Integer roundPlayerId = e.getPlayerId();
     if (roundPlayerId > 127) {
