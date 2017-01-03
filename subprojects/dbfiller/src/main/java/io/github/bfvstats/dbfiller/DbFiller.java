@@ -220,13 +220,6 @@ public class DbFiller {
     }
   }
 
-    /*
-  -- Death-TK 168; DeathNoMsg-Kill 195 või siis -- 378
-  -- aga on ka deathe (või ka deathnomsgeid) ilma killita
-Death on TK osapooleks või mitte millegi
-DeathNoMsg on Kill osapooleks
-   */
-
   private void setLastKillEvent(BfEvent e) {
     Integer victimId = e.getIntegerParamValueByName("victim_id");
 
@@ -326,13 +319,9 @@ DeathNoMsg on Kill osapooleks
   }
 
   /**
-   * @param roundId
-   * @param killEvent  nullable, "Kill" or "TK" score event type, can be null if player just died
    * @param deathEvent "DeathNoMsg" or "Death" score event type, should not be null, unless I'm wrong
-   * @return
+   * @param killEvent  nullable, "Kill" or "TK" score event type, can be null if player just died
    */
-
-  //enne oli 363 kus  select * from round_player_death where killer_player_id is not null;
   private RoundPlayerDeathRecord addPlayerDeath(int roundId, BfEvent deathEvent, BfEvent killEvent) {
     LocalDateTime eventTime = logStartTime.plus(deathEvent.getDurationSinceLogStart());
 
@@ -377,20 +366,12 @@ DeathNoMsg on Kill osapooleks
     RoundPlayerScoreEventRecord roundPlayerScoreEventRecord = transaction().newRecord(ROUND_PLAYER_SCORE_EVENT);
     roundPlayerScoreEventRecord.setRoundId(roundId);
     roundPlayerScoreEventRecord.setPlayerId(playerId);
-    if (e.getPlayerLocation() != null) {
-      String[] playerLocation = e.getPlayerLocation();
-      roundPlayerScoreEventRecord.setPlayerLocationX(new BigDecimal(playerLocation[0]));
-      roundPlayerScoreEventRecord.setPlayerLocationY(new BigDecimal(playerLocation[1]));
-      roundPlayerScoreEventRecord.setPlayerLocationZ(new BigDecimal(playerLocation[2]));
-    }
+    String[] playerLocation = e.getPlayerLocation();
+    roundPlayerScoreEventRecord.setPlayerLocationX(new BigDecimal(playerLocation[0]));
+    roundPlayerScoreEventRecord.setPlayerLocationY(new BigDecimal(playerLocation[1]));
+    roundPlayerScoreEventRecord.setPlayerLocationZ(new BigDecimal(playerLocation[2]));
     roundPlayerScoreEventRecord.setEventTime(Timestamp.valueOf(eventTime));
     roundPlayerScoreEventRecord.setScoreType(scoreType);
-    roundPlayerScoreEventRecord.setVictimId(null);
-    String weapon = e.getStringParamValueByName(ScoreEventParams.weapon.name());
-    if ("(none)".equals(weapon)) {
-      weapon = null;
-    }
-    roundPlayerScoreEventRecord.setWeapon(weapon);
 
     roundPlayerScoreEventRecord.insert();
     return roundPlayerScoreEventRecord;
