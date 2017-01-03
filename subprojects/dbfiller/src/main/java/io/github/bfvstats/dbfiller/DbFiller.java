@@ -9,6 +9,8 @@ import io.github.bfvstats.logparser.xml.BfRoundStats;
 import io.github.bfvstats.logparser.xml.enums.EventName;
 import io.github.bfvstats.logparser.xml.enums.event.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -35,6 +37,7 @@ import static java.util.Objects.requireNonNull;
 
 @Slf4j
 public class DbFiller {
+  public static final int FAKE_BOT_SLOT_ID = -1;
   private final DSLContext dslContext;
   private final Connection connection;
 
@@ -42,6 +45,11 @@ public class DbFiller {
 
   private final BfLog bfLog;
   private final LocalDateTime logStartTime;
+
+  // actually not per round, but per log file
+  private Map<Integer, RoundPlayer> activePlayersByRoundPlayerId = new HashMap<>();
+
+  private final Map<EventTimestampAndVictimId, BfEvent> lastKillEventsByVictimId = new HashMap<>();
 
   public DbFiller(BfLog bfLog) {
     this.bfLog = bfLog;
@@ -120,7 +128,7 @@ public class DbFiller {
       PlayerRecord botPlayerRecord = addPlayerOrNickName("FAKE_BOT", "FAKE_BOT");
       Integer botPlayerId = botPlayerRecord.getId();
       RoundPlayer botRoundPlayer = new RoundPlayer()
-          .setRoundPlayerId(-1)
+          .setRoundPlayerId(FAKE_BOT_SLOT_ID)
           .setPlayerId(botPlayerId)
           .setName("FAKE_BOT")
           .setKeyhash("FAKE_BOT");
@@ -131,11 +139,13 @@ public class DbFiller {
 
     dslContext.close();
     connection.close();
+
+    if (!lastKillEventsByVictimId.isEmpty()) {
+      log.warn("lastKillEventsByVictimId is not empty " + lastKillEventsByVictimId.toString());
+    }
   }
 
   private void parseLog(RoundPlayer botRoundPlayer, int botRoundPlayerId) {
-    // actually not per round, but per log file
-    Map<Integer, RoundPlayer> activePlayersByRoundPlayerId = new HashMap<>();
     activePlayersByRoundPlayerId.put(botRoundPlayer.getRoundPlayerId(), botRoundPlayer);
 
     int lastRoundId = -1;
@@ -205,36 +215,73 @@ public class DbFiller {
         parseEventChat(activePlayersByRoundPlayerId, roundId, e);
         break;
       case scoreEvent:
-        parseEventScoreEvent(botRoundPlayerId, activePlayersByRoundPlayerId, roundId, e);
+        String scoreType = e.getStringParamValueByName(ScoreEventParams.score_type.name());
+
+        // add kill event to queue until death event picks it up
+        if (scoreType.equals(ScoreType.TK.name()) || scoreType.equals(ScoreType.Kill.name())) {
+          queueKillEvent(e);
+        } else if (scoreType.equals(ScoreType.Death.name()) || scoreType.equals(ScoreType.DeathNoMsg.name())) {
+          parseDeathEvent(roundId, e);
+        } else {
+          parseEventScoreEvent(botRoundPlayerId, activePlayersByRoundPlayerId, roundId, e);
+        }
         break;
     }
   }
 
-  /*
-  -- Death-TK 168; DeathNoMsg-Kill 195
+    /*
+  -- Death-TK 168; DeathNoMsg-Kill 195 või siis -- 378
   -- aga on ka deathe (või ka deathnomsgeid) ilma killita
-
-  select kill_event.player_location_x, kill_event.event_time, kill_event.victim_id, death_event.event_time, death_event.player_location_x from round_player_score_event as kill_event
-INNER join round_player_score_event as death_event ON death_event.player_id != 1 and death_event.victim_id is null and death_event.score_type in ('Death', 'DeathNoMsg')
-and death_event.player_id = kill_event.victim_id and
-strftime('%s',death_event.event_time) = strftime('%s',kill_event.event_time)
-WHERE kill_event.victim_id is not null and kill_event.victim_id != 1 and kill_event.score_type in ('Kill', 'TK');
-
 Death on TK osapooleks või mitte millegi
 DeathNoMsg on Kill osapooleks
    */
+
+  private void queueKillEvent(BfEvent e) {
+    EventTimestampAndVictimId eventTimestampAndVictimId = new EventTimestampAndVictimId(e.getTimestamp(), e.getIntegerParamValueByName("victim_id"));
+    lastKillEventsByVictimId.put(eventTimestampAndVictimId, e);
+  }
+
+  private void parseDeathEvent(int roundId, BfEvent e) {
+    EventTimestampAndVictimId eventTimestampAndVictimId = new EventTimestampAndVictimId(e.getTimestamp(), e.getPlayerSlotId());
+    BfEvent killOrTkEvent = lastKillEventsByVictimId.remove(eventTimestampAndVictimId); // kill event had only one victim_id, so safe to remove it now
+    if (isSlotIdBot(e.getPlayerSlotId())) {
+      return;
+    }
+    if (killOrTkEvent != null && isSlotIdBot(killOrTkEvent.getPlayerSlotId())) {
+      return;
+    }
+    addPlayerDeath(roundId, e, killOrTkEvent);
+  }
+
+  @EqualsAndHashCode(of = {"eventTimestamp", "victimId"})
+  @ToString
+  public static class EventTimestampAndVictimId {
+    private String eventTimestamp;
+    private Integer victimId; // player slot id (not player id)
+
+    public EventTimestampAndVictimId(String eventTimestamp, Integer victimId) {
+      this.eventTimestamp = eventTimestamp;
+      this.victimId = victimId;
+    }
+  }
+
+  private static boolean isSlotIdBot(int slotId) {
+    return slotId > 127;
+  }
+
+  private int getPlayerIdFromSlotId(int slotId) {
+    if (isSlotIdBot(slotId)) {
+      slotId = FAKE_BOT_SLOT_ID; // treat bots as a single fake player
+    }
+    RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(slotId);
+    return requireNonNull(roundPlayer.getPlayerId(), "cant find player id for slot " + slotId);
+  }
+
   private void parseEventScoreEvent(int botRoundPlayerId, Map<Integer, RoundPlayer> activePlayersByRoundPlayerId, int roundId, BfEvent e) {
     Integer roundPlayerId = e.getPlayerId();
     if (roundPlayerId > 127) {
       // using fake player for a bot
       roundPlayerId = botRoundPlayerId;
-    }
-
-    String scoreType = e.getStringParamValueByName(ScoreEventParams.score_type.name());
-    if (scoreType.equals(ScoreType.Death.name())) {
-      // find "TK" event (can be suicide as well, same player in that case); otherwise no info about killing - just died
-    } else if (scoreType.equals(ScoreType.DeathNoMsg.name())) {
-      // find "Kill" event; otherwise no info about killing - just died
     }
 
     if (roundPlayerId == botRoundPlayerId) {
@@ -298,6 +345,50 @@ DeathNoMsg on Kill osapooleks
         .setKeyhash(null);
     activePlayersByRoundPlayerId.put(e.getPlayerId(), roundPlayer);
     log.info("added round-player " + e.getPlayerId());
+  }
+
+  /**
+   * @param roundId
+   * @param killEvent  nullable, "Kill" or "TK" score event type, can be null if player just died
+   * @param deathEvent "DeathNoMsg" or "Death" score event type, should not be null, unless I'm wrong
+   * @return
+   */
+
+  //enne oli 363 kus  select * from round_player_death where killer_player_id is not null;
+  private RoundPlayerDeathRecord addPlayerDeath(int roundId, BfEvent deathEvent, BfEvent killEvent) {
+    LocalDateTime eventTime = logStartTime.plus(deathEvent.getDurationSinceLogStart());
+
+    RoundPlayerDeathRecord roundPlayerDeathRecord = transaction().newRecord(ROUND_PLAYER_DEATH);
+    roundPlayerDeathRecord.setRoundId(roundId);
+    int deathPlayerId = getPlayerIdFromSlotId(deathEvent.getPlayerSlotId());
+    roundPlayerDeathRecord.setPlayerId(deathPlayerId);
+
+    String[] victimLocation = deathEvent.getPlayerLocation();
+    roundPlayerDeathRecord.setPlayerLocationX(new BigDecimal(victimLocation[0]));
+    roundPlayerDeathRecord.setPlayerLocationY(new BigDecimal(victimLocation[1]));
+    roundPlayerDeathRecord.setPlayerLocationZ(new BigDecimal(victimLocation[2]));
+    roundPlayerDeathRecord.setEventTime(Timestamp.valueOf(eventTime));
+
+    if (killEvent != null) {
+      int killerPlayerId = getPlayerIdFromSlotId(killEvent.getPlayerSlotId());
+      roundPlayerDeathRecord.setKillerPlayerId(killerPlayerId);
+      String[] killerLocation = killEvent.getPlayerLocation();
+      roundPlayerDeathRecord.setKillerLocationX(new BigDecimal(killerLocation[0]));
+      roundPlayerDeathRecord.setKillerLocationY(new BigDecimal(killerLocation[1]));
+      roundPlayerDeathRecord.setKillerLocationZ(new BigDecimal(killerLocation[2]));
+
+      String scoreType = killEvent.getStringParamValueByName(ScoreEventParams.score_type.name());
+      roundPlayerDeathRecord.setKillType(scoreType); // Kill or TK
+
+      String weapon = killEvent.getStringParamValueByName(ScoreEventParams.weapon.name());
+      if ("(none)".equals(weapon)) {
+        weapon = null;
+      }
+      roundPlayerDeathRecord.setKillWeapon(weapon);
+    }
+
+    roundPlayerDeathRecord.insert();
+    return roundPlayerDeathRecord;
   }
 
   private RoundPlayerScoreEventRecord addRoundPlayerScoreEvent(int roundId, Integer playerId,

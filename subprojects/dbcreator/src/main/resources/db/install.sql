@@ -88,10 +88,30 @@ CREATE TABLE IF NOT EXISTS round_player_score_event (
   player_location_y DECIMAL(4,4) NOT NULL,
   player_location_z DECIMAL(4,4) NOT NULL,
   event_time DATETIME NOT NULL,
-  score_type VARCHAR(30) NOT NULL, -- Kill, TK,  Death, DeathNoMsg,  FlagCapture, Defence
+  score_type VARCHAR(30) NOT NULL, -- FlagCapture, Defence
   victim_id INTEGER, -- if type is TK or Kill
   weapon VARCHAR(50),
   FOREIGN KEY (round_id) REFERENCES round(round_id),
   FOREIGN KEY (player_id) REFERENCES player(id),
   FOREIGN KEY (victim_id) REFERENCES player(id)
+);
+
+
+CREATE TABLE IF NOT EXISTS round_player_death (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  round_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  player_location_x DECIMAL(4,4) NOT NULL,
+  player_location_y DECIMAL(4,4) NOT NULL,
+  player_location_z DECIMAL(4,4) NOT NULL,
+  event_time DATETIME NOT NULL,
+  killer_player_id INTEGER,
+  killer_location_x DECIMAL(4,4),
+  killer_location_y DECIMAL(4,4),
+  killer_location_z DECIMAL(4,4),
+  kill_type VARCHAR(30), -- Kill, TK
+  kill_weapon VARCHAR(50),
+  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (player_id) REFERENCES player(id),
+  FOREIGN KEY (killer_player_id) REFERENCES player(id)
 );

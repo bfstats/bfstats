@@ -10,6 +10,7 @@ import io.github.bfvstats.game.jooq.tables.Round;
 import io.github.bfvstats.game.jooq.tables.RoundChatLog;
 import io.github.bfvstats.game.jooq.tables.RoundEndStats;
 import io.github.bfvstats.game.jooq.tables.RoundEndStatsPlayer;
+import io.github.bfvstats.game.jooq.tables.RoundPlayerDeath;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfvstats.game.jooq.tables.SqliteSequence;
 
@@ -37,7 +38,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -689615400;
+    private static final long serialVersionUID = -821003613;
 
     /**
      * The reference instance of <code></code>
@@ -73,6 +74,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>round_end_stats_player</code>.
      */
     public final RoundEndStatsPlayer ROUND_END_STATS_PLAYER = io.github.bfvstats.game.jooq.tables.RoundEndStatsPlayer.ROUND_END_STATS_PLAYER;
+
+    /**
+     * The table <code>round_player_death</code>.
+     */
+    public final RoundPlayerDeath ROUND_PLAYER_DEATH = io.github.bfvstats.game.jooq.tables.RoundPlayerDeath.ROUND_PLAYER_DEATH;
 
     /**
      * The table <code>round_player_score_event</code>.
@@ -115,6 +121,7 @@ public class DefaultSchema extends SchemaImpl {
             RoundChatLog.ROUND_CHAT_LOG,
             RoundEndStats.ROUND_END_STATS,
             RoundEndStatsPlayer.ROUND_END_STATS_PLAYER,
+            RoundPlayerDeath.ROUND_PLAYER_DEATH,
             RoundPlayerScoreEvent.ROUND_PLAYER_SCORE_EVENT,
             SqliteSequence.SQLITE_SEQUENCE);
     }

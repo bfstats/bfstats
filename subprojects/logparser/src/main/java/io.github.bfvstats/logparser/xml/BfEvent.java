@@ -77,6 +77,11 @@ public class BfEvent {
     return getIntegerParamValueByName("player_id");
   }
 
+  // less confusing name (TODO: remove getPlayerId())
+  public Integer getPlayerSlotId() {
+    return getIntegerParamValueByName("player_id");
+  }
+
   // nullable
   public String[] getPlayerLocation() {
     return getVector3ParamValueByName("player_location");
