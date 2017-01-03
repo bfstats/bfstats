@@ -236,6 +236,13 @@ public class DbFiller {
       roundPlayerId = botRoundPlayerId;
     }
 
+    if (roundPlayerId == botRoundPlayerId) {
+      // skip bots killing bots
+      // skip bots killing humans (should probably add killer player id for human die event)
+      // skip bots dieing because of humans (should maybe add some additional info for human kill event)
+      return;
+    }
+
     RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(roundPlayerId);
     Integer playerId = requireNonNull(roundPlayer.getPlayerId());
 
