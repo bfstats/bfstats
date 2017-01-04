@@ -261,16 +261,13 @@ public class DbFiller {
   private void parseDeathEvent(int roundId, BfEvent e) {
     BfEvent killOrTkEvent = getLastKillEventForVictim(e.getPlayerSlotId());
 
-    // skip bots killing bots
-    // skip bots killing humans (should probably add killer player id for human die event)
-    // skip bots dieing because of humans (should maybe add some additional info for human kill event)
-
+    // skip dying bot if killer is not known or is also a bot
     if (isSlotIdBot(e.getPlayerSlotId())) {
-      return;
+      if (killOrTkEvent == null || isSlotIdBot(killOrTkEvent.getPlayerSlotId())) {
+        return;
+      }
     }
-    if (killOrTkEvent != null && isSlotIdBot(killOrTkEvent.getPlayerSlotId())) {
-      return;
-    }
+
     addPlayerDeath(roundId, e, killOrTkEvent);
   }
 
