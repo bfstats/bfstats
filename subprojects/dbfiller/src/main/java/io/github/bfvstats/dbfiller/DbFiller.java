@@ -81,7 +81,7 @@ public class DbFiller {
     }
 
     for (File fileI : dirFiles) {
-      if (numberOfFilesCompleted % 10 == 0) {
+      if (numberOfFilesCompleted % 30 == 0) {
         System.out.println(numberOfFilesCompleted + "/" + totalNumberOfFiles);
       }
       numberOfFilesCompleted++;
