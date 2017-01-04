@@ -132,6 +132,8 @@ tr.team-2 {
 
 .map_point {
   position: absolute;
+  margin-top: -3px;
+  margin-left: -3px;
 }
 
 .map_point_kills, .map_point_deaths {
