@@ -1,8 +1,7 @@
 package io.github.bfvstats.service;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.bfvstats.game.jooq.tables.records.RoundPlayerScoreEventRecord;
-import io.github.bfvstats.logparser.xml.enums.event.ScoreType;
+import io.github.bfvstats.game.jooq.tables.records.RoundPlayerDeathRecord;
 import io.github.bfvstats.model.Location;
 import io.github.bfvstats.model.MapStatsInfo;
 import io.github.bfvstats.model.MapUsage;
@@ -43,49 +42,56 @@ public class MapService {
       .build();
 
   public MapStatsInfo getMapStatsInfoForPlayer(String mapCode, int playerId) {
-    Result<Record> records = getDslContext().select()
-        .from(ROUND_PLAYER_SCORE_EVENT)
-        .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_SCORE_EVENT.ROUND_ID))
+    Result<RoundPlayerDeathRecord> killRecords = getDslContext()
+        .select()
+        .from(ROUND_PLAYER_DEATH)
+        .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
         .where(ROUND.MAP_CODE.eq(mapCode))
-        .and(ROUND_PLAYER_SCORE_EVENT.PLAYER_ID.eq(playerId))
-        //.and(ROUND_PLAYER_SCORE_EVENT.SCORE_TYPE.eq(ScoreType.Kill.name()))
-        .fetch();
+        .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
+        .fetch()
+        .into(ROUND_PLAYER_DEATH);
 
-    List<RoundPlayerScoreEventRecord> roundPlayerScoreEventRecords = records.stream()
-        .map(record -> record.into(ROUND_PLAYER_SCORE_EVENT))
-        .collect(Collectors.toList());
+    Result<RoundPlayerDeathRecord> deathRecords = getDslContext()
+        .select()
+        .from(ROUND_PLAYER_DEATH)
+        .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
+        .where(ROUND.MAP_CODE.eq(mapCode))
+        .and(ROUND_PLAYER_DEATH.PLAYER_ID.eq(playerId))
+        .fetch()
+        .into(ROUND_PLAYER_DEATH);
 
-    return toMapStatsInfo(roundPlayerScoreEventRecords, mapCode);
+    return toMapStatsInfo(mapCode, killRecords, deathRecords);
   }
 
-  private static MapStatsInfo toMapStatsInfo(List<RoundPlayerScoreEventRecord> roundPlayerScoreEventRecords, String mapCode) {
+
+  private MapStatsInfo toMapStatsInfo(String mapCode, Result<RoundPlayerDeathRecord> killRecords, Result<RoundPlayerDeathRecord> deathRecords) {
     Collection<Location> killLocations = new ArrayList<>();
     Collection<Location> deathLocations = new ArrayList<>();
 
-    for (RoundPlayerScoreEventRecord roundPlayerScoreEventRecord : roundPlayerScoreEventRecords) {
+    for (RoundPlayerDeathRecord roundPlayerScoreEventRecord : killRecords) {
       BigDecimal x = roundPlayerScoreEventRecord.getPlayerLocationX();
       BigDecimal y = roundPlayerScoreEventRecord.getPlayerLocationY();
       BigDecimal z = roundPlayerScoreEventRecord.getPlayerLocationZ();
       Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
+      killLocations.add(location);
+    }
 
-      String scoreType = roundPlayerScoreEventRecord.getScoreType();
-      if (scoreType.equals(ScoreType.Kill.name())) {
-        killLocations.add(location);
-      } else if (scoreType.equals(ScoreType.DeathNoMsg.name())) {
-        deathLocations.add(location);
-      }
+    for (RoundPlayerDeathRecord roundPlayerScoreEventRecord : deathRecords) {
+      BigDecimal x = roundPlayerScoreEventRecord.getPlayerLocationX();
+      BigDecimal y = roundPlayerScoreEventRecord.getPlayerLocationY();
+      BigDecimal z = roundPlayerScoreEventRecord.getPlayerLocationZ();
+      Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
+      deathLocations.add(location);
     }
 
     Integer mapSize = mapSizesByMap.get(mapCode);
 
-    MapStatsInfo mapStatsInfo = new MapStatsInfo()
+    return new MapStatsInfo()
         .setMapName(mapCode)
         .setMapFileName(mapCode)
         .setMapSize(mapSize)
         .setKillLocations(killLocations)
         .setDeathLocations(deathLocations);
-
-    return mapStatsInfo;
   }
 
   public List<MapUsage> getMapUsagesForPlayer(int playerId) {

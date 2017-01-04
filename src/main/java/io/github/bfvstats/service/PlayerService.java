@@ -3,7 +3,6 @@ package io.github.bfvstats.service;
 import io.github.bfvstats.Player;
 import io.github.bfvstats.game.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfvstats.game.jooq.tables.records.PlayerRecord;
-import io.github.bfvstats.logparser.xml.enums.event.ScoreType;
 import io.github.bfvstats.model.NicknameUsage;
 import io.github.bfvstats.model.VehicleUsage;
 import io.github.bfvstats.model.WeaponUsage;
@@ -53,12 +52,11 @@ public class PlayerService {
   }
 
   public List<WeaponUsage> getWeaponUsages(int playerId) {
-    SelectHavingStep<Record2<String, Integer>> records = getDslContext().select(ROUND_PLAYER_SCORE_EVENT.WEAPON, DSL.count().as("times_used"))
-        .from(ROUND_PLAYER_SCORE_EVENT)
-        .where(ROUND_PLAYER_SCORE_EVENT.SCORE_TYPE.eq(ScoreType.Kill.name()))
-        .and(ROUND_PLAYER_SCORE_EVENT.WEAPON.isNotNull())
-        .and(ROUND_PLAYER_SCORE_EVENT.PLAYER_ID.eq(playerId))
-        .groupBy(ROUND_PLAYER_SCORE_EVENT.WEAPON);
+    SelectHavingStep<Record2<String, Integer>> records = getDslContext().select(ROUND_PLAYER_DEATH.KILL_WEAPON, DSL.count().as("times_used"))
+        .from(ROUND_PLAYER_DEATH)
+        .where(ROUND_PLAYER_DEATH.KILL_WEAPON.isNotNull())
+        .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
+        .groupBy(ROUND_PLAYER_DEATH.KILL_WEAPON);
 
 
     Integer totalWeaponsTimesUsed = records.stream()
@@ -73,7 +71,7 @@ public class PlayerService {
   private static WeaponUsage toWeaponUsage(Record r, int totalWeaponsTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
     return new WeaponUsage()
-        .setName(r.get(ROUND_PLAYER_SCORE_EVENT.WEAPON))
+        .setName(r.get(ROUND_PLAYER_DEATH.KILL_WEAPON))
         .setTimesUsed(timesUsed)
         .setPercentage(timesUsed * 100 / totalWeaponsTimesUsed);
   }

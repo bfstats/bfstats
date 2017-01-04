@@ -73,7 +73,17 @@ public class DbFiller {
   public static void parseAllInDir(String logDirPath) throws FileNotFoundException, JAXBException, SQLException {
     File logDir = new File(logDirPath);
     File[] dirFiles = logDir.listFiles((dir, name) -> name.endsWith(".xml") || name.endsWith(".zxml"));
+    if (dirFiles == null) {
+      throw new IllegalArgumentException("could not list files in " + logDirPath);
+    }
+
+    int totalNumberOfFiles = dirFiles.length;
+    int numberOfFilesCompleted = 0;
     for (File fileI : dirFiles) {
+      if (numberOfFilesCompleted % 10 == 0) {
+        System.out.println(numberOfFilesCompleted + "/" + totalNumberOfFiles);
+      }
+      numberOfFilesCompleted++;
       String filePath = fileI.getPath();
       if (filePath.endsWith(".xml")) {
         Path checkablePath = Paths.get(filePath.substring(0, filePath.length() - 4) + ".zxml");
