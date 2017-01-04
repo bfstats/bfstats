@@ -38,7 +38,8 @@ public class CacheFiller {
           .select(transactionContext.select(ROUND_END_STATS_PLAYER.PLAYER_ID)
               .from(ROUND_END_STATS_PLAYER)
               .groupBy(ROUND_END_STATS_PLAYER.PLAYER_ID)
-              .orderBy(sum(ROUND_END_STATS_PLAYER.SCORE).desc()));
+              .orderBy(sum(ROUND_END_STATS_PLAYER.SCORE).desc()))
+          .execute();
     });
 
     dslContext.close();
