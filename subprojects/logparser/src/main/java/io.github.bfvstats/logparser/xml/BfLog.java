@@ -33,14 +33,6 @@ public class BfLog {
   })
   private List<Object> rootEventsAndRounds;
 
-  @Deprecated
-  @XmlElement(name = "event", namespace = BfLog.NAMESPACE)
-  private List<BfEvent> events;
-
-  @Deprecated
-  @XmlElement(name = "round", namespace = BfLog.NAMESPACE)
-  private List<BfRound> rounds;
-
   public String getEngine() {
     return engine;
   }
@@ -52,7 +44,6 @@ public class BfLog {
         gameUnpaused event (no parameters)
         sayAll event (text parameter)
         ip parameter to existing connectPlayer event
-        timestamp parameter in bf:log tag (see below)
         endGame event
             reason = timelimit, scoreLimit, tickets
             winner = 1|2
