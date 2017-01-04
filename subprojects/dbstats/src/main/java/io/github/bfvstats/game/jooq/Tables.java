@@ -6,6 +6,7 @@ package io.github.bfvstats.game.jooq;
 
 import io.github.bfvstats.game.jooq.tables.Player;
 import io.github.bfvstats.game.jooq.tables.PlayerNickname;
+import io.github.bfvstats.game.jooq.tables.PlayerRank;
 import io.github.bfvstats.game.jooq.tables.Round;
 import io.github.bfvstats.game.jooq.tables.RoundChatLog;
 import io.github.bfvstats.game.jooq.tables.RoundEndStats;
@@ -39,6 +40,11 @@ public class Tables {
      * The table <code>player_nickname</code>.
      */
     public static final PlayerNickname PLAYER_NICKNAME = io.github.bfvstats.game.jooq.tables.PlayerNickname.PLAYER_NICKNAME;
+
+    /**
+     * The table <code>player_rank</code>.
+     */
+    public static final PlayerRank PLAYER_RANK = io.github.bfvstats.game.jooq.tables.PlayerRank.PLAYER_RANK;
 
     /**
      * The table <code>round</code>.

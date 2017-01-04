@@ -122,4 +122,12 @@ CREATE TABLE IF NOT EXISTS round_player_death (
 );
 CREATE INDEX IF NOT EXISTS round_player_death_round_id_idx ON round_player_death(round_id);
 CREATE INDEX IF NOT EXISTS round_player_death_player_id_idx ON round_player_death(player_id);
-CREATE INDEX IF NOT EXISTS round_player_killer_player_id_idx ON round_player_death(killer_player_id) ;
+CREATE INDEX IF NOT EXISTS round_player_killer_player_id_idx ON round_player_death(killer_player_id);
+
+
+CREATE TABLE IF NOT EXISTS player_rank (
+  rank INTEGER PRIMARY KEY AUTOINCREMENT,
+  player_id INTEGER NOT NULL,
+  FOREIGN KEY (player_id) REFERENCES player(id)
+);
+CREATE INDEX IF NOT EXISTS player_rank_player_id_idx ON player_rank(player_id);

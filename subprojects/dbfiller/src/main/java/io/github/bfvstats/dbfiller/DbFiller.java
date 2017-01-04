@@ -36,8 +36,8 @@ import static java.util.Objects.requireNonNull;
 @Slf4j
 public class DbFiller {
   public static final int FAKE_BOT_SLOT_ID = -1;
-  private final DSLContext dslContext;
-  private final Connection connection;
+  private static DSLContext dslContext;
+  private static Connection connection;
 
   private DSLContext transactionDslContext;
 
@@ -52,13 +52,6 @@ public class DbFiller {
   public DbFiller(BfLog bfLog) {
     this.bfLog = bfLog;
     this.logStartTime = bfLog.getTimestampAsDate();
-
-    try {
-      this.connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
-      this.dslContext = DSL.using(connection);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   private DSLContext transaction() {
@@ -79,6 +72,14 @@ public class DbFiller {
 
     int totalNumberOfFiles = dirFiles.length;
     int numberOfFilesCompleted = 0;
+
+    try {
+      connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
+      dslContext = DSL.using(connection);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+
     for (File fileI : dirFiles) {
       if (numberOfFilesCompleted % 10 == 0) {
         System.out.println(numberOfFilesCompleted + "/" + totalNumberOfFiles);
@@ -109,6 +110,9 @@ public class DbFiller {
       DbFiller dbFiller = new DbFiller(bfLog);
       dbFiller.fillDb();
     }
+
+    dslContext.close();
+    connection.close();
   }
 
   public static String unzip(String filepath) throws IOException {
@@ -144,9 +148,6 @@ public class DbFiller {
 
       parseLog();
     });
-
-    dslContext.close();
-    connection.close();
 
     if (!lastKillEventByVictimId.isEmpty()) {
       log.warn("last kill events is not empty in the end of the round " + lastKillEventByVictimId);

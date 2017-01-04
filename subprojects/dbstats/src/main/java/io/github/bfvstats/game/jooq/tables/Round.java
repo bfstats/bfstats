@@ -15,6 +15,7 @@ import java.util.List;
 import javax.annotation.Generated;
 
 import org.jooq.Field;
+import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -35,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Round extends TableImpl<RoundRecord> {
 
-    private static final long serialVersionUID = -80633135;
+    private static final long serialVersionUID = -439248324;
 
     /**
      * The reference instance of <code>round</code>
@@ -183,6 +184,14 @@ public class Round extends TableImpl<RoundRecord> {
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Identity<RoundRecord, Integer> getIdentity() {
+        return Keys.IDENTITY_ROUND;
     }
 
     /**
