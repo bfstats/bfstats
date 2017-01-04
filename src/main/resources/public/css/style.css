@@ -132,18 +132,17 @@ tr.team-2 {
 
 .map_point {
   position: absolute;
+}
+
+.map_point_kills, .map_point_deaths {
   width: 6px;
   height: 6px;
   background-color: white;
   border: 1px solid black;
   border-radius: 50%;
-  box-shadow: 0 0 8px #ea4c89, inset 0 0 8px #ea4c89;
-}
-
-.map_point_kills {
-  background-color: blue;
+  background-color: #0066cc;
 }
 
 .map_point_deaths {
-  background-color: red;
+  background-color: #ff471a;
 }
