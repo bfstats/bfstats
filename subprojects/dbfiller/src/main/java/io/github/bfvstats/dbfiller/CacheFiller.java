@@ -9,8 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static io.github.bfvstats.game.jooq.Tables.PLAYER_RANK;
-import static io.github.bfvstats.game.jooq.Tables.ROUND_END_STATS_PLAYER;
+import static io.github.bfvstats.game.jooq.Tables.*;
 import static org.jooq.impl.DSL.sum;
 
 public class CacheFiller {
@@ -32,7 +31,8 @@ public class CacheFiller {
     dslContext.transaction(configuration -> {
       DSLContext transactionContext = DSL.using(configuration);
 
-      transactionContext.delete(PLAYER_RANK).execute();
+      transactionContext.deleteFrom(PLAYER_RANK).execute();
+      transactionContext.deleteFrom(SQLITE_SEQUENCE).where(SQLITE_SEQUENCE.NAME.eq(PLAYER_RANK.getName())).execute();
 
       transactionContext.insertInto(PLAYER_RANK, PLAYER_RANK.PLAYER_ID)
           .select(transactionContext.select(ROUND_END_STATS_PLAYER.PLAYER_ID)
