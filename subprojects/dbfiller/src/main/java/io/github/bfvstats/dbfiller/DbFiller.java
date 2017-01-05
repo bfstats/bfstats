@@ -37,6 +37,8 @@ import static java.util.Objects.requireNonNull;
 @Slf4j
 public class DbFiller {
   public static final int FAKE_BOT_SLOT_ID = -1;
+  public static final int FAKE_BOT_TEAM = -1;
+
   private static DSLContext dslContext;
   private static Connection connection;
 
@@ -142,11 +144,12 @@ public class DbFiller {
       PlayerRecord botPlayerRecord = addPlayerOrNickName("FAKE_BOT", "FAKE_BOT");
       Integer botPlayerId = botPlayerRecord.getId();
       RoundPlayer botRoundPlayer = new RoundPlayer()
-          .setRoundPlayerId(FAKE_BOT_SLOT_ID)
+          .setRoundPlayerSlotId(FAKE_BOT_SLOT_ID)
           .setPlayerId(botPlayerId)
           .setName("FAKE_BOT")
-          .setKeyhash("FAKE_BOT");
-      activePlayersByRoundPlayerId.put(botRoundPlayer.getRoundPlayerId(), botRoundPlayer);
+          .setKeyhash("FAKE_BOT")
+          .setTeam(FAKE_BOT_TEAM);
+      activePlayersByRoundPlayerId.put(botRoundPlayer.getRoundPlayerSlotId(), botRoundPlayer);
 
       parseLog();
     });
@@ -218,8 +221,16 @@ public class DbFiller {
         parseEventPlayerKeyHash(e);
         break;
       case destroyPlayer:
-        endVehicleUsageIfNeeded(roundId, e);
-        parseEventDestroyPlayer(e);
+        if (isSlotIdBot(e.getPlayerSlotId())) {
+          // skipping bot vehicle events
+          return;
+        }
+
+        if (getRoundPlayerFromSlotId(e.getPlayerSlotId()).getPlayerId() != null) {
+          endVehicleUsageIfNeeded(roundId, e);
+        }
+
+        parseEventDestroyPlayer(roundId, e);
         break;
       case changePlayerName:
         parseEventChangePlayerName(e);
@@ -250,7 +261,36 @@ public class DbFiller {
         break;
       case destroyVehicle:
         break;
+      case setTeam:
+        parseSetTeamEvent(roundId, e);
+        break;
+      case spawnEvent:
+        if (!isSlotIdBot(e.getPlayerSlotId())) {
+          RoundPlayer roundPlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
+          Integer spawnTeam = e.getIntegerParamValueByName("team");
+          if (!roundPlayer.getTeam().equals(spawnTeam)) {
+            Integer previousTeam = roundPlayer.getTeam();
+            Duration previousTeamStart = roundPlayer.getTeamStart();
+            roundPlayer.setTeamStart(e.getDurationSinceLogStart());
+            roundPlayer.setTeam(spawnTeam);
+            addRoundPlayerTeamUsage(roundId, roundPlayer.getPlayerId(), previousTeam, previousTeamStart, roundPlayer.getTeamStart());
+          }
+        }
+        break;
     }
+  }
+
+  // stores previous team interval
+  private void parseSetTeamEvent(int roundId, BfEvent e) {
+    RoundPlayer roundPlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
+    Integer previousTeam = roundPlayer.getTeam();
+    Duration previousTeamStart = roundPlayer.getTeamStart();
+
+    Integer team = e.getIntegerParamValueByName(SetTeamParams.team.name());
+    roundPlayer.setTeamStart(e.getDurationSinceLogStart());
+    roundPlayer.setTeam(team);
+
+    addRoundPlayerTeamUsage(roundId, roundPlayer.getPlayerId(), previousTeam, previousTeamStart, roundPlayer.getTeamStart());
   }
 
   private void setLastEnterVehicle(BfEvent e) {
@@ -283,6 +323,22 @@ public class DbFiller {
       return addVehicleUsage(roundId, enterVehicle, someEndEvent.getDurationSinceLogStart());
     }
     return null;
+  }
+
+
+  private RoundPlayerTeamRecord addRoundPlayerTeamUsage(int roundId, int playerId, Integer team, Duration teamStart, Duration teamEnd) {
+    LocalDateTime teamStartDate = logStartTime.plus(teamStart);
+    LocalDateTime teamEndDate = logStartTime.plus(teamEnd);
+
+    RoundPlayerTeamRecord roundPlayerTeamRecord = transaction().newRecord(ROUND_PLAYER_TEAM);
+    roundPlayerTeamRecord.setRoundId(roundId);
+    roundPlayerTeamRecord.setPlayerId(playerId);
+    roundPlayerTeamRecord.setTeam(team);
+    roundPlayerTeamRecord.setStartTime(Timestamp.valueOf(teamStartDate));
+    roundPlayerTeamRecord.setEndTime(Timestamp.valueOf(teamEndDate));
+
+    roundPlayerTeamRecord.insert();
+    return roundPlayerTeamRecord;
   }
 
   private RoundPlayerVehicleRecord addVehicleUsage(int roundId, BfEvent enterVehicleEvent, Duration endTimeDurationSinceLogStart) {
@@ -357,11 +413,15 @@ public class DbFiller {
     return slotId > 127;
   }
 
-  private int getPlayerIdFromSlotId(int slotId) {
+  private RoundPlayer getRoundPlayerFromSlotId(int slotId) {
     if (isSlotIdBot(slotId)) {
       slotId = FAKE_BOT_SLOT_ID; // treat bots as a single fake player
     }
-    RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(slotId);
+    return activePlayersByRoundPlayerId.get(slotId);
+  }
+
+  private int getPlayerIdFromSlotId(int slotId) {
+    RoundPlayer roundPlayer = getRoundPlayerFromSlotId(slotId);
     return requireNonNull(roundPlayer.getPlayerId(), "cant find player id for slot " + slotId);
   }
 
@@ -382,9 +442,22 @@ public class DbFiller {
     addNickname(playerId, newPlayerName);
   }
 
-  private void parseEventDestroyPlayer(BfEvent e) {
-    activePlayersByRoundPlayerId.remove(e.getPlayerSlotId());
-    log.info("removed round-player " + e.getPlayerSlotId());
+  private void parseEventDestroyPlayer(int roundId, BfEvent destroyPlayerEvent) {
+    if (isSlotIdBot(destroyPlayerEvent.getPlayerSlotId())) {
+      return;
+    }
+
+    RoundPlayer roundPlayer = activePlayersByRoundPlayerId.remove(destroyPlayerEvent.getPlayerSlotId());
+    log.info("removed round-player " + destroyPlayerEvent.getPlayerSlotId());
+
+    if (roundPlayer.getPlayerId() == null) {
+      log.info("Player " + roundPlayer.getName() + " has disconnected before playerKeyHash");
+      return;
+    }
+
+    Duration durationSinceLogStart = destroyPlayerEvent.getDurationSinceLogStart();
+    addRoundPlayerTeamUsage(roundId, roundPlayer.getPlayerId(), roundPlayer.getTeam(), roundPlayer.getTeamStart(), durationSinceLogStart);
+    addRoundPlayerJoinEndDates(roundId, roundPlayer, destroyPlayerEvent.getDurationSinceLogStart());
   }
 
   private void parseEventPlayerKeyHash(BfEvent e) {
@@ -401,9 +474,12 @@ public class DbFiller {
       throw new IllegalStateException("destroyPlayer event should've deleted player with id " + e.getPlayerSlotId());
     }
     RoundPlayer roundPlayer = new RoundPlayer()
-        .setRoundPlayerId(e.getPlayerSlotId())
+        .setRoundPlayerSlotId(e.getPlayerSlotId())
         .setName(e.getStringParamValueByName(CreatePlayerParams.name.name()))
-        .setKeyhash(null);
+        .setKeyhash(null)
+        .setJoined(e.getDurationSinceLogStart())
+        .setTeam(e.getIntegerParamValueByName(CreatePlayerParams.team.name()))
+        .setTeamStart(e.getDurationSinceLogStart());
     activePlayersByRoundPlayerId.put(e.getPlayerSlotId(), roundPlayer);
     log.info("added round-player " + e.getPlayerSlotId());
   }
@@ -448,6 +524,20 @@ public class DbFiller {
     return roundPlayerDeathRecord;
   }
 
+  private RoundPlayerRecord addRoundPlayerJoinEndDates(int roundId, RoundPlayer roundPlayer, Duration endTime) {
+    LocalDateTime joined = logStartTime.plus(roundPlayer.getJoined());
+    LocalDateTime ended = logStartTime.plus(endTime);
+
+    RoundPlayerRecord roundPlayerRecord = transaction().newRecord(ROUND_PLAYER);
+    roundPlayerRecord.setRoundId(roundId);
+    roundPlayerRecord.setPlayerId(roundPlayer.getPlayerId());
+    roundPlayerRecord.setStartTime(Timestamp.valueOf(joined));
+    roundPlayerRecord.setEndTime(Timestamp.valueOf(ended));
+
+    roundPlayerRecord.insert();
+    return roundPlayerRecord;
+  }
+
   private RoundPlayerScoreEventRecord addRoundPlayerScoreEvent(int roundId, BfEvent e) {
     int playerId = getPlayerIdFromSlotId(e.getPlayerSlotId());
     LocalDateTime eventTime = logStartTime.plus(e.getDurationSinceLogStart());
@@ -470,10 +560,13 @@ public class DbFiller {
   @Data
   @Accessors(chain = true)
   public static class RoundPlayer {
-    int roundPlayerId;
+    int roundPlayerSlotId;
     Integer playerId;
     String name;
     String keyhash;
+    Duration joined;
+    Duration teamStart;
+    Integer team;
   }
 
   private RoundEndStatsPlayerRecord addRoundEndStatsPlayer(Integer roundId, BfRoundStats.BfPlayerStat bfPlayerStat,

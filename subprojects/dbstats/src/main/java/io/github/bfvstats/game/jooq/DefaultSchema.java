@@ -11,8 +11,10 @@ import io.github.bfvstats.game.jooq.tables.Round;
 import io.github.bfvstats.game.jooq.tables.RoundChatLog;
 import io.github.bfvstats.game.jooq.tables.RoundEndStats;
 import io.github.bfvstats.game.jooq.tables.RoundEndStatsPlayer;
+import io.github.bfvstats.game.jooq.tables.RoundPlayer;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerDeath;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerScoreEvent;
+import io.github.bfvstats.game.jooq.tables.RoundPlayerTeam;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerVehicle;
 import io.github.bfvstats.game.jooq.tables.SqliteSequence;
 
@@ -40,7 +42,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -1441000335;
+    private static final long serialVersionUID = 538614703;
 
     /**
      * The reference instance of <code></code>
@@ -83,6 +85,11 @@ public class DefaultSchema extends SchemaImpl {
     public final RoundEndStatsPlayer ROUND_END_STATS_PLAYER = io.github.bfvstats.game.jooq.tables.RoundEndStatsPlayer.ROUND_END_STATS_PLAYER;
 
     /**
+     * The table <code>round_player</code>.
+     */
+    public final RoundPlayer ROUND_PLAYER = io.github.bfvstats.game.jooq.tables.RoundPlayer.ROUND_PLAYER;
+
+    /**
      * The table <code>round_player_death</code>.
      */
     public final RoundPlayerDeath ROUND_PLAYER_DEATH = io.github.bfvstats.game.jooq.tables.RoundPlayerDeath.ROUND_PLAYER_DEATH;
@@ -91,6 +98,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>round_player_score_event</code>.
      */
     public final RoundPlayerScoreEvent ROUND_PLAYER_SCORE_EVENT = io.github.bfvstats.game.jooq.tables.RoundPlayerScoreEvent.ROUND_PLAYER_SCORE_EVENT;
+
+    /**
+     * The table <code>round_player_team</code>.
+     */
+    public final RoundPlayerTeam ROUND_PLAYER_TEAM = io.github.bfvstats.game.jooq.tables.RoundPlayerTeam.ROUND_PLAYER_TEAM;
 
     /**
      * The table <code>round_player_vehicle</code>.
@@ -134,8 +146,10 @@ public class DefaultSchema extends SchemaImpl {
             RoundChatLog.ROUND_CHAT_LOG,
             RoundEndStats.ROUND_END_STATS,
             RoundEndStatsPlayer.ROUND_END_STATS_PLAYER,
+            RoundPlayer.ROUND_PLAYER,
             RoundPlayerDeath.ROUND_PLAYER_DEATH,
             RoundPlayerScoreEvent.ROUND_PLAYER_SCORE_EVENT,
+            RoundPlayerTeam.ROUND_PLAYER_TEAM,
             RoundPlayerVehicle.ROUND_PLAYER_VEHICLE,
             SqliteSequence.SQLITE_SEQUENCE);
     }

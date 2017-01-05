@@ -8,8 +8,8 @@ public enum EventName {
   createVehicle, // no playerId; not useful
   destroyPlayer,
   destroyVehicle, // sometimes no playerId
-  disconnectPlayer,
-  endGame,
+  disconnectPlayer, // we use destroyPlayer instead
+  endGame, // we use round end stats instead (but could use this to reset team maybe until spawnEvent?)
   enterVehicle,
   exitVehicle,
   pickupKit,

@@ -102,6 +102,31 @@ CREATE INDEX IF NOT EXISTS round_player_score_round_id_idx ON round_player_score
 CREATE INDEX IF NOT EXISTS round_player_score_player_id_idx ON round_player_score_event(player_id);
 CREATE INDEX IF NOT EXISTS round_player_score_type_idx ON round_player_score_event(score_type);
 
+CREATE TABLE IF NOT EXISTS round_player (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  round_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (player_id) REFERENCES player(id)
+);
+CREATE INDEX IF NOT EXISTS round_player_round_id_idx ON round_player(round_id);
+CREATE INDEX IF NOT EXISTS round_player_player_id_idx ON round_player(player_id);
+
+CREATE TABLE IF NOT EXISTS round_player_team (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  round_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  team INTEGER NOT NULL,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (player_id) REFERENCES player(id)
+);
+CREATE INDEX IF NOT EXISTS round_player_team_id_idx ON round_player_team(round_id);
+CREATE INDEX IF NOT EXISTS round_player_team_id_idx ON round_player_team(player_id);
+
 CREATE TABLE IF NOT EXISTS round_player_death (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   round_id INTEGER NOT NULL,
