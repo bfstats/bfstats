@@ -124,6 +124,23 @@ CREATE INDEX IF NOT EXISTS round_player_death_round_id_idx ON round_player_death
 CREATE INDEX IF NOT EXISTS round_player_death_player_id_idx ON round_player_death(player_id);
 CREATE INDEX IF NOT EXISTS round_player_killer_player_id_idx ON round_player_death(killer_player_id);
 
+CREATE TABLE IF NOT EXISTS round_player_vehicle (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  round_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  player_location_x DECIMAL(4,4) NOT NULL, -- entering location
+  player_location_y DECIMAL(4,4) NOT NULL, -- entering location
+  player_location_z DECIMAL(4,4) NOT NULL, -- entering location
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  duration_seconds INTEGER NOT NULL,
+  vehicle VARCHAR(50),
+  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (player_id) REFERENCES player(id)
+);
+CREATE INDEX IF NOT EXISTS round_player_vehicle_round_id_idx ON round_player_vehicle(round_id);
+CREATE INDEX IF NOT EXISTS round_player_vehicle_player_id_idx ON round_player_vehicle(player_id);
+
 
 CREATE TABLE IF NOT EXISTS player_rank (
   rank INTEGER PRIMARY KEY AUTOINCREMENT,

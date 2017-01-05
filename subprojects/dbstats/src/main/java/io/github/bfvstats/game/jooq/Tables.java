@@ -13,6 +13,7 @@ import io.github.bfvstats.game.jooq.tables.RoundEndStats;
 import io.github.bfvstats.game.jooq.tables.RoundEndStatsPlayer;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerDeath;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerScoreEvent;
+import io.github.bfvstats.game.jooq.tables.RoundPlayerVehicle;
 import io.github.bfvstats.game.jooq.tables.SqliteSequence;
 
 import javax.annotation.Generated;
@@ -75,6 +76,11 @@ public class Tables {
      * The table <code>round_player_score_event</code>.
      */
     public static final RoundPlayerScoreEvent ROUND_PLAYER_SCORE_EVENT = io.github.bfvstats.game.jooq.tables.RoundPlayerScoreEvent.ROUND_PLAYER_SCORE_EVENT;
+
+    /**
+     * The table <code>round_player_vehicle</code>.
+     */
+    public static final RoundPlayerVehicle ROUND_PLAYER_VEHICLE = io.github.bfvstats.game.jooq.tables.RoundPlayerVehicle.ROUND_PLAYER_VEHICLE;
 
     /**
      * The table <code>sqlite_sequence</code>.

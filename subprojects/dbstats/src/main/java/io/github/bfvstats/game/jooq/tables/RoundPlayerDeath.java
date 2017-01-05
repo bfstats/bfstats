@@ -17,7 +17,6 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -38,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerDeath extends TableImpl<RoundPlayerDeathRecord> {
 
-    private static final long serialVersionUID = -2095793180;
+    private static final long serialVersionUID = -1757832897;
 
     /**
      * The reference instance of <code>round_player_death</code>
@@ -146,14 +145,6 @@ public class RoundPlayerDeath extends TableImpl<RoundPlayerDeathRecord> {
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Identity<RoundPlayerDeathRecord, Integer> getIdentity() {
-        return Keys.IDENTITY_ROUND_PLAYER_DEATH;
     }
 
     /**

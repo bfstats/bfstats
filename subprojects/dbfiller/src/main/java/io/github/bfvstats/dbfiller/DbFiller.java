@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.InflaterInputStream;
@@ -48,6 +49,7 @@ public class DbFiller {
   private Map<Integer, RoundPlayer> activePlayersByRoundPlayerId = new HashMap<>();
 
   private Map<Integer, BfEvent> lastKillEventByVictimId = new HashMap<>();
+  private Map<Integer, BfEvent> lastEnterVehicleByPlayerSlotId = new HashMap<>();
 
   public DbFiller(BfLog bfLog) {
     this.bfLog = bfLog;
@@ -174,6 +176,13 @@ public class DbFiller {
     }
   }
 
+  private void forceEndAllVehicleEvents(int roundId, Duration endTimeDurationSinceLogStart) {
+    lastEnterVehicleByPlayerSlotId.forEach((playerSlotId, enterVehicle) ->
+        addVehicleUsage(roundId, enterVehicle, endTimeDurationSinceLogStart)
+    );
+    lastEnterVehicleByPlayerSlotId.clear();
+  }
+
   private int parseRound(BfRound bfRound) {
     RoundRecord roundRecord = addRound(bfRound);
     int roundId = roundRecord.getId();
@@ -184,6 +193,7 @@ public class DbFiller {
 
     if (bfRound.getRoundStats() != null) {
       BfRoundStats roundStats = bfRound.getRoundStats();
+      forceEndAllVehicleEvents(roundId, roundStats.getDurationSinceLogStart());
       RoundEndStatsRecord roundEndStatsRecord = addRoundEndStats(roundId, roundStats);
       // in order of rank
       int rank = 1;
@@ -208,6 +218,7 @@ public class DbFiller {
         parseEventPlayerKeyHash(e);
         break;
       case destroyPlayer:
+        endVehicleUsageIfNeeded(roundId, e);
         parseEventDestroyPlayer(e);
         break;
       case changePlayerName:
@@ -223,12 +234,83 @@ public class DbFiller {
         if (scoreType.equals(ScoreType.TK.name()) || scoreType.equals(ScoreType.Kill.name())) {
           setLastKillEvent(e);
         } else if (scoreType.equals(ScoreType.Death.name()) || scoreType.equals(ScoreType.DeathNoMsg.name())) {
+          endVehicleUsageIfNeeded(roundId, e);
           parseDeathEvent(roundId, e);
         } else {
           parseEventScoreEvent(roundId, e);
         }
         break;
+      case enterVehicle:
+        setLastEnterVehicle(e);
+        break;
+      case exitVehicle:
+        endVehicleUsageIfNeeded(roundId, e);
+        break;
+      case createVehicle:
+        break;
+      case destroyVehicle:
+        break;
     }
+  }
+
+  private void setLastEnterVehicle(BfEvent e) {
+    if (isSlotIdBot(e.getPlayerSlotId())) {
+      // skipping bot vehicle events
+      return;
+    }
+
+    Integer playerSlotId = e.getPlayerSlotId();
+
+    String newVehicle = e.getStringParamValueByName(EnterVehicleParams.vehicle.name());
+    if (lastEnterVehicleByPlayerSlotId.containsKey(playerSlotId)) {
+      BfEvent existingEnterEvent = lastEnterVehicleByPlayerSlotId.get(playerSlotId);
+      String oldVehicle = existingEnterEvent.getStringParamValueByName(EnterVehicleParams.vehicle.name());
+      log.warn(logStartTime + " last enter vehicle event already exists for player slot " + playerSlotId + " (" + existingEnterEvent.getTimestamp() + "= new vehicle: " +
+          newVehicle + "(" + e.getTimestamp() + "), old vehicle: " + oldVehicle);
+    }
+
+    lastEnterVehicleByPlayerSlotId.put(playerSlotId, e);
+  }
+
+  private RoundPlayerVehicleRecord endVehicleUsageIfNeeded(int roundId, BfEvent someEndEvent) {
+    if (isSlotIdBot(someEndEvent.getPlayerSlotId())) {
+      // skipping bot vehicle events
+      return null;
+    }
+
+    BfEvent enterVehicle = lastEnterVehicleByPlayerSlotId.remove(someEndEvent.getPlayerSlotId());
+    if (enterVehicle != null) {
+      return addVehicleUsage(roundId, enterVehicle, someEndEvent.getDurationSinceLogStart());
+    }
+    return null;
+  }
+
+  private RoundPlayerVehicleRecord addVehicleUsage(int roundId, BfEvent enterVehicleEvent, Duration endTimeDurationSinceLogStart) {
+    LocalDateTime startTime = logStartTime.plus(enterVehicleEvent.getDurationSinceLogStart());
+    LocalDateTime endTime = logStartTime.plus(endTimeDurationSinceLogStart);
+    int durationSeconds = Long.valueOf(ChronoUnit.SECONDS.between(startTime, endTime)).intValue();
+    String vehicle = enterVehicleEvent.getStringParamValueByName(EnterVehicleParams.vehicle.name());
+    int playerId = getPlayerIdFromSlotId(enterVehicleEvent.getPlayerSlotId());
+
+    // might be able to use <bf:param type="int" name="pco_id">0</bf:param> 0 if driver??
+    // maybe non-driver is reflected in vehicle name as well
+    // also it's probably possible that changing seats does not trigger some events, so lets skip this feature
+
+    RoundPlayerVehicleRecord roundPlayerVehicleRecord = transaction().newRecord(ROUND_PLAYER_VEHICLE);
+    roundPlayerVehicleRecord.setRoundId(roundId);
+    roundPlayerVehicleRecord.setPlayerId(playerId);
+    String[] playerLocation = enterVehicleEvent.getPlayerLocation();
+    roundPlayerVehicleRecord.setPlayerLocationX(new BigDecimal(playerLocation[0]));
+    roundPlayerVehicleRecord.setPlayerLocationY(new BigDecimal(playerLocation[1]));
+    roundPlayerVehicleRecord.setPlayerLocationZ(new BigDecimal(playerLocation[2]));
+    roundPlayerVehicleRecord.setStartTime(Timestamp.valueOf(startTime));
+    roundPlayerVehicleRecord.setEndTime(Timestamp.valueOf(endTime));
+    roundPlayerVehicleRecord.setDurationSeconds(durationSeconds);
+    roundPlayerVehicleRecord.setVehicle(vehicle);
+
+    roundPlayerVehicleRecord.insert();
+
+    return roundPlayerVehicleRecord;
   }
 
   private void setLastKillEvent(BfEvent e) {
