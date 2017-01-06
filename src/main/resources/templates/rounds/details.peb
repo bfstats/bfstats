@@ -1,0 +1,7 @@
+{% extends "layout" %}
+{% block title %} Round {{ round.mapCode }} {{ round.startTime }} {% endblock %}
+
+{% block content %}
+<h3>{{ round.mapCode }} {{ round.startTime }}</h3>
+
+{% endblock %}

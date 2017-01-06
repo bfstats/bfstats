@@ -1,0 +1,15 @@
+{% extends "layout" %}
+{% block title %} Rounds List {% endblock %}
+
+{% block content %}
+{% if rounds is empty %}
+There are no rounds.
+{% else %}
+<ul>
+  {% for round in rounds %}
+  <li><a href="/rounds/{{ round.id }}">{{ round.mapCode }}</a> {{ round.startTime }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% endblock %}
