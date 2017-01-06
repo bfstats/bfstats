@@ -17,7 +17,7 @@ public class ChatController extends Controller {
   }
 
   public void list() {
-    List<ChatMessage> chatMessages = chatService.getChatMessages();
+    List<ChatMessage> chatMessages = chatService.getChatMessages(null);
     getResponse().bind("chatMessages", chatMessages).render("chat/list");
   }
 }

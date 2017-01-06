@@ -16,7 +16,6 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -37,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayer extends TableImpl<RoundPlayerRecord> {
 
-    private static final long serialVersionUID = -679395969;
+    private static final long serialVersionUID = 913539197;
 
     /**
      * The reference instance of <code>round_player</code>
@@ -58,9 +57,14 @@ public class RoundPlayer extends TableImpl<RoundPlayerRecord> {
     public final TableField<RoundPlayerRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>round_player.round_id</code>.
+     * The column <code>round_player.joined_round_id</code>.
      */
-    public final TableField<RoundPlayerRecord, Integer> ROUND_ID = createField("round_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<RoundPlayerRecord, Integer> JOINED_ROUND_ID = createField("joined_round_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>round_player.end_round_id</code>.
+     */
+    public final TableField<RoundPlayerRecord, Integer> END_ROUND_ID = createField("end_round_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>round_player.player_id</code>.
@@ -111,14 +115,6 @@ public class RoundPlayer extends TableImpl<RoundPlayerRecord> {
      * {@inheritDoc}
      */
     @Override
-    public Identity<RoundPlayerRecord, Integer> getIdentity() {
-        return Keys.IDENTITY_ROUND_PLAYER;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public UniqueKey<RoundPlayerRecord> getPrimaryKey() {
         return Keys.PK_ROUND_PLAYER;
     }
@@ -136,7 +132,7 @@ public class RoundPlayer extends TableImpl<RoundPlayerRecord> {
      */
     @Override
     public List<ForeignKey<RoundPlayerRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<RoundPlayerRecord, ?>>asList(Keys.FK_ROUND_PLAYER_ROUND_1, Keys.FK_ROUND_PLAYER_PLAYER_1);
+        return Arrays.<ForeignKey<RoundPlayerRecord, ?>>asList(Keys.FK_ROUND_PLAYER_ROUND_2, Keys.FK_ROUND_PLAYER_ROUND_1, Keys.FK_ROUND_PLAYER_PLAYER_1);
     }
 
     /**

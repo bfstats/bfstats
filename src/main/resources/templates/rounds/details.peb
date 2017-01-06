@@ -4,4 +4,8 @@
 {% block content %}
 <h3>{{ round.mapCode }} {{ round.startTime }}</h3>
 
+<div style="overflow-y: auto; width: 700px; height: 400px;">
+  {% include "fragments/chat" %}
+</div>
+
 {% endblock %}

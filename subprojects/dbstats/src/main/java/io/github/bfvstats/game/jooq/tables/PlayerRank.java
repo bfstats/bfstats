@@ -15,7 +15,6 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -36,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PlayerRank extends TableImpl<PlayerRankRecord> {
 
-    private static final long serialVersionUID = 1065474358;
+    private static final long serialVersionUID = -1236752060;
 
     /**
      * The reference instance of <code>player_rank</code>
@@ -89,14 +88,6 @@ public class PlayerRank extends TableImpl<PlayerRankRecord> {
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Identity<PlayerRankRecord, Integer> getIdentity() {
-        return Keys.IDENTITY_PLAYER_RANK;
     }
 
     /**

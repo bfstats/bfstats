@@ -2,6 +2,7 @@ package io.github.bfvstats.service;
 
 import io.github.bfvstats.model.ChatMessage;
 import org.jooq.Record;
+import org.jooq.impl.DSL;
 
 import java.util.Date;
 import java.util.List;
@@ -12,14 +13,15 @@ import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class ChatService {
 
-  public List<ChatMessage> getChatMessages() {
+  public List<ChatMessage> getChatMessages(Integer roundId) {
     return getDslContext().select(ROUND_CHAT_LOG.PLAYER_ID, ROUND_CHAT_LOG.MESSAGE, ROUND_CHAT_LOG.EVENT_TIME, ROUND_CHAT_LOG.TO_TEAM, PLAYER.NAME, ROUND_PLAYER_TEAM.TEAM)
         .from(ROUND_CHAT_LOG)
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_CHAT_LOG.PLAYER_ID))
-        .join(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_CHAT_LOG.ROUND_ID)
+        .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_CHAT_LOG.ROUND_ID)
             .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(ROUND_CHAT_LOG.PLAYER_ID))
             .and(ROUND_CHAT_LOG.EVENT_TIME.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
         )
+        .where(roundId == null ? DSL.trueCondition() : ROUND_CHAT_LOG.ROUND_ID.eq(roundId))
         .orderBy(ROUND_CHAT_LOG.EVENT_TIME.sortAsc())
         //.limit(0, 50)
         .fetch()
@@ -29,7 +31,6 @@ public class ChatService {
   }
 
   private ChatMessage toChatMessage(Record r) {
-
     return new ChatMessage()
         .setPlayerId(r.get(ROUND_CHAT_LOG.PLAYER_ID, Integer.class))
         .setPlayerName(r.get(PLAYER.NAME, String.class))

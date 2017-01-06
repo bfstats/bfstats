@@ -104,14 +104,17 @@ CREATE INDEX IF NOT EXISTS round_player_score_type_idx ON round_player_score_eve
 
 CREATE TABLE IF NOT EXISTS round_player (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  round_id INTEGER NOT NULL,
+  joined_round_id INTEGER NOT NULL,
+  end_round_id INTEGER NOT NULL,
   player_id INTEGER NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL,
-  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (joined_round_id) REFERENCES round(round_id),
+  FOREIGN KEY (end_round_id) REFERENCES round(round_id),
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
-CREATE INDEX IF NOT EXISTS round_player_round_id_idx ON round_player(round_id);
+CREATE INDEX IF NOT EXISTS round_player_joined_round_id_idx ON round_player(joined_round_id);
+CREATE INDEX IF NOT EXISTS round_player_end_round_id_idx ON round_player(end_round_id);
 CREATE INDEX IF NOT EXISTS round_player_player_id_idx ON round_player(player_id);
 
 CREATE TABLE IF NOT EXISTS round_player_team (
