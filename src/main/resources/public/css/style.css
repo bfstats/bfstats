@@ -127,6 +127,13 @@ tr.team-3 {
   border-right: 0;
 }
 
+.chat_table td.time {
+  color: #9c9c9c;
+}
+.chat_table td.name {
+  text-align: right;
+}
+
 /* map */
 .map_bg {
   position: relative;

@@ -4,6 +4,11 @@
 
 {% block content %}
 
+{% macro teamName(teamId) %}
+{{ teamId == 3 ? '[SPECTATORS] ' : '' }}
+{{ teamId == 2 ? '[USA] ' : '' }}
+{{ teamId == 1 ? '[NVA] ' : '' }}
+{% endmacro %}
 
 {% if chatMessages is empty %}
 There are no chat messages
@@ -11,17 +16,17 @@ There are no chat messages
 <table class="styled_table chat_table">
   <thead>
   <tr>
-    <th>Time</th>
-    <th>Name</th>
-    <th>Message</th>
+    <th></th>
+    <th style="text-align:right">Name</th>
+    <th style="text-align:left">Message</th>
   </tr>
   </thead>
   <tbody>
   {% for chatMessage in chatMessages %}
   <tr class="chat-team team-{{ chatMessage.playerTeam }}">
-    <td>{{ chatMessage.time | formatTime('dd-MM-yyyy HH:mm') }} </td>
-    <td><a href="/players/{{ chatMessage.playerId }}">{{ chatMessage.playerName }}</a>:</td>
-    <td>{{ chatMessage.text }}</td>
+    <td class="time">{{ chatMessage.time | formatTime('dd-MM-yyyy HH:mm') }} </td>
+    <td class="name" style="text-align:right"><a href="/players/{{ chatMessage.playerId }}">{{ chatMessage.playerName }}</a> {{ teamName(chatMessage.toTeam) }}:</td>
+    <td class="message">{{ chatMessage.text }}</td>
   </tr>
   {% endfor %}
   </tbody>
