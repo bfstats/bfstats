@@ -33,6 +33,7 @@ import java.util.zip.InflaterInputStream;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 @Slf4j
 public class DbFiller {
@@ -63,11 +64,22 @@ public class DbFiller {
   }
 
   public static void main(String[] args) throws JAXBException, FileNotFoundException, SQLException {
+    System.setProperty("org.jooq.no-logo", "true");
+
     String logDirPath = "D:\\bflogs\\";
-    parseAllInDir(logDirPath);
+    //String xmlFilePath = "D:\\bflogs\\ev_15567-20170105_2340.xml";
+
+    prepareConnection();
+    try {
+      //addFromXmlFile(xmlFilePath);
+      parseAllInDir(logDirPath);
+    } finally {
+      closeConnection();
+    }
+
   }
 
-  public static void parseAllInDir(String logDirPath) throws FileNotFoundException, JAXBException, SQLException {
+  public static void parseAllInDir(String logDirPath) {
     File logDir = new File(logDirPath);
     File[] dirFiles = logDir.listFiles((dir, name) -> name.endsWith(".xml") || name.endsWith(".zxml"));
     if (dirFiles == null) {
@@ -77,46 +89,70 @@ public class DbFiller {
     int totalNumberOfFiles = dirFiles.length;
     int numberOfFilesCompleted = 0;
 
-    try {
-      connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
-      dslContext = DSL.using(connection);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-
     for (File fileI : dirFiles) {
       if (numberOfFilesCompleted % 30 == 0) {
         System.out.println(numberOfFilesCompleted + "/" + totalNumberOfFiles);
       }
       numberOfFilesCompleted++;
       String filePath = fileI.getPath();
-      if (filePath.endsWith(".xml")) {
-        Path checkablePath = Paths.get(filePath.substring(0, filePath.length() - 4) + ".zxml");
-        boolean hasZxmlCounterpart = Files.exists(checkablePath);
-        if (hasZxmlCounterpart) {
-          // TODO: maybe vice-versa - should ignore zxml files instead
-          log.info("ignoring " + filePath + " because zxml will be extracted again");
-          // skipping xml, as zxml also exists, so will wait for unzipping that again
-          continue;
-        }
-      } else if (filePath.endsWith(".zxml")) {
-        try {
-          filePath = unzip(filePath); // replace with .xml counterpart
-        } catch (IOException e) {
-          log.warn("looks like " + filePath + " is not complete. " + e.getMessage());
-          continue;
-        }
+      filePath = extractIfNecessary(filePath);
+      if (filePath != null) {
+        addFromXmlFile(filePath);
       }
+    }
+  }
 
-      log.info("Parsing " + filePath);
-      File file = new File(filePath);
+  private static String extractIfNecessary(String filePath) {
+    if (filePath.endsWith(".xml")) {
+      Path checkablePath = Paths.get(filePath.substring(0, filePath.length() - 4) + ".zxml");
+      boolean hasZxmlCounterpart = Files.exists(checkablePath);
+      if (hasZxmlCounterpart) {
+        // TODO: maybe vice-versa - should ignore zxml files instead
+        log.info("ignoring " + filePath + " because zxml will be extracted again");
+        // skipping xml, as zxml also exists, so will wait for unzipping that again
+        return null;
+      } else {
+        return filePath;
+      }
+    } else if (filePath.endsWith(".zxml")) {
+      try {
+        return unzip(filePath); // replace with .xml counterpart
+      } catch (IOException e) {
+        log.warn("looks like " + filePath + " is not complete. " + e.getMessage());
+        return null;
+      }
+    }
+    return null;
+  }
+
+  private static void prepareConnection() {
+    try {
+      connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
+      dslContext = DSL.using(connection);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static void closeConnection() {
+    dslContext.close();
+    try {
+      connection.close();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static void addFromXmlFile(String xmlFilePath) {
+    try {
+      log.info("Parsing " + xmlFilePath);
+      File file = new File(xmlFilePath);
       BfLog bfLog = XmlParser.parseXmlLogFile(file);
       DbFiller dbFiller = new DbFiller(bfLog);
       dbFiller.fillDb();
+    } catch (FileNotFoundException | SQLException | JAXBException e) {
+      throw new RuntimeException(e);
     }
-
-    dslContext.close();
-    connection.close();
   }
 
   public static String unzip(String filepath) throws IOException {
@@ -167,7 +203,7 @@ public class DbFiller {
         parseEvent(lastRoundId, bfEvent);
       } else if (child instanceof BfRound) {
         BfRound bfRound = (BfRound) child;
-        int roundId = parseRound(bfRound);
+        int roundId = parseRound(bfRound, lastRoundId);
         lastRoundId = roundId;
       } else if (child instanceof String) {
         if (!child.toString().equals("\n")) {
@@ -186,12 +222,20 @@ public class DbFiller {
     lastEnterVehicleByPlayerSlotId.clear();
   }
 
-  private int parseRound(BfRound bfRound) {
+  private int parseRound(BfRound bfRound, int previousRoundId) {
     RoundRecord roundRecord = addRound(bfRound);
     int roundId = requireNonNull(roundRecord.getId());
 
+    if (previousRoundId != -1) {
+      // put team between two rounds into the first round
+      // kind of waste of db - should merge this and previous round team usage
+      recordEndGame(previousRoundId, bfRound.getDurationSinceLogStart());
+    }
+
+    BfEvent lastEvent = null;
     for (BfEvent e : bfRound.getEvents()) {
       parseEvent(roundId, e);
+      lastEvent = e;
     }
 
     if (bfRound.getRoundStats() != null) {
@@ -209,7 +253,27 @@ public class DbFiller {
         addRoundEndStatsPlayer(roundId, bfPlayerStat, rank);
       }
     }
+
+    if (lastEvent != null) {
+      Duration teamEndDur = ofNullable(bfRound.getRoundStats())
+          .map(BfRoundStats::getDurationSinceLogStart)
+          .orElse(lastEvent.getDurationSinceLogStart());
+      recordEndGame(roundId, teamEndDur);
+    }
+
     return roundId;
+  }
+
+  private void recordEndGame(int endingRoundId, Duration endingRoundEndTime) {
+    for (RoundPlayer roundPlayer : activePlayersByRoundPlayerId.values()) {
+      if (isSlotIdBot(roundPlayer.getRoundPlayerSlotId())) {
+        continue;
+      }
+      if (roundPlayer.getTeam() == null || roundPlayer.getPlayerId() == null) {
+        continue;
+      }
+      addRoundPlayerTeamUsage(endingRoundId, roundPlayer, endingRoundEndTime);
+    }
   }
 
   private void parseEvent(Integer roundId, BfEvent e) {
@@ -268,16 +332,9 @@ public class DbFiller {
         if (!isSlotIdBot(e.getPlayerSlotId())) {
           RoundPlayer roundPlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
           Integer spawnTeam = e.getIntegerParamValueByName("team");
-          if (!roundPlayer.getRoundId().equals(roundId)) {
-            Integer previousTeam = roundPlayer.getTeam();
-            Duration previousTeamStart = roundPlayer.getTeamStart();
-            Integer previousRoundId = roundPlayer.getRoundId();
-            roundPlayer.setTeamStart(e.getDurationSinceLogStart());
+          if (!roundPlayer.getTeam().equals(spawnTeam)) {
+            addRoundPlayerTeamUsage(roundId, roundPlayer, e.getDurationSinceLogStart());
             roundPlayer.setTeam(spawnTeam);
-            roundPlayer.setRoundId(roundId);
-
-            // adding team usage to previous round
-            addRoundPlayerTeamUsage(previousRoundId, roundPlayer.getPlayerId(), previousTeam, previousTeamStart, roundPlayer.getTeamStart());
           }
         }
         break;
@@ -287,15 +344,10 @@ public class DbFiller {
   // stores previous team interval
   private void parseSetTeamEvent(int roundId, BfEvent e) {
     RoundPlayer roundPlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
-    Integer previousTeam = roundPlayer.getTeam();
-    Duration previousTeamStart = roundPlayer.getTeamStart();
-    Integer previousRoundId = roundPlayer.getRoundId();
 
+    addRoundPlayerTeamUsage(roundId, roundPlayer, e.getDurationSinceLogStart());
     Integer team = e.getIntegerParamValueByName(SetTeamParams.team.name());
-    roundPlayer.setTeamStart(e.getDurationSinceLogStart());
     roundPlayer.setTeam(team);
-
-    addRoundPlayerTeamUsage(previousRoundId, roundPlayer.getPlayerId(), previousTeam, previousTeamStart, roundPlayer.getTeamStart());
   }
 
   private void setLastEnterVehicle(BfEvent e) {
@@ -330,8 +382,14 @@ public class DbFiller {
     return null;
   }
 
+  // todo: rename parent method to endTeamUsage?
+  private RoundPlayerTeamRecord addRoundPlayerTeamUsage(int roundId, RoundPlayer roundPlayer, Duration teamEnd) {
+    int playerId = roundPlayer.getPlayerId();
+    int team = roundPlayer.getTeam();
+    Duration teamStart = roundPlayer.getTeamStart();
+    roundPlayer.setTeamStart(teamEnd);
 
-  private RoundPlayerTeamRecord addRoundPlayerTeamUsage(int roundId, int playerId, Integer team, Duration teamStart, Duration teamEnd) {
+    log.info("end team usage in round " + roundId + " for player slot " + roundPlayer.getRoundPlayerSlotId() + " for team " + team + " start: " + teamStart.getSeconds() + " end: " + teamEnd.getSeconds());
     LocalDateTime teamStartDate = logStartTime.plus(teamStart);
     LocalDateTime teamEndDate = logStartTime.plus(teamEnd);
 
@@ -415,7 +473,7 @@ public class DbFiller {
   }
 
   private static boolean isSlotIdBot(int slotId) {
-    return slotId > 127;
+    return slotId > 127 || slotId == FAKE_BOT_SLOT_ID;
   }
 
   private RoundPlayer getRoundPlayerFromSlotId(int slotId) {
@@ -460,8 +518,7 @@ public class DbFiller {
       return;
     }
 
-    Duration durationSinceLogStart = destroyPlayerEvent.getDurationSinceLogStart();
-    addRoundPlayerTeamUsage(roundPlayer.getRoundId(), roundPlayer.getPlayerId(), roundPlayer.getTeam(), roundPlayer.getTeamStart(), durationSinceLogStart);
+    addRoundPlayerTeamUsage(roundId, roundPlayer, destroyPlayerEvent.getDurationSinceLogStart());
     addRoundPlayerJoinEndDates(roundId, roundPlayer, destroyPlayerEvent.getDurationSinceLogStart());
   }
 
@@ -485,8 +542,7 @@ public class DbFiller {
         .setJoined(e.getDurationSinceLogStart())
         .setTeam(e.getIntegerParamValueByName(CreatePlayerParams.team.name()))
         .setTeamStart(e.getDurationSinceLogStart())
-        .setJoinedRoundId(roundId)
-        .setRoundId(roundId);
+        .setJoinedRoundId(roundId);
     activePlayersByRoundPlayerId.put(e.getPlayerSlotId(), roundPlayer);
     log.info("added round-player " + e.getPlayerSlotId());
   }
@@ -577,7 +633,12 @@ public class DbFiller {
     Duration teamStart;
     Integer team;
     Integer joinedRoundId;
-    Integer roundId;
+
+    public RoundPlayer setTeamStart(Duration teamStart) {
+      this.teamStart = teamStart;
+      log.info("was setting for player slot " + roundPlayerSlotId + " team start to " + teamStart.getSeconds());
+      return this;
+    }
   }
 
   private RoundEndStatsPlayerRecord addRoundEndStatsPlayer(Integer roundId, BfRoundStats.BfPlayerStat bfPlayerStat,
@@ -622,6 +683,10 @@ public class DbFiller {
     int playerId = getPlayerIdFromSlotId(bfEvent.getPlayerSlotId());
     String message = bfEvent.getStringParamValueByName(ChatEventParams.text.name());
     LocalDateTime eventTime = logStartTime.plus(bfEvent.getDurationSinceLogStart());
+
+    log.info("Adding chat to round " + roundId + " player slot " + bfEvent.getPlayerSlotId() + " @ " + bfEvent.getDurationSinceLogStart().getSeconds()
+        + " " + message
+    );
 
     RoundChatLogRecord roundChatLogRecord = transaction().newRecord(ROUND_CHAT_LOG);
     roundChatLogRecord.setRoundId(roundId);
