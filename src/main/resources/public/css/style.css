@@ -109,12 +109,17 @@ tr.chat-team a {
   color: inherit;
 }
 
-/*red*/
+/* NVA */
 tr.team-1 {
   color: #ff5959;
 }
+/* USA */
 tr.team-2 {
   color: #6699ff;
+}
+/* Spectator */
+tr.team-3 {
+  color: #ffff00;
 }
 
 .chat_table th, .chat_table td {
