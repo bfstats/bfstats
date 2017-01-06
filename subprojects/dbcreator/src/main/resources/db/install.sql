@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS round_chat_log (
   player_location_x DECIMAL(4,4),
   player_location_y DECIMAL(4,4),
   player_location_z DECIMAL(4,4),
-  team INTEGER NOT NULL, -- 0 is all, maybe: 1 (NVA) or 2 (USA)
+  to_team INTEGER NOT NULL, -- 0 is all, maybe: 1 (NVA) or 2 (USA)
   message VARCHAR(50) NOT NULL,
   event_time DATETIME NOT NULL,
   FOREIGN KEY (round_id) REFERENCES round(round_id),
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS round_player_team (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   round_id INTEGER NOT NULL,
   player_id INTEGER NOT NULL,
-  team INTEGER NOT NULL,
+  team INTEGER NOT NULL, -- 1 (NVA); 2 (USA); 3 (Spectator)
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL,
   FOREIGN KEY (round_id) REFERENCES round(round_id),

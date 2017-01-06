@@ -31,7 +31,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundChatLogRecord extends UpdatableRecordImpl<RoundChatLogRecord> implements Record9<Integer, Integer, Integer, BigDecimal, BigDecimal, BigDecimal, Integer, String, Timestamp> {
 
-    private static final long serialVersionUID = 1338005500;
+    private static final long serialVersionUID = 514396486;
 
     /**
      * Setter for <code>round_chat_log.id</code>.
@@ -118,16 +118,16 @@ public class RoundChatLogRecord extends UpdatableRecordImpl<RoundChatLogRecord> 
     }
 
     /**
-     * Setter for <code>round_chat_log.team</code>.
+     * Setter for <code>round_chat_log.to_team</code>.
      */
-    public void setTeam(Integer value) {
+    public void setToTeam(Integer value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>round_chat_log.team</code>.
+     * Getter for <code>round_chat_log.to_team</code>.
      */
-    public Integer getTeam() {
+    public Integer getToTeam() {
         return (Integer) get(6);
     }
 
@@ -244,7 +244,7 @@ public class RoundChatLogRecord extends UpdatableRecordImpl<RoundChatLogRecord> 
      */
     @Override
     public Field<Integer> field7() {
-        return RoundChatLog.ROUND_CHAT_LOG.TEAM;
+        return RoundChatLog.ROUND_CHAT_LOG.TO_TEAM;
     }
 
     /**
@@ -316,7 +316,7 @@ public class RoundChatLogRecord extends UpdatableRecordImpl<RoundChatLogRecord> 
      */
     @Override
     public Integer value7() {
-        return getTeam();
+        return getToTeam();
     }
 
     /**
@@ -394,7 +394,7 @@ public class RoundChatLogRecord extends UpdatableRecordImpl<RoundChatLogRecord> 
      */
     @Override
     public RoundChatLogRecord value7(Integer value) {
-        setTeam(value);
+        setToTeam(value);
         return this;
     }
 
@@ -447,7 +447,7 @@ public class RoundChatLogRecord extends UpdatableRecordImpl<RoundChatLogRecord> 
     /**
      * Create a detached, initialised RoundChatLogRecord
      */
-    public RoundChatLogRecord(Integer id, Integer roundId, Integer playerId, BigDecimal playerLocationX, BigDecimal playerLocationY, BigDecimal playerLocationZ, Integer team, String message, Timestamp eventTime) {
+    public RoundChatLogRecord(Integer id, Integer roundId, Integer playerId, BigDecimal playerLocationX, BigDecimal playerLocationY, BigDecimal playerLocationZ, Integer toTeam, String message, Timestamp eventTime) {
         super(RoundChatLog.ROUND_CHAT_LOG);
 
         set(0, id);
@@ -456,7 +456,7 @@ public class RoundChatLogRecord extends UpdatableRecordImpl<RoundChatLogRecord> 
         set(3, playerLocationX);
         set(4, playerLocationY);
         set(5, playerLocationZ);
-        set(6, team);
+        set(6, toTeam);
         set(7, message);
         set(8, eventTime);
     }

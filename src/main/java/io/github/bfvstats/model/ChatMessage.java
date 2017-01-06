@@ -12,5 +12,6 @@ public class ChatMessage {
   private String playerName;
   private String text;
   private Date time;
-  private String team;
+  private Integer toTeam;
+  private Integer playerTeam;
 }

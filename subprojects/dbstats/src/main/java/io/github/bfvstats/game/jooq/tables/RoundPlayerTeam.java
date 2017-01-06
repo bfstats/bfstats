@@ -16,6 +16,7 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -36,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerTeam extends TableImpl<RoundPlayerTeamRecord> {
 
-    private static final long serialVersionUID = -223233432;
+    private static final long serialVersionUID = -20975481;
 
     /**
      * The reference instance of <code>round_player_team</code>
@@ -67,6 +68,11 @@ public class RoundPlayerTeam extends TableImpl<RoundPlayerTeamRecord> {
     public final TableField<RoundPlayerTeamRecord, Integer> PLAYER_ID = createField("player_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
+     * The column <code>round_player_team.team</code>.
+     */
+    public final TableField<RoundPlayerTeamRecord, Integer> TEAM = createField("team", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
      * The column <code>round_player_team.start_time</code>.
      */
     public final TableField<RoundPlayerTeamRecord, Timestamp> START_TIME = createField("start_time", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
@@ -75,11 +81,6 @@ public class RoundPlayerTeam extends TableImpl<RoundPlayerTeamRecord> {
      * The column <code>round_player_team.end_time</code>.
      */
     public final TableField<RoundPlayerTeamRecord, Timestamp> END_TIME = createField("end_time", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
-
-    /**
-     * The column <code>round_player_team.team</code>.
-     */
-    public final TableField<RoundPlayerTeamRecord, Integer> TEAM = createField("team", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>round_player_team</code> table reference
@@ -109,6 +110,14 @@ public class RoundPlayerTeam extends TableImpl<RoundPlayerTeamRecord> {
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Identity<RoundPlayerTeamRecord, Integer> getIdentity() {
+        return Keys.IDENTITY_ROUND_PLAYER_TEAM;
     }
 
     /**

@@ -622,7 +622,7 @@ public class DbFiller {
       roundChatLogRecord.setPlayerLocationZ(new BigDecimal(playerLocation[2]));
     }
 
-    roundChatLogRecord.setTeam(bfEvent.getIntegerParamValueByName(ChatEventParams.team.name()));
+    roundChatLogRecord.setToTeam(bfEvent.getIntegerParamValueByName(ChatEventParams.team.name()));
     roundChatLogRecord.setMessage(message);
     roundChatLogRecord.setEventTime(Timestamp.valueOf(eventTime));
 

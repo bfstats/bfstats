@@ -18,7 +18,7 @@ There are no chat messages
   </thead>
   <tbody>
   {% for chatMessage in chatMessages %}
-  <tr class="chat-team team-{{ chatMessage.team }}">
+  <tr class="chat-team team-{{ chatMessage.playerTeam }}">
     <td>{{ chatMessage.time | formatTime('dd-MM-yyyy HH:mm') }} </td>
     <td><a href="/players/{{ chatMessage.playerId }}">{{ chatMessage.playerName }}</a>:</td>
     <td>{{ chatMessage.text }}</td>

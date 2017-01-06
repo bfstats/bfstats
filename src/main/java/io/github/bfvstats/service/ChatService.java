@@ -7,16 +7,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.github.bfvstats.game.jooq.Tables.PLAYER;
-import static io.github.bfvstats.game.jooq.Tables.ROUND_CHAT_LOG;
+import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class ChatService {
 
   public List<ChatMessage> getChatMessages() {
-    return getDslContext().select(ROUND_CHAT_LOG.PLAYER_ID, ROUND_CHAT_LOG.MESSAGE, ROUND_CHAT_LOG.EVENT_TIME, ROUND_CHAT_LOG.TEAM, PLAYER.NAME)
+    return getDslContext().select(ROUND_CHAT_LOG.PLAYER_ID, ROUND_CHAT_LOG.MESSAGE, ROUND_CHAT_LOG.EVENT_TIME, ROUND_CHAT_LOG.TO_TEAM, PLAYER.NAME, ROUND_PLAYER_TEAM.TEAM)
         .from(ROUND_CHAT_LOG)
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_CHAT_LOG.PLAYER_ID))
+        .join(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_CHAT_LOG.ROUND_ID)
+            .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(ROUND_CHAT_LOG.PLAYER_ID))
+            .and(ROUND_CHAT_LOG.EVENT_TIME.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
+        )
         .orderBy(ROUND_CHAT_LOG.EVENT_TIME.sortAsc())
         //.limit(0, 50)
         .fetch()
@@ -32,6 +35,7 @@ public class ChatService {
         .setPlayerName(r.get(PLAYER.NAME, String.class))
         .setText(r.get(ROUND_CHAT_LOG.MESSAGE, String.class))
         .setTime(r.get(ROUND_CHAT_LOG.EVENT_TIME, Date.class))
-        .setTeam(String.valueOf(r.get(ROUND_CHAT_LOG.TEAM, Integer.class)));
+        .setToTeam(r.get(ROUND_CHAT_LOG.TO_TEAM))
+        .setPlayerTeam(r.get(ROUND_PLAYER_TEAM.TEAM));
   }
 }
