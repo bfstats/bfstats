@@ -34,7 +34,10 @@ public class RankingService {
         DSL.sum(ROUND_END_STATS_PLAYER.TKS).as("tks"),
         DSL.sum(ROUND_END_STATS_PLAYER.CAPTURES).as("captures"),
         DSL.sum(ROUND_END_STATS_PLAYER.ATTACKS).as("attacks"),
-        DSL.sum(ROUND_END_STATS_PLAYER.DEFENCES).as("defences")
+        DSL.sum(ROUND_END_STATS_PLAYER.DEFENCES).as("defences"),
+        DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(1), 1).otherwise(0)).as("gold_count"),
+        DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(2), 1).otherwise(0)).as("silver_count"),
+        DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(3), 1).otherwise(0)).as("bronze_count")
     )
         .from(ROUND_END_STATS_PLAYER)
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
@@ -67,9 +70,9 @@ public class RankingService {
         .setKills(r.get("kills", Integer.class))
         .setDeaths(r.get("deaths", Integer.class))
         .setKillDeathRatio(kdRate)
-        .setGoldCount(0)
-        .setSilverCount(0)
-        .setBronzeCount(0)
+        .setGoldCount(r.get("gold_count", Integer.class))
+        .setSilverCount(r.get("silver_count", Integer.class))
+        .setBronzeCount(r.get("bronze_count", Integer.class))
         .setTeamKills(r.get("tks", Integer.class))
         .setAttacks(r.get("attacks", Integer.class))
         .setCaptures(r.get("captures", Integer.class))

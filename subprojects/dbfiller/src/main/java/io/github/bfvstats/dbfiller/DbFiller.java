@@ -27,8 +27,11 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.InflaterInputStream;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
@@ -242,9 +245,14 @@ public class DbFiller {
       BfRoundStats roundStats = bfRound.getRoundStats();
       forceEndAllVehicleEvents(roundId, roundStats.getDurationSinceLogStart());
       RoundEndStatsRecord roundEndStatsRecord = addRoundEndStats(roundId, roundStats);
+      // higher score to lower score
+      List<BfRoundStats.BfPlayerStat> sortedPlayerStats = roundStats.getPlayerStats().stream()
+          .sorted(Comparator.comparingInt(BfRoundStats.BfPlayerStat::getScore).reversed())
+          .collect(Collectors.toList());
+
       // in order of rank
-      int rank = 1;
-      for (BfRoundStats.BfPlayerStat bfPlayerStat : roundStats.getPlayerStats()) {
+      int rank = 0;
+      for (BfRoundStats.BfPlayerStat bfPlayerStat : sortedPlayerStats) {
         rank++;
         if (bfPlayerStat.isAi()) {
           // skip bot stats

@@ -42,9 +42,9 @@ There are no players.
     <th title="Kills">{{sortableLink('K','kills',sortingColumn,sortingOrder)}}</th>
     <th title="Deaths">{{sortableLink('D','deaths',sortingColumn,sortingOrder)}}</th>
     <th title="Kill/death ratio">{{sortableLink('K/D','kdrate',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of gold medals" class="medals gold_medals">{{sortableLink('Gold','first',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of silver medals" class="medals silver_medals">{{sortableLink('Silver','second',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of bronze medals" class="medals bronze_medals">{{sortableLink('Bronze','third',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of gold medals" class="medals gold_medals">{{sortableLink('Gold','gold_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of silver medals" class="medals silver_medals">{{sortableLink('Silver','silver_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of bronze medals" class="medals bronze_medals">{{sortableLink('Bronze','bronze_count',sortingColumn,sortingOrder)}}</th>
     <th title="Team kills">{{sortableLink('TKs','tks',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Flag Captures','captures',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Rounds Played','rounds_played',sortingColumn,sortingOrder)}}</th>
