@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
+import static org.jooq.impl.DSL.trueCondition;
 
 public class MapService {
   public static Map<String, Integer> mapSizesByMap = ImmutableMap.<String, Integer>builder()
@@ -41,13 +42,14 @@ public class MapService {
       .put("saigon68", 1024)
       .build();
 
-  public MapStatsInfo getMapStatsInfoForPlayer(String mapCode, int playerId) {
+  public MapStatsInfo getMapStatsInfoForPlayer(String mapCode, Integer playerId, Integer roundId) {
     Result<RoundPlayerDeathRecord> killRecords = getDslContext()
         .select()
         .from(ROUND_PLAYER_DEATH)
         .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
         .where(ROUND.MAP_CODE.eq(mapCode))
-        .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
+        .and(playerId == null ? ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.isNotNull() : ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
+        .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
         .fetch()
         .into(ROUND_PLAYER_DEATH);
 
@@ -56,7 +58,8 @@ public class MapService {
         .from(ROUND_PLAYER_DEATH)
         .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
         .where(ROUND.MAP_CODE.eq(mapCode))
-        .and(ROUND_PLAYER_DEATH.PLAYER_ID.eq(playerId))
+        .and(playerId == null ? trueCondition() : ROUND_PLAYER_DEATH.PLAYER_ID.eq(playerId))
+        .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
         .fetch()
         .into(ROUND_PLAYER_DEATH);
 
@@ -69,9 +72,9 @@ public class MapService {
     Collection<Location> deathLocations = new ArrayList<>();
 
     for (RoundPlayerDeathRecord roundPlayerScoreEventRecord : killRecords) {
-      BigDecimal x = roundPlayerScoreEventRecord.getPlayerLocationX();
-      BigDecimal y = roundPlayerScoreEventRecord.getPlayerLocationY();
-      BigDecimal z = roundPlayerScoreEventRecord.getPlayerLocationZ();
+      BigDecimal x = roundPlayerScoreEventRecord.getKillerLocationX();
+      BigDecimal y = roundPlayerScoreEventRecord.getKillerLocationY();
+      BigDecimal z = roundPlayerScoreEventRecord.getKillerLocationZ();
       Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
       killLocations.add(location);
     }

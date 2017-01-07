@@ -5,26 +5,6 @@
 {% block content %}
 <h3>Map {{ mapInfo.mapName }} stats for {{ player.name }}</h3>
 
-
-<div>
-  <div class="map_point_kills"></div>
-  Kills ({{mapInfo.killLocations.size}})
-  <div class="map_point_deaths"></div>
-  Deaths ({{mapInfo.deathLocations.size}})
-</div>
-
-
-<div class="map_bg" style="background-image: url({{ publicAt('img/maps/radar/' + mapInfo.mapFileName + '.png') }});">
-  {% for location in mapInfo.killLocations %}
-  <div class="map_point map_point_kills"
-       style="left: {{ location.x*100/mapInfo.mapSize }}%; bottom: {{ location.z*100/mapInfo.mapSize}}%;"></div>
-  {% endfor %}
-
-  {% for location in mapInfo.deathLocations %}
-  <div class="map_point map_point_deaths"
-       style="left: {{ location.x*100/mapInfo.mapSize }}%; bottom: {{ location.z*100/mapInfo.mapSize}}%;"></div>
-  {% endfor %}
-</div>
-
+{% include "fragments/map" %}
 
 {% endblock %}

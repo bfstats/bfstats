@@ -48,7 +48,7 @@ public class PlayerController extends Controller {
   public void mapStats(@Param("id") int playerId, @Param("mapCode") String mapCode) {
     Player player = playerService.getPlayer(playerId);
 
-    MapStatsInfo mapStatsInfo = mapService.getMapStatsInfoForPlayer(mapCode, playerId);
+    MapStatsInfo mapStatsInfo = mapService.getMapStatsInfoForPlayer(mapCode, playerId, null);
 
     getResponse()
         .bind("player", player)
