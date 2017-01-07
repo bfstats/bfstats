@@ -2,37 +2,24 @@ package io.github.bfvstats.service;
 
 import io.github.bfvstats.model.PlayerStats;
 import io.github.bfvstats.util.Sort;
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
 
+import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
+import static io.github.bfvstats.util.SortUtils.getJooqSortOrder;
+import static io.github.bfvstats.util.SortUtils.getSortableField;
 
 public class RankingService {
 
-  /*private Map<String, Field<?>> orderOverrides = ImmutableMap.<String, Field<?>>builder()
-      .put("averageScore", SELECTBF_CACHE_RANKING.SCORE.div(SELECTBF_CACHE_RANKING.ROUNDS_PLAYED))
-      .build();*/
-
-  public List<PlayerStats> getRankings(Sort sort) {
-    int minimumRounds = 0;
-
-    if (sort == null) {
-      sort = new Sort("rank", Sort.SortOrder.ASC);
-    }
-
-    //Field<?> sortableField = getSortableFieldOrOverride(SELECTBF_CACHE_RANKING, sort.getProperty(), orderOverrides);
-    /*Result<SelectbfCacheRankingRecord> records = getDslContext()
-        .selectFrom(SELECTBF_CACHE_RANKING)
-        .where(SELECTBF_CACHE_RANKING.ROUNDS_PLAYED.greaterOrEqual(minimumRounds))
-        .orderBy(sortableField.sort(getJooqSortOrder(sort.getOrder())))
-        .limit(0, 50)
-        .fetch();*/
-
+  public List<PlayerStats> getRankings(@Nonnull Sort sort) {
+    Field<?> sortableField = getSortableField(sort.getProperty());
 
     return getDslContext().select(
         DSL.count().as("rounds_played"),
@@ -40,6 +27,7 @@ public class RankingService {
         PLAYER_RANK.RANK.as("player_rank"),
         ROUND_END_STATS_PLAYER.PLAYER_ID.as("player_id"),
         DSL.sum(ROUND_END_STATS_PLAYER.SCORE).as("score"),
+        DSL.sum(ROUND_END_STATS_PLAYER.SCORE).div(DSL.count()).as("average_score"),
         DSL.sum(ROUND_END_STATS_PLAYER.KILLS).as("kills"),
         DSL.sum(ROUND_END_STATS_PLAYER.DEATHS).as("deaths"),
         DSL.sum(ROUND_END_STATS_PLAYER.KILLS).div(DSL.sum(ROUND_END_STATS_PLAYER.DEATHS)).as("kdrate"), // kill/death rate
@@ -52,7 +40,7 @@ public class RankingService {
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
         .join(PLAYER_RANK).on(PLAYER_RANK.PLAYER_ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
         .groupBy(ROUND_END_STATS_PLAYER.PLAYER_ID)
-        .orderBy(PLAYER_RANK.RANK.asc())
+        .orderBy(sortableField.sort(getJooqSortOrder(sort.getOrder())))
         .limit(0, 50)
         .fetch()
         .stream()
@@ -61,10 +49,6 @@ public class RankingService {
   }
 
   private PlayerStats toPlayerStats(Record r) {
-    Integer score = r.get("score", Integer.class);
-    int kills = r.get("kills", Integer.class);
-    int deaths = r.get("deaths", Integer.class);
-
     BigDecimal kdRateBigDec = r.get("kdrate", BigDecimal.class);
     Double kdRate = kdRateBigDec == null ? 0.0 : kdRateBigDec.doubleValue();
 
@@ -78,10 +62,10 @@ public class RankingService {
         .setName(r.get("player_name", String.class))
         .setRank(r.get("player_rank", Integer.class))
         .setPoints(1)
-        .setScore(score)
-        .setAverageScore(score / r.get("rounds_played", Integer.class))
-        .setKills(kills)
-        .setDeaths(deaths)
+        .setScore(r.get("score", Integer.class))
+        .setAverageScore(r.get("average_score", Integer.class))
+        .setKills(r.get("kills", Integer.class))
+        .setDeaths(r.get("deaths", Integer.class))
         .setKillDeathRatio(kdRate)
         .setGoldCount(0)
         .setSilverCount(0)

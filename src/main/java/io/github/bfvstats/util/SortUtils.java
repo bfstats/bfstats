@@ -1,14 +1,12 @@
 package io.github.bfvstats.util;
 
 import org.jooq.Field;
-import org.jooq.SortField;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import ro.pippo.core.ParameterValue;
 import ro.pippo.core.Request;
 
 import java.util.Arrays;
-import java.util.Map;
 
 public class SortUtils {
 
@@ -31,11 +29,6 @@ public class SortUtils {
         }).orElse(null);
   }
 
-  public static SortField<?> getSortField(Table table, Sort sort) {
-    return getSortableField(table, sort.getProperty())
-        .sort(getJooqSortOrder(sort.getOrder()));
-  }
-
   public static org.jooq.SortOrder getJooqSortOrder(Sort.SortOrder sortOrder) {
     if (sortOrder == Sort.SortOrder.ASC) {
       return org.jooq.SortOrder.ASC;
@@ -43,6 +36,16 @@ public class SortUtils {
       return org.jooq.SortOrder.DESC;
     }
     return null;
+  }
+
+  // if string type column, then converts it to lower(), so that sorting is case insensitive
+  public static Field<?> getSortableField(String columnName) {
+    Field<?> field = DSL.field(columnName);
+    if (field.getType().equals(String.class)) {
+      Field<String> fieldTypedString = field.cast(String.class);
+      field = DSL.lower(fieldTypedString);
+    }
+    return field;
   }
 
   // if string type column, then converts it to lower(), so that sorting is case insensitive
@@ -56,13 +59,5 @@ public class SortUtils {
       field = DSL.lower(fieldTypedString);
     }
     return field;
-  }
-
-  public static Field<?> getSortableFieldOrOverride(Table table, String columnName, Map<String, Field<?>> orderOverrides) {
-    if (orderOverrides.containsKey(columnName)) {
-      return orderOverrides.get(columnName);
-    } else {
-      return getSortableField(table, columnName);
-    }
   }
 }

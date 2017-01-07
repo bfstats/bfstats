@@ -22,7 +22,7 @@ public class RankingController extends Controller {
   public void ranking() {
     Sort sort = getSortColumnAndOrderFromRequest(getRequest());
     if (sort == null) {
-      sort = new Sort("rank", Sort.SortOrder.ASC);
+      sort = new Sort("player_rank", Sort.SortOrder.ASC);
     }
     List<PlayerStats> players = rankingService.getRankings(sort);
 

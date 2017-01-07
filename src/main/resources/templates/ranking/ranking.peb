@@ -32,12 +32,12 @@ There are no players.
 <table class="ranking_table styled_table">
   <thead>
   <tr>
-    <th>{{sortableLink('Rank','rank',sortingColumn,sortingOrder)}}</th>
-    <th>{{sortableLink('Player','playername',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Rank','player_rank',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Player','player_name',sortingColumn,sortingOrder)}}</th>
     {#
     <th>{{sortableLink('Points','score',sortingColumn,sortingOrder)}}</th>
     #}
-    <th title="Average score per round">{{sortableLink('S/R','averageScore',sortingColumn,sortingOrder)}}</th>
+    <th title="Average score per round">{{sortableLink('S/R','average_score',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Score','score',sortingColumn,sortingOrder)}}</th>
     <th title="Kills">{{sortableLink('K','kills',sortingColumn,sortingOrder)}}</th>
     <th title="Deaths">{{sortableLink('D','deaths',sortingColumn,sortingOrder)}}</th>
