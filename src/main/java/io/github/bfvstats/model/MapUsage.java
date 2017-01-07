@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class MapUsage {
+  private String code;
   private String name;
   private Integer score;
   private float percentage;

@@ -21,7 +21,7 @@ import static io.github.bfvstats.util.DbUtils.getDslContext;
 import static org.jooq.impl.DSL.trueCondition;
 
 public class MapService {
-  public static Map<String, Integer> mapSizesByMap = ImmutableMap.<String, Integer>builder()
+  public static Map<String, Integer> mapSizesByMapCode = ImmutableMap.<String, Integer>builder()
       .put("defense_of_con_thien", 2048)
       .put("fall_of_saigon", 2048)
       .put("ho_chi_minh_trail", 1024)
@@ -40,6 +40,27 @@ public class MapService {
       .put("quang_tri", 1024)
       .put("quang_tri_alt", 1024)
       .put("saigon68", 1024)
+      .build();
+
+  public static Map<String, String> mapNameByMapCode = ImmutableMap.<String, String>builder()
+      .put("defense_of_con_thien", "Defence of Con Thien")
+      .put("fall_of_saigon", "Fall of Saigon")
+      .put("ho_chi_minh_trail", "Ho Chi Minh Trail")
+      .put("ho_chi_minh_trail_alt", "Cambodian Incursion")
+      .put("hue", "Hue 1968")
+      .put("hue_alt", "Reclaiming Hue")
+      .put("ia_drang", "Ia Drang Valley")
+      .put("khe_sahn", "Siege of Khe Sahn")
+      .put("landing_zone_albany", "Landing Zone Albany")
+      .put("lang_vei", "Fall of Lang Vei")
+      .put("operation_cedar_falls", "Operation Cedar Falls")
+      .put("operation_flaming_dart", "Operation Flaming Dart")
+      .put("operation_game_warden", "Operation Game Warden")
+      .put("operation_hastings", "Operation Hastings")
+      .put("operation_irving", "Operation Irving")
+      .put("quang_tri", "Quang Tri 1968")
+      .put("quang_tri_alt", "Quang Tri 1972")
+      .put("saigon68", "Saigon 1968")
       .build();
 
   public MapStatsInfo getMapStatsInfoForPlayer(String mapCode, Integer playerId, Integer roundId) {
@@ -87,10 +108,11 @@ public class MapService {
       deathLocations.add(location);
     }
 
-    Integer mapSize = mapSizesByMap.get(mapCode);
+    Integer mapSize = mapSizesByMapCode.get(mapCode);
+    String mapName = mapName(mapCode);
 
     return new MapStatsInfo()
-        .setMapName(mapCode)
+        .setMapName(mapName)
         .setMapFileName(mapCode)
         .setMapSize(mapSize)
         .setKillLocations(killLocations)
@@ -112,9 +134,15 @@ public class MapService {
     return records.stream().map(r -> toMapUsage(r, totalMapsScore)).collect(Collectors.toList());
   }
 
+  public static String mapName(String mapCode) {
+    return mapNameByMapCode.get(mapCode);
+  }
+
   private static MapUsage toMapUsage(Record r, float totalMapsScore) {
+    String mapCode = r.get(ROUND.MAP_CODE, String.class);
     return new MapUsage()
-        .setName(r.get(ROUND.MAP_CODE, String.class))
+        .setCode(mapCode)
+        .setName(mapName(mapCode))
         .setScore(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class))
         .setPercentage(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class) * 100 / totalMapsScore);
   }

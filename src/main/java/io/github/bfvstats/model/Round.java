@@ -10,5 +10,6 @@ import java.time.LocalDateTime;
 public class Round {
   private Integer id;
   private String mapCode;
+  private String mapName;
   private LocalDateTime startTime;
 }

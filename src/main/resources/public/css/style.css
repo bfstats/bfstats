@@ -7,6 +7,10 @@ a {
   color: #f0f0f0;
 }
 
+.clear {
+  overflow: auto;
+}
+
 table {
   border-collapse: collapse;
 }
@@ -146,6 +150,11 @@ tr.team-3 {
   position: absolute;
   margin-top: -3px;
   margin-left: -3px;
+}
+
+.map_point_legend {
+  margin-left: 10px;
+  margin-right: 4px;
 }
 
 .map_point_kills, .map_point_deaths {

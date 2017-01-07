@@ -7,7 +7,7 @@ There are no rounds.
 {% else %}
 <ul>
   {% for round in rounds %}
-  <li>{{ round.id }} <a href="/rounds/{{ round.id }}">{{ round.mapCode }}</a> {{ round.startTime }}</li>
+  <li>{{ round.id }} <a href="/rounds/{{ round.id }}">{{ round.mapName }}</a> {{ round.startTime }}</li>
   {% endfor %}
 </ul>
 {% endif %}

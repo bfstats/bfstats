@@ -21,9 +21,13 @@ public class RoundService {
   }
 
   private static Round toRound(RoundRecord roundRecord) {
+    String mapCode = roundRecord.getMapCode();
+    String mapName = MapService.mapName(mapCode);
+
     return new Round()
         .setId(roundRecord.getId())
-        .setMapCode(roundRecord.getMapCode())
+        .setMapCode(mapCode)
+        .setMapName(mapName)
         .setStartTime(roundRecord.getStartTime().toLocalDateTime());
   }
 
