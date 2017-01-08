@@ -5,6 +5,26 @@
 {% block content %}
 <h3>{{ player.name }}</h3>
 
+
+<ul>
+  <li>Last seen: {{ playerDetails.lastSeen }}</li>
+  <li>Rank {{ playerStats.rank }}</li>
+  <li>Total score {{ playerStats.score }}</li>
+  <li>Avg Score per round: {{ playerStats.averageScore }}</li>
+  <li>Kills: {{ playerStats.kills }}</li>
+  <li>Deaths: {{ playerStats.deaths }}</li>
+  <li>K/D: {{ playerStats.killDeathRatio }}</li>
+  <li>1st: {{ playerStats.goldCount }}</li>
+  <li>2nd: {{ playerStats.silverCount }}</li>
+  <li>3rd: {{ playerStats.bronzeCount }}</li>
+  <li>TKs: {{ playerStats.teamKills }}</li>
+  <li>Captures: {{ playerStats.captures }}</li>
+  <li>Rounds played: {{ playerStats.roundsPlayed }}</li>
+  <li>Heals: {{ playerStats.heals }}</li>
+  <li>Repairs: {{ playerStats.repairs }}</li>
+</ul>
+
+
 {% include "players/weapons" %}
 {% include "players/kits" %}
 {% include "players/vehicles" %}

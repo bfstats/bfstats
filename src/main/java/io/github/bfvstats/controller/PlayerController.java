@@ -4,6 +4,8 @@ import io.github.bfvstats.Player;
 import io.github.bfvstats.model.*;
 import io.github.bfvstats.service.MapService;
 import io.github.bfvstats.service.PlayerService;
+import io.github.bfvstats.service.RankingService;
+import io.github.bfvstats.util.Sort;
 import ro.pippo.controller.Controller;
 import ro.pippo.core.Param;
 
@@ -15,11 +17,13 @@ public class PlayerController extends Controller {
 
   private PlayerService playerService;
   private MapService mapService;
+  private RankingService rankingService;
 
   @Inject
-  public PlayerController(PlayerService playerService, MapService mapService) {
+  public PlayerController(PlayerService playerService, MapService mapService, RankingService rankingService) {
     this.playerService = playerService;
     this.mapService = mapService;
+    this.rankingService = rankingService;
   }
 
   public void list() {
@@ -32,14 +36,21 @@ public class PlayerController extends Controller {
     List<NicknameUsage> otherNicknames = playerService.getNicknameUsages(playerId).stream()
         .filter(nu -> !nu.getName().equals(player.getName())).collect(Collectors.toList());
 
+    Sort dummySort = new Sort("player_rank", Sort.SortOrder.ASC);
+    PlayerStats playerStats = rankingService.getRankings(dummySort, playerId).get(0);
+    PlayerDetails playerDetails = playerService.getPlayerDetails(playerId);
+
     List<WeaponUsage> weapons = playerService.getWeaponUsages(playerId);
     List<KitUsage> kits = playerService.getKitUsages(playerId);
     List<VehicleUsage> vehicles = playerService.getVehicleUsages(playerId);
     List<MapUsage> maps = mapService.getMapUsagesForPlayer(playerId);
 
+
     getResponse()
         .bind("player", player)
         .bind("otherNicknames", otherNicknames)
+        .bind("playerStats", playerStats)
+        .bind("playerDetails", playerDetails)
         .bind("weapons", weapons)
         .bind("kits", kits)
         .bind("vehicles", vehicles)

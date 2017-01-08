@@ -3,10 +3,8 @@ package io.github.bfvstats.service;
 import io.github.bfvstats.Player;
 import io.github.bfvstats.game.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfvstats.game.jooq.tables.records.PlayerRecord;
-import io.github.bfvstats.model.KitUsage;
-import io.github.bfvstats.model.NicknameUsage;
-import io.github.bfvstats.model.VehicleUsage;
-import io.github.bfvstats.model.WeaponUsage;
+import io.github.bfvstats.game.jooq.tables.records.RoundPlayerRecord;
+import io.github.bfvstats.model.*;
 import org.jooq.Record;
 import org.jooq.Record2;
 import org.jooq.Record3;
@@ -38,6 +36,17 @@ public class PlayerService {
         .setId(r.getId())
         .setName(r.getName())
         .setKeyHash(r.getKeyhash());
+  }
+
+  public PlayerDetails getPlayerDetails(int playerId) {
+    RoundPlayerRecord roundPlayerRecord = getDslContext().selectFrom(ROUND_PLAYER)
+        .where(ROUND_PLAYER.PLAYER_ID.eq(playerId))
+        .orderBy(ROUND_PLAYER.END_ROUND_ID.desc())
+        .limit(1)
+        .fetchOne();
+
+    return new PlayerDetails()
+        .setLastSeen(roundPlayerRecord.getEndTime().toLocalDateTime());
   }
 
   public List<NicknameUsage> getNicknameUsages(int playerId) {

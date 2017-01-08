@@ -24,7 +24,7 @@ public class RankingController extends Controller {
     if (sort == null) {
       sort = new Sort("player_rank", Sort.SortOrder.ASC);
     }
-    List<PlayerStats> players = rankingService.getRankings(sort);
+    List<PlayerStats> players = rankingService.getRankings(sort, null);
 
     getResponse()
         .bind("players", players)

@@ -7,6 +7,7 @@ import org.jooq.Record;
 import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ import static io.github.bfvstats.util.SortUtils.getSortableField;
 
 public class RankingService {
 
-  public List<PlayerStats> getRankings(@Nonnull Sort sort) {
+  public List<PlayerStats> getRankings(@Nonnull Sort sort, @Nullable Integer playerId) {
     Field<?> sortableField = getSortableField(sort.getProperty());
 
     return getDslContext().select(
@@ -48,6 +49,7 @@ public class RankingService {
             .and(ROUND_PLAYER_MEDPACK.ROUND_ID.eq(ROUND_END_STATS_PLAYER.ROUND_ID)))
         .leftJoin(ROUND_PLAYER_REPAIR).on(ROUND_PLAYER_REPAIR.PLAYER_ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID)
             .and(ROUND_PLAYER_REPAIR.ROUND_ID.eq(ROUND_END_STATS_PLAYER.ROUND_ID)))
+        .where(playerId == null ? DSL.trueCondition() : ROUND_END_STATS_PLAYER.PLAYER_ID.eq(playerId))
         .groupBy(ROUND_END_STATS_PLAYER.PLAYER_ID)
         .orderBy(sortableField.sort(getJooqSortOrder(sort.getOrder())))
         .limit(0, 50)
