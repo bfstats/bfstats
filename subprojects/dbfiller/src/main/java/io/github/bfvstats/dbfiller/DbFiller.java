@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,6 +43,8 @@ import static java.util.Optional.ofNullable;
 public class DbFiller {
   public static final int FAKE_BOT_SLOT_ID = -1;
   public static final int FAKE_BOT_TEAM = -1;
+
+  public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
 
   private static DSLContext dslContext;
   private static Connection connection;
@@ -94,11 +97,22 @@ public class DbFiller {
     int totalNumberOfFiles = dirFiles.length;
     int numberOfFilesCompleted = 0;
 
+    LocalDateTime latestAdded = LocalDateTime.parse("20170106_2230", DATE_TIME_FORMATTER);
+
     for (File fileI : dirFiles) {
       if (numberOfFilesCompleted % 30 == 0) {
         System.out.println(numberOfFilesCompleted + "/" + totalNumberOfFiles);
       }
       numberOfFilesCompleted++;
+
+      String dtsAndExtStr = fileI.getName().split("-")[1];
+      String dateTimeStr = dtsAndExtStr.split("\\.")[0];
+      LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, DATE_TIME_FORMATTER);
+
+      if (!dateTime.isAfter(latestAdded)) {
+        continue;
+      }
+
       String filePath = fileI.getPath();
       filePath = extractIfNecessary(filePath);
       if (filePath != null) {
