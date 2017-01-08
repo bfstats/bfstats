@@ -3,13 +3,13 @@ package io.github.bfvstats.service;
 import io.github.bfvstats.Player;
 import io.github.bfvstats.game.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfvstats.game.jooq.tables.records.PlayerRecord;
+import io.github.bfvstats.model.KitUsage;
 import io.github.bfvstats.model.NicknameUsage;
 import io.github.bfvstats.model.VehicleUsage;
 import io.github.bfvstats.model.WeaponUsage;
 import org.jooq.Record;
 import org.jooq.Record2;
 import org.jooq.Result;
-import org.jooq.SelectHavingStep;
 import org.jooq.impl.DSL;
 
 import java.util.ArrayList;
@@ -52,28 +52,52 @@ public class PlayerService {
   }
 
   public List<WeaponUsage> getWeaponUsages(int playerId) {
-    SelectHavingStep<Record2<String, Integer>> records = getDslContext().select(ROUND_PLAYER_DEATH.KILL_WEAPON, DSL.count().as("times_used"))
+    Result<Record2<String, Integer>> records = getDslContext().select(ROUND_PLAYER_DEATH.KILL_WEAPON, DSL.count().as("times_used"))
         .from(ROUND_PLAYER_DEATH)
         .where(ROUND_PLAYER_DEATH.KILL_WEAPON.isNotNull())
         .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
-        .groupBy(ROUND_PLAYER_DEATH.KILL_WEAPON);
+        .groupBy(ROUND_PLAYER_DEATH.KILL_WEAPON)
+        .fetch();
 
-
-    Integer totalWeaponsTimesUsed = records.stream()
+    Integer totalTimesUsed = records.stream()
         .map(r -> r.get("times_used", Integer.class))
         .reduce(0, Integer::sum);
 
     return records.stream()
-        .map(r -> toWeaponUsage(r, totalWeaponsTimesUsed))
+        .map(r -> toWeaponUsage(r, totalTimesUsed))
         .collect(Collectors.toList());
   }
 
-  private static WeaponUsage toWeaponUsage(Record r, int totalWeaponsTimesUsed) {
+  private static WeaponUsage toWeaponUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
     return new WeaponUsage()
         .setName(r.get(ROUND_PLAYER_DEATH.KILL_WEAPON))
         .setTimesUsed(timesUsed)
-        .setPercentage(timesUsed * 100 / totalWeaponsTimesUsed);
+        .setPercentage(timesUsed * 100 / totalTimesUsed);
+  }
+
+  public List<KitUsage> getKitUsages(int playerId) {
+    Result<Record2<String, Integer>> records = getDslContext().select(ROUND_PLAYER_PICKUP_KIT.KIT, DSL.count().as("times_used"))
+        .from(ROUND_PLAYER_PICKUP_KIT)
+        .where(ROUND_PLAYER_PICKUP_KIT.PLAYER_ID.eq(playerId))
+        .groupBy(ROUND_PLAYER_PICKUP_KIT.KIT)
+        .fetch();
+
+    Integer totalTimesUsed = records.stream()
+        .map(r -> r.get("times_used", Integer.class))
+        .reduce(0, Integer::sum);
+
+    return records.stream()
+        .map(r -> toKitUsage(r, totalTimesUsed))
+        .collect(Collectors.toList());
+  }
+
+  private static KitUsage toKitUsage(Record r, int totalTimesUsed) {
+    Integer timesUsed = r.get("times_used", Integer.class);
+    return new KitUsage()
+        .setName(r.get(ROUND_PLAYER_PICKUP_KIT.KIT))
+        .setTimesUsed(timesUsed)
+        .setPercentage(timesUsed * 100 / totalTimesUsed);
   }
 
   public List<VehicleUsage> getVehicleUsages(int playerId) {

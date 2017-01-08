@@ -33,6 +33,7 @@ public class PlayerController extends Controller {
         .filter(nu -> !nu.getName().equals(player.getName())).collect(Collectors.toList());
 
     List<WeaponUsage> weapons = playerService.getWeaponUsages(playerId);
+    List<KitUsage> kits = playerService.getKitUsages(playerId);
     List<VehicleUsage> vehicles = playerService.getVehicleUsages(playerId);
     List<MapUsage> maps = mapService.getMapUsagesForPlayer(playerId);
 
@@ -40,6 +41,7 @@ public class PlayerController extends Controller {
         .bind("player", player)
         .bind("otherNicknames", otherNicknames)
         .bind("weapons", weapons)
+        .bind("kits", kits)
         .bind("vehicles", vehicles)
         .bind("maps", maps)
         .render("players/details");
