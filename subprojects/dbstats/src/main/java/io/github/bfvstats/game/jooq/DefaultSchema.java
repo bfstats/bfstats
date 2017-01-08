@@ -13,6 +13,8 @@ import io.github.bfvstats.game.jooq.tables.RoundEndStats;
 import io.github.bfvstats.game.jooq.tables.RoundEndStatsPlayer;
 import io.github.bfvstats.game.jooq.tables.RoundPlayer;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerDeath;
+import io.github.bfvstats.game.jooq.tables.RoundPlayerMedpack;
+import io.github.bfvstats.game.jooq.tables.RoundPlayerRepair;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerTeam;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerVehicle;
@@ -42,7 +44,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 538614703;
+    private static final long serialVersionUID = -861220117;
 
     /**
      * The reference instance of <code></code>
@@ -93,6 +95,16 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>round_player_death</code>.
      */
     public final RoundPlayerDeath ROUND_PLAYER_DEATH = io.github.bfvstats.game.jooq.tables.RoundPlayerDeath.ROUND_PLAYER_DEATH;
+
+    /**
+     * The table <code>round_player_medpack</code>.
+     */
+    public final RoundPlayerMedpack ROUND_PLAYER_MEDPACK = io.github.bfvstats.game.jooq.tables.RoundPlayerMedpack.ROUND_PLAYER_MEDPACK;
+
+    /**
+     * The table <code>round_player_repair</code>.
+     */
+    public final RoundPlayerRepair ROUND_PLAYER_REPAIR = io.github.bfvstats.game.jooq.tables.RoundPlayerRepair.ROUND_PLAYER_REPAIR;
 
     /**
      * The table <code>round_player_score_event</code>.
@@ -148,6 +160,8 @@ public class DefaultSchema extends SchemaImpl {
             RoundEndStatsPlayer.ROUND_END_STATS_PLAYER,
             RoundPlayer.ROUND_PLAYER,
             RoundPlayerDeath.ROUND_PLAYER_DEATH,
+            RoundPlayerMedpack.ROUND_PLAYER_MEDPACK,
+            RoundPlayerRepair.ROUND_PLAYER_REPAIR,
             RoundPlayerScoreEvent.ROUND_PLAYER_SCORE_EVENT,
             RoundPlayerTeam.ROUND_PLAYER_TEAM,
             RoundPlayerVehicle.ROUND_PLAYER_VEHICLE,

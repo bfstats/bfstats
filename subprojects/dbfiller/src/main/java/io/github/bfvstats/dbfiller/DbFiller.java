@@ -56,6 +56,8 @@ public class DbFiller {
 
   private Map<Integer, BfEvent> lastKillEventByVictimId = new HashMap<>();
   private Map<Integer, BfEvent> lastEnterVehicleByPlayerSlotId = new HashMap<>();
+  private Map<Integer, BfEvent> lastBeginRepairByPlayerSlotId = new HashMap<>();
+  private Map<Integer, BfEvent> lastBeginMedPackByPlayerSlotId = new HashMap<>();
 
   public DbFiller(BfLog bfLog) {
     this.bfLog = bfLog;
@@ -300,6 +302,8 @@ public class DbFiller {
 
         if (getRoundPlayerFromSlotId(e.getPlayerSlotId()).getPlayerId() != null) {
           endVehicleUsageIfNeeded(roundId, e);
+          endRepairIfNeeded(roundId, e);
+          endMedPackIfNeeded(roundId, e);
         }
 
         parseEventDestroyPlayer(roundId, e);
@@ -318,6 +322,8 @@ public class DbFiller {
           setLastKillEvent(e);
         } else if (scoreType.equals(ScoreType.Death.name()) || scoreType.equals(ScoreType.DeathNoMsg.name())) {
           endVehicleUsageIfNeeded(roundId, e);
+          endRepairIfNeeded(roundId, e);
+          endMedPackIfNeeded(roundId, e);
           parseDeathEvent(roundId, e);
         } else {
           parseEventScoreEvent(roundId, e);
@@ -333,6 +339,18 @@ public class DbFiller {
         break;
       case destroyVehicle:
         break;
+      case beginMedPack:
+        addLastBeginMedPackEvent(e);
+        break;
+      case endMedPack:
+        endMedPackIfNeeded(roundId, e);
+        break;
+      case beginRepair:
+        addLastBeginRepairEvent(e);
+        break;
+      case endRepair:
+        endRepairIfNeeded(roundId, e);
+        break;
       case setTeam:
         parseSetTeamEvent(roundId, e);
         break;
@@ -347,6 +365,193 @@ public class DbFiller {
         }
         break;
     }
+  }
+
+  /*
+  <bf:event name="beginRepair" timestamp="1085.03">
+      <bf:param type="int" name="player_id">1</bf:param>
+      <bf:param type="vec3" name="player_location">1188.66/35.9301/1294.51</bf:param>
+      <bf:param type="int" name="repair_status">1000</bf:param>
+      <bf:param type="string" name="vehicle_type">T54</bf:param>
+  </bf:event>
+   */
+
+  /*
+  <bf:event name="beginRepair" timestamp="1091.91">
+    <bf:param type="int" name="player_id">1</bf:param>
+    <bf:param type="vec3" name="player_location">1195.77/35.6102/1285.18</bf:param>
+    <bf:param type="int" name="repair_status">1000</bf:param>
+    <bf:param type="string" name="vehicle_type">VietcongA2</bf:param>
+
+    <bf:param type="int" name="vehicle_player">1</bf:param>
+  </bf:event>
+
+  beginHeal
+if player_id == healed_player selfheal; number of self-heals
+else otherheal; number of heals
+
+
+beginRepair
+if vehicle_player: repairplayer; number of repairs to others
+else: repair; number of repairs
+   */
+
+
+  private void addLastBeginRepairEvent(BfEvent e) {
+    if (isSlotIdBot(e.getPlayerSlotId())) {
+      // skipping bot
+      return;
+    }
+
+    Integer playerSlotId = e.getPlayerSlotId();
+
+    String newVehicleType = e.getStringParamValueByName(BeginRepairParams.vehicle_type.name());
+    if (lastBeginRepairByPlayerSlotId.containsKey(playerSlotId)) {
+      BfEvent existingEnterEvent = lastBeginRepairByPlayerSlotId.get(playerSlotId);
+      String oldVehicle = existingEnterEvent.getStringParamValueByName(BeginRepairParams.vehicle_type.name());
+      log.warn(logStartTime + " last begin repair event already exists for player slot " + playerSlotId + " (" + existingEnterEvent.getTimestamp() + "= new vehicle: " +
+          newVehicleType + "(" + e.getTimestamp() + "), old vehicle: " + oldVehicle);
+    }
+
+    lastBeginRepairByPlayerSlotId.put(playerSlotId, e);
+  }
+
+  private RoundPlayerRepairRecord endRepairIfNeeded(int roundId, BfEvent someEndEvent) {
+    if (isSlotIdBot(someEndEvent.getPlayerSlotId())) {
+      // skipping bot vehicle events
+      return null;
+    }
+
+    BfEvent beginRepairEvent = lastBeginRepairByPlayerSlotId.remove(someEndEvent.getPlayerSlotId());
+    if (beginRepairEvent != null) {
+      return addRepairUsage(roundId, beginRepairEvent, someEndEvent);
+    }
+    return null;
+  }
+
+  /*
+  <bf:event name="beginMedPack" timestamp="728.543">
+    <bf:param type="int" name="player_id">0</bf:param>
+    <bf:param type="vec3" name="player_location">477.402/39.2381/519.162</bf:param>
+    <bf:param type="int" name="medpack_status">300</bf:param>
+    <bf:param type="int" name="healed_player">201</bf:param>
+  </bf:event>
+
+  <bf:event name="endMedPack" timestamp="304.624">
+      <bf:param type="int" name="player_id">0</bf:param>
+      <bf:param type="vec3" name="player_location">958.119/21.4942/742.521</bf:param>
+      <bf:param type="int" name="medpack_status">61</bf:param>
+  </bf:event>
+   */
+  private void addLastBeginMedPackEvent(BfEvent e) {
+    if (isSlotIdBot(e.getPlayerSlotId())) {
+      // skipping bot
+      return;
+    }
+
+    Integer playerSlotId = e.getPlayerSlotId();
+
+    Integer newHealedPlayer = e.getIntegerParamValueByName(BeginMedPackParams.healed_player.name());
+    if (lastBeginMedPackByPlayerSlotId.containsKey(playerSlotId)) {
+      BfEvent existingBeginMedPackEvent = lastBeginMedPackByPlayerSlotId.get(playerSlotId);
+      Integer oldHealedPlayer = existingBeginMedPackEvent.getIntegerParamValueByName(BeginMedPackParams.healed_player.name());
+      log.warn(logStartTime + " last begin med pack event already exists for player slot " + playerSlotId + " (" + existingBeginMedPackEvent.getTimestamp() + "= new vehicle: " +
+          newHealedPlayer + "(" + e.getTimestamp() + "), old healed player: " + oldHealedPlayer);
+    }
+
+    lastBeginMedPackByPlayerSlotId.put(playerSlotId, e);
+  }
+
+
+  private RoundPlayerMedpackRecord endMedPackIfNeeded(int roundId, BfEvent someEndEvent) {
+    if (isSlotIdBot(someEndEvent.getPlayerSlotId())) {
+      // skipping bot events
+      return null;
+    }
+
+    BfEvent beginMedPackEvent = lastBeginMedPackByPlayerSlotId.remove(someEndEvent.getPlayerSlotId());
+    if (beginMedPackEvent != null) {
+      return addMedPackUsage(roundId, beginMedPackEvent, someEndEvent);
+    }
+    return null;
+  }
+
+  private RoundPlayerMedpackRecord addMedPackUsage(int roundId, BfEvent beginMedPackEvent, BfEvent endMedPackEvent) {
+    RoundPlayerMedpackRecord roundPlayerMedpackRecord = transaction().newRecord(ROUND_PLAYER_MEDPACK);
+
+    int playerId = getPlayerIdFromSlotId(beginMedPackEvent.getPlayerSlotId());
+
+    Integer healedPlayerSlotId = beginMedPackEvent.getIntegerParamValueByName(BeginMedPackParams.healed_player.name());
+    int healedPlayerId = getPlayerIdFromSlotId(healedPlayerSlotId);
+
+    LocalDateTime startTime = logStartTime.plus(beginMedPackEvent.getDurationSinceLogStart());
+    LocalDateTime endTime = logStartTime.plus(endMedPackEvent.getDurationSinceLogStart());
+    int durationSeconds = Long.valueOf(ChronoUnit.SECONDS.between(startTime, endTime)).intValue();
+
+    Integer beginMedPackStatus = beginMedPackEvent.getIntegerParamValueByName(BeginMedPackParams.medpack_status.name());
+    Integer endMedPackStatus = endMedPackEvent.getIntegerParamValueByName(EndMedPackParams.medpack_status.name());
+
+    roundPlayerMedpackRecord.setRoundId(roundId);
+    roundPlayerMedpackRecord.setPlayerId(playerId);
+    String[] playerLocation = beginMedPackEvent.getPlayerLocation();
+    roundPlayerMedpackRecord.setPlayerLocationX(new BigDecimal(playerLocation[0]));
+    roundPlayerMedpackRecord.setPlayerLocationY(new BigDecimal(playerLocation[1]));
+    roundPlayerMedpackRecord.setPlayerLocationZ(new BigDecimal(playerLocation[2]));
+    roundPlayerMedpackRecord.setStartTime(Timestamp.valueOf(startTime));
+    roundPlayerMedpackRecord.setEndTime(Timestamp.valueOf(endTime));
+    roundPlayerMedpackRecord.setDurationSeconds(durationSeconds);
+    roundPlayerMedpackRecord.setStartMedpackStatus(beginMedPackStatus);
+    roundPlayerMedpackRecord.setEndMedpackStatus(endMedPackStatus);
+    roundPlayerMedpackRecord.setHealedPlayerId(healedPlayerId);
+    String[] endPlayerLocation = endMedPackEvent.getPlayerLocation();
+    roundPlayerMedpackRecord.setEndPlayerLocationX(new BigDecimal(endPlayerLocation[0]));
+    roundPlayerMedpackRecord.setEndPlayerLocationY(new BigDecimal(endPlayerLocation[1]));
+    roundPlayerMedpackRecord.setEndPlayerLocationZ(new BigDecimal(endPlayerLocation[2]));
+
+    roundPlayerMedpackRecord.insert();
+    return roundPlayerMedpackRecord;
+  }
+
+  private RoundPlayerRepairRecord addRepairUsage(int roundId, BfEvent beginRepairEvent, BfEvent someEndEvent) {
+    RoundPlayerRepairRecord roundPlayerRepairRecord = transaction().newRecord(ROUND_PLAYER_REPAIR);
+
+    int playerId = getPlayerIdFromSlotId(beginRepairEvent.getPlayerSlotId());
+
+    String vehicleType = beginRepairEvent.getStringParamValueByName(BeginRepairParams.vehicle_type.name());
+
+    Integer vehiclePlayerId = null;
+    Integer vehiclePlayerSlotId = beginRepairEvent.getIntegerParamValueByName(BeginRepairParams.vehicle_player.name());
+    if (vehiclePlayerSlotId != null) {
+      vehiclePlayerId = getPlayerIdFromSlotId(vehiclePlayerSlotId);
+    }
+
+    LocalDateTime startTime = logStartTime.plus(beginRepairEvent.getDurationSinceLogStart());
+    LocalDateTime endTime = logStartTime.plus(someEndEvent.getDurationSinceLogStart());
+    int durationSeconds = Long.valueOf(ChronoUnit.SECONDS.between(startTime, endTime)).intValue();
+
+    Integer beginRepairStatus = beginRepairEvent.getIntegerParamValueByName(BeginRepairParams.repair_status.name());
+    Integer endRepairStatus = someEndEvent.getIntegerParamValueByName(EndRepairParams.repair_status.name());
+
+    roundPlayerRepairRecord.setRoundId(roundId);
+    roundPlayerRepairRecord.setPlayerId(playerId);
+    String[] playerLocation = beginRepairEvent.getPlayerLocation();
+    roundPlayerRepairRecord.setPlayerLocationX(new BigDecimal(playerLocation[0]));
+    roundPlayerRepairRecord.setPlayerLocationY(new BigDecimal(playerLocation[1]));
+    roundPlayerRepairRecord.setPlayerLocationZ(new BigDecimal(playerLocation[2]));
+    roundPlayerRepairRecord.setStartTime(Timestamp.valueOf(startTime));
+    roundPlayerRepairRecord.setEndTime(Timestamp.valueOf(endTime));
+    roundPlayerRepairRecord.setDurationSeconds(durationSeconds);
+    roundPlayerRepairRecord.setStartRepairStatus(beginRepairStatus);
+    roundPlayerRepairRecord.setEndRepairStatus(endRepairStatus);
+    roundPlayerRepairRecord.setVehicleType(vehicleType);
+    roundPlayerRepairRecord.setVehiclePlayerId(vehiclePlayerId);
+    String[] endPlayerLocation = someEndEvent.getPlayerLocation();
+    roundPlayerRepairRecord.setEndPlayerLocationX(new BigDecimal(endPlayerLocation[0]));
+    roundPlayerRepairRecord.setEndPlayerLocationY(new BigDecimal(endPlayerLocation[1]));
+    roundPlayerRepairRecord.setEndPlayerLocationZ(new BigDecimal(endPlayerLocation[2]));
+
+    roundPlayerRepairRecord.insert();
+    return roundPlayerRepairRecord;
   }
 
   // stores previous team interval

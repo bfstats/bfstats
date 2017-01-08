@@ -169,6 +169,54 @@ CREATE TABLE IF NOT EXISTS round_player_vehicle (
 CREATE INDEX IF NOT EXISTS round_player_vehicle_round_id_idx ON round_player_vehicle(round_id);
 CREATE INDEX IF NOT EXISTS round_player_vehicle_player_id_idx ON round_player_vehicle(player_id);
 
+CREATE TABLE IF NOT EXISTS round_player_repair (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  round_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  player_location_x DECIMAL(4,4) NOT NULL, -- start location
+  player_location_y DECIMAL(4,4) NOT NULL, -- start location
+  player_location_z DECIMAL(4,4) NOT NULL, -- start location
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  duration_seconds INTEGER NOT NULL,
+  start_repair_status INTEGER NOT NULL,
+  vehicle_type VARCHAR(50) NOT NULL,
+  vehicle_player_id INTEGER,
+  end_player_location_x DECIMAL(4,4),
+  end_player_location_y DECIMAL(4,4),
+  end_player_location_z DECIMAL(4,4),
+  end_repair_status INTEGER, -- null because it might've ended with death event
+  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (player_id) REFERENCES player(id),
+  FOREIGN KEY (vehicle_player_id) REFERENCES player(id)
+);
+CREATE INDEX IF NOT EXISTS round_player_repair_round_id_idx ON round_player_repair(round_id);
+CREATE INDEX IF NOT EXISTS round_player_repair_player_id_idx ON round_player_repair(player_id);
+CREATE INDEX IF NOT EXISTS round_player_repair_vehicle_player_id_idx ON round_player_repair(vehicle_player_id);
+
+CREATE TABLE IF NOT EXISTS round_player_medpack (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  round_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  player_location_x DECIMAL(4,4) NOT NULL, -- start location
+  player_location_y DECIMAL(4,4) NOT NULL, -- start location
+  player_location_z DECIMAL(4,4) NOT NULL, -- start location
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  duration_seconds INTEGER NOT NULL,
+  start_medpack_status INTEGER NOT NULL,
+  healed_player_id INTEGER NOT NULL,
+  end_player_location_x DECIMAL(4,4),
+  end_player_location_y DECIMAL(4,4),
+  end_player_location_z DECIMAL(4,4),
+  end_medpack_status INTEGER, -- null because it might've ended with death event
+  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (player_id) REFERENCES player(id),
+  FOREIGN KEY (healed_player_id) REFERENCES player(id)
+);
+CREATE INDEX IF NOT EXISTS round_player_medpack_round_id_idx ON round_player_medpack(round_id);
+CREATE INDEX IF NOT EXISTS round_player_medpack_player_id_idx ON round_player_medpack(player_id);
+CREATE INDEX IF NOT EXISTS round_player_medpack_vehicle_healed_player_id_idx ON round_player_medpack(healed_player_id);
 
 CREATE TABLE IF NOT EXISTS player_rank (
   rank INTEGER PRIMARY KEY AUTOINCREMENT,

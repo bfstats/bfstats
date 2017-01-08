@@ -13,6 +13,8 @@ import io.github.bfvstats.game.jooq.tables.RoundEndStats;
 import io.github.bfvstats.game.jooq.tables.RoundEndStatsPlayer;
 import io.github.bfvstats.game.jooq.tables.RoundPlayer;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerDeath;
+import io.github.bfvstats.game.jooq.tables.RoundPlayerMedpack;
+import io.github.bfvstats.game.jooq.tables.RoundPlayerRepair;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerTeam;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerVehicle;
@@ -78,6 +80,16 @@ public class Tables {
      * The table <code>round_player_death</code>.
      */
     public static final RoundPlayerDeath ROUND_PLAYER_DEATH = io.github.bfvstats.game.jooq.tables.RoundPlayerDeath.ROUND_PLAYER_DEATH;
+
+    /**
+     * The table <code>round_player_medpack</code>.
+     */
+    public static final RoundPlayerMedpack ROUND_PLAYER_MEDPACK = io.github.bfvstats.game.jooq.tables.RoundPlayerMedpack.ROUND_PLAYER_MEDPACK;
+
+    /**
+     * The table <code>round_player_repair</code>.
+     */
+    public static final RoundPlayerRepair ROUND_PLAYER_REPAIR = io.github.bfvstats.game.jooq.tables.RoundPlayerRepair.ROUND_PLAYER_REPAIR;
 
     /**
      * The table <code>round_player_score_event</code>.

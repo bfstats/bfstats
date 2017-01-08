@@ -37,6 +37,10 @@ public class BfEventParam {
       case "int":
         return Integer.parseInt(value);
       case "vec3":
+        if ("(unknown)".equals(value)) {
+          return null;
+        }
+
         String[] coordinates = value.split("/", 3);
         String coordinate1 = coordinates[0];
         String coordinate2 = coordinates[1];
