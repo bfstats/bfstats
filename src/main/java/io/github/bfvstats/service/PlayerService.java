@@ -13,8 +13,12 @@ import org.jooq.impl.DSL;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
@@ -40,6 +44,32 @@ public class PlayerService {
         .setId(r.getId())
         .setName(r.getName())
         .setKeyHash(r.getKeyhash());
+  }
+
+  public Map<LocalDateTime, Integer> fetchPlayersOnlineTimes() {
+    Result<Record> records = getDslContext()
+        .select()
+        .select(ROUND_PLAYER.START_TIME.as("time"), DSL.inline("start").as("start_or_end")).from(ROUND_PLAYER)
+        .unionAll(getDslContext().select(ROUND_PLAYER.END_TIME.as("time"), DSL.inline("end").as("start_or_end")).from(ROUND_PLAYER))
+        .orderBy(DSL.field("time"))
+        .fetch();
+
+    Map<LocalDateTime, Integer> usersAt = new LinkedHashMap<>();
+    int concurrentPlayers = 0;
+    for (Record record : records) {
+      Timestamp time = record.get("time", Timestamp.class);
+      String startOrEnd = record.get("start_or_end", String.class);
+      int concurrentPlayersBefore = concurrentPlayers;
+      if (startOrEnd.equals("start")) {
+        concurrentPlayers++;
+      } else {
+        concurrentPlayers--;
+      }
+      usersAt.put(time.toLocalDateTime(), concurrentPlayersBefore);
+      usersAt.put(time.toLocalDateTime().plusNanos(1000), concurrentPlayers);
+    }
+
+    return usersAt;
   }
 
   public PlayerDetails getPlayerDetails(int playerId) {

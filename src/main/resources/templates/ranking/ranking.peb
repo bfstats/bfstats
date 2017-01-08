@@ -79,4 +79,45 @@ There are no players.
 </table>
 {% endif %}
 
+
+
+
+
+
+<div id="container" style="width:100%; height:400px;"></div>
+
+<script>
+   Highcharts.chart('container', {
+        chart: {
+          type: 'area',
+          zoomType : 'x'
+        },
+        title: {
+          text: 'Online Players',
+        },
+        xAxis: {
+            type: 'datetime'
+        },
+        yAxis: {
+            title: {
+                text: 'Players'
+            },
+            min: 0
+        },
+        plotOptions: {
+            spline: {
+                marker: {
+                    enabled: true
+                }
+            }
+        },
+        legend: {enabled: false},
+        series: [{
+            name: 'online',
+            data: [{{playersOnline}}]
+        }]
+    });
+
+</script>
+
 {% endblock %}

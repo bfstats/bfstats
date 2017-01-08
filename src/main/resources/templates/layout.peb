@@ -2,6 +2,9 @@
 <head>
   <title>{% block title %}My Website{% endblock %}</title>
   <link href="{{ publicAt('css/style.css') }}" rel="stylesheet">
+
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="http://code.highcharts.com/themes/dark-unica.js"></script>
 </head>
 <body>
 <div id="content">

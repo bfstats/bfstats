@@ -97,7 +97,7 @@ public class DbFiller {
     int totalNumberOfFiles = dirFiles.length;
     int numberOfFilesCompleted = 0;
 
-    LocalDateTime latestAdded = LocalDateTime.parse("20170106_2230", DATE_TIME_FORMATTER);
+    LocalDateTime latestAdded = LocalDateTime.parse("20170108_0152", DATE_TIME_FORMATTER);
 
     for (File fileI : dirFiles) {
       if (numberOfFilesCompleted % 30 == 0) {
