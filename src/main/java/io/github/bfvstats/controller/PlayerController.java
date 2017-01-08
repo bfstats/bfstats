@@ -45,12 +45,16 @@ public class PlayerController extends Controller {
     List<VehicleUsage> vehicles = playerService.getVehicleUsages(playerId);
     List<MapUsage> maps = mapService.getMapUsagesForPlayer(playerId);
 
+    List<PlayerAndTotal> killsByVictims = playerService.getKillsByVictims(playerId);
+    List<PlayerAndTotal> deathsByKillers = playerService.getDeathsByKillers(playerId);
 
     getResponse()
         .bind("player", player)
         .bind("otherNicknames", otherNicknames)
         .bind("playerStats", playerStats)
         .bind("playerDetails", playerDetails)
+        .bind("killsByVictims", killsByVictims)
+        .bind("deathsByKillers", deathsByKillers)
         .bind("weapons", weapons)
         .bind("kits", kits)
         .bind("vehicles", vehicles)

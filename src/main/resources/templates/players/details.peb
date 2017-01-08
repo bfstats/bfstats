@@ -24,6 +24,8 @@
   <li>Repairs: {{ playerStats.repairs }}</li>
 </ul>
 
+{% include "players/deaths" %}
+{% include "players/kills" %}
 
 {% include "players/weapons" %}
 {% include "players/kits" %}

@@ -11,6 +11,7 @@ import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.List;
@@ -20,6 +21,9 @@ import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class PlayerService {
+
+  public static final int BOT_PLAYER_ID = 1;
+
   public List<Player> getPlayers() {
     Result<PlayerRecord> records = getDslContext().selectFrom(PLAYER).fetch();
     return records.stream().map(PlayerService::toPlayer).collect(Collectors.toList());
@@ -60,6 +64,58 @@ public class PlayerService {
     return new NicknameUsage()
         .setName(r.getNickname())
         .setTimesUsed(0);
+  }
+
+  public List<PlayerAndTotal> getKillsByVictims(@Nullable Integer playerId) {
+    Result<Record3<Integer, Integer, String>> killRecords = getDslContext()
+        .select(DSL.count().as("kill_count"), ROUND_PLAYER_DEATH.PLAYER_ID, PLAYER.NAME)
+        .from(ROUND_PLAYER_DEATH)
+        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_DEATH.PLAYER_ID))
+        .where(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
+        .and(ROUND_PLAYER_DEATH.PLAYER_ID.notEqual(BOT_PLAYER_ID))
+        .groupBy(ROUND_PLAYER_DEATH.PLAYER_ID)
+        .orderBy(DSL.count().desc())
+        .fetch();
+
+    Integer totalKillCount = killRecords.stream()
+        .map(r -> r.get("kill_count", Integer.class))
+        .reduce(0, Integer::sum);
+
+    return killRecords.stream().map(r -> {
+      Integer killCount = r.get("kill_count", Integer.class);
+      return new PlayerAndTotal()
+          .setPlayerId(r.get(ROUND_PLAYER_DEATH.PLAYER_ID))
+          .setPlayerName(r.get(PLAYER.NAME))
+          .setTotal(killCount)
+          .setPercentage(killCount * 100 / totalKillCount);
+    }).collect(Collectors.toList());
+  }
+
+  public List<PlayerAndTotal> getDeathsByKillers(@Nullable Integer playerId) {
+    Result<Record3<Integer, Integer, String>> deathRecords = getDslContext()
+        .select(DSL.count().as("death_count"), ROUND_PLAYER_DEATH.KILLER_PLAYER_ID, PLAYER.NAME)
+        .from(ROUND_PLAYER_DEATH)
+        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
+        .where(ROUND_PLAYER_DEATH.PLAYER_ID.eq(playerId))
+        .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.isNotNull())
+        .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.notEqual(BOT_PLAYER_ID))
+        .groupBy(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID)
+        .orderBy(DSL.count().desc())
+        .fetch();
+
+    Integer totalDeathCount = deathRecords.stream()
+        .map(r -> r.get("death_count", Integer.class))
+        .reduce(0, Integer::sum);
+
+    return deathRecords.stream().map(r -> {
+          Integer deathCount = r.get("death_count", Integer.class);
+          return new PlayerAndTotal()
+              .setPlayerId(r.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
+              .setPlayerName(r.get(PLAYER.NAME))
+              .setTotal(deathCount)
+              .setPercentage(deathCount * 100 / totalDeathCount);
+        }
+    ).collect(Collectors.toList());
   }
 
   public List<WeaponUsage> getWeaponUsages(int playerId) {
