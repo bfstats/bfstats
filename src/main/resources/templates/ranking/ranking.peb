@@ -48,8 +48,8 @@ There are no players.
     <th title="Team kills">{{sortableLink('TKs','tks',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Flag Captures','captures',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Rounds Played','rounds_played',sortingColumn,sortingOrder)}}</th>
-    <th>{{sortableLink('Heals','heals',sortingColumn,sortingOrder)}}</th>
-    <th>{{sortableLink('Repairs','otherrepairs',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Heals','heals_count',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Repairs','repairs_count',sortingColumn,sortingOrder)}}</th>
   </tr>
   </thead>
   <tbody>
@@ -72,7 +72,7 @@ There are no players.
     <td>{{ player.captures }}</td>
     <td>{{ player.roundsPlayed }}</td>
     <td>{{ player.heals }}</td>
-    <td>{{ player.otherRepairs }}</td>
+    <td>{{ player.repairs }}</td>
   </tr>
   {% endfor %}
   </tbody>

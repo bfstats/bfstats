@@ -19,9 +19,7 @@ public class PlayerStats {
   int silverCount;
   int bronzeCount;
   int teamKills;
-  int attacks;
   int captures;
-  int objectives;
   int roundsPlayed;
   int heals;
   int otherRepairs;

@@ -37,11 +37,17 @@ public class RankingService {
         DSL.sum(ROUND_END_STATS_PLAYER.DEFENCES).as("defences"),
         DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(1), 1).otherwise(0)).as("gold_count"),
         DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(2), 1).otherwise(0)).as("silver_count"),
-        DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(3), 1).otherwise(0)).as("bronze_count")
+        DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(3), 1).otherwise(0)).as("bronze_count"),
+        DSL.count(ROUND_PLAYER_MEDPACK.ID).as("heals_count"),
+        DSL.count(ROUND_PLAYER_REPAIR.ID).as("repairs_count")
     )
         .from(ROUND_END_STATS_PLAYER)
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
         .join(PLAYER_RANK).on(PLAYER_RANK.PLAYER_ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
+        .leftJoin(ROUND_PLAYER_MEDPACK).on(ROUND_PLAYER_MEDPACK.PLAYER_ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID)
+            .and(ROUND_PLAYER_MEDPACK.ROUND_ID.eq(ROUND_END_STATS_PLAYER.ROUND_ID)))
+        .leftJoin(ROUND_PLAYER_REPAIR).on(ROUND_PLAYER_REPAIR.PLAYER_ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID)
+            .and(ROUND_PLAYER_REPAIR.ROUND_ID.eq(ROUND_END_STATS_PLAYER.ROUND_ID)))
         .groupBy(ROUND_END_STATS_PLAYER.PLAYER_ID)
         .orderBy(sortableField.sort(getJooqSortOrder(sort.getOrder())))
         .limit(0, 50)
@@ -54,11 +60,6 @@ public class RankingService {
   private PlayerStats toPlayerStats(Record r) {
     BigDecimal kdRateBigDec = r.get("kdrate", BigDecimal.class);
     Double kdRate = kdRateBigDec == null ? 0.0 : kdRateBigDec.doubleValue();
-
-    /*Double kdRate = 0.0;
-    if (deaths != 0) {
-      kdRate = (double) (kills / deaths);
-    }*/
 
     return new PlayerStats()
         .setId(r.get("player_id", Integer.class))
@@ -74,14 +75,12 @@ public class RankingService {
         .setSilverCount(r.get("silver_count", Integer.class))
         .setBronzeCount(r.get("bronze_count", Integer.class))
         .setTeamKills(r.get("tks", Integer.class))
-        .setAttacks(r.get("attacks", Integer.class))
         .setCaptures(r.get("captures", Integer.class))
-        .setObjectives(0)
         .setRoundsPlayed(r.get("rounds_played", Integer.class))
-        .setHeals(0)
-        .setOtherRepairs(0)
+        .setHeals(r.get("heals_count", Integer.class))
         .setSelfHeals(0)
-        .setRepairs(0)
+        .setOtherRepairs(0) // with vehicle_player
+        .setRepairs(r.get("repairs_count", Integer.class)) // without vehicle_player
         .setScorePerMinute(0);
   }
 }
