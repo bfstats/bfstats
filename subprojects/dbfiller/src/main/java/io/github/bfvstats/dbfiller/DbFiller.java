@@ -364,6 +364,9 @@ public class DbFiller {
           }
         }
         break;
+      case pickupKit:
+        parsePickupKit(roundId, e);
+        break;
     }
   }
 
@@ -712,6 +715,14 @@ else: repair; number of repairs
     addChatMessage(roundId, e);
   }
 
+  private void parsePickupKit(int roundId, BfEvent e) {
+    if (isSlotIdBot(e.getPlayerSlotId())) {
+      return;
+    }
+
+    addPickupKit(roundId, e);
+  }
+
   private void parseEventChangePlayerName(BfEvent e) {
     int playerId = getPlayerIdFromSlotId(e.getPlayerSlotId());
     String newPlayerName = e.getStringParamValueByName("name");
@@ -890,6 +901,28 @@ else: repair; number of repairs
 
     roundEndStatsRecord.insert();
     return roundEndStatsRecord;
+  }
+
+  private RoundPlayerPickupKitRecord addPickupKit(Integer roundId, BfEvent bfEvent) {
+    int playerId = getPlayerIdFromSlotId(bfEvent.getPlayerSlotId());
+    LocalDateTime eventTime = logStartTime.plus(bfEvent.getDurationSinceLogStart());
+
+    String kit = bfEvent.getStringParamValueByName(PickupKitParams.kit.name());
+
+    RoundPlayerPickupKitRecord roundPlayerPickupKitRecord = transaction().newRecord(ROUND_PLAYER_PICKUP_KIT);
+    roundPlayerPickupKitRecord.setRoundId(roundId);
+    roundPlayerPickupKitRecord.setPlayerId(playerId);
+    if (bfEvent.getPlayerLocation() != null) {
+      String[] playerLocation = bfEvent.getPlayerLocation();
+      roundPlayerPickupKitRecord.setPlayerLocationX(new BigDecimal(playerLocation[0]));
+      roundPlayerPickupKitRecord.setPlayerLocationY(new BigDecimal(playerLocation[1]));
+      roundPlayerPickupKitRecord.setPlayerLocationZ(new BigDecimal(playerLocation[2]));
+    }
+    roundPlayerPickupKitRecord.setEventTime(Timestamp.valueOf(eventTime));
+    roundPlayerPickupKitRecord.setKit(kit);
+
+    roundPlayerPickupKitRecord.insert();
+    return roundPlayerPickupKitRecord;
   }
 
   private RoundChatLogRecord addChatMessage(Integer roundId, BfEvent bfEvent) {

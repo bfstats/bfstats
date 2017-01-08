@@ -218,6 +218,21 @@ CREATE INDEX IF NOT EXISTS round_player_medpack_round_id_idx ON round_player_med
 CREATE INDEX IF NOT EXISTS round_player_medpack_player_id_idx ON round_player_medpack(player_id);
 CREATE INDEX IF NOT EXISTS round_player_medpack_vehicle_healed_player_id_idx ON round_player_medpack(healed_player_id);
 
+CREATE TABLE IF NOT EXISTS round_player_pickup_kit (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  round_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  player_location_x DECIMAL(4,4) NOT NULL,
+  player_location_y DECIMAL(4,4) NOT NULL,
+  player_location_z DECIMAL(4,4) NOT NULL,
+  kit VARCHAR(50) NOT NULL,
+  event_time DATETIME NOT NULL,
+  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (player_id) REFERENCES player(id)
+);
+CREATE INDEX IF NOT EXISTS round_player_pickup_kit_round_id_idx ON round_player_pickup_kit(round_id);
+CREATE INDEX IF NOT EXISTS round_player_pickup_kit_player_id_idx ON round_player_pickup_kit(player_id);
+
 CREATE TABLE IF NOT EXISTS player_rank (
   rank INTEGER PRIMARY KEY AUTOINCREMENT,
   player_id INTEGER NOT NULL,

@@ -14,6 +14,7 @@ import io.github.bfvstats.game.jooq.tables.RoundEndStatsPlayer;
 import io.github.bfvstats.game.jooq.tables.RoundPlayer;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerDeath;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerMedpack;
+import io.github.bfvstats.game.jooq.tables.RoundPlayerPickupKit;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerRepair;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerTeam;
@@ -44,7 +45,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -861220117;
+    private static final long serialVersionUID = -860700788;
 
     /**
      * The reference instance of <code></code>
@@ -100,6 +101,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>round_player_medpack</code>.
      */
     public final RoundPlayerMedpack ROUND_PLAYER_MEDPACK = io.github.bfvstats.game.jooq.tables.RoundPlayerMedpack.ROUND_PLAYER_MEDPACK;
+
+    /**
+     * The table <code>round_player_pickup_kit</code>.
+     */
+    public final RoundPlayerPickupKit ROUND_PLAYER_PICKUP_KIT = io.github.bfvstats.game.jooq.tables.RoundPlayerPickupKit.ROUND_PLAYER_PICKUP_KIT;
 
     /**
      * The table <code>round_player_repair</code>.
@@ -161,6 +167,7 @@ public class DefaultSchema extends SchemaImpl {
             RoundPlayer.ROUND_PLAYER,
             RoundPlayerDeath.ROUND_PLAYER_DEATH,
             RoundPlayerMedpack.ROUND_PLAYER_MEDPACK,
+            RoundPlayerPickupKit.ROUND_PLAYER_PICKUP_KIT,
             RoundPlayerRepair.ROUND_PLAYER_REPAIR,
             RoundPlayerScoreEvent.ROUND_PLAYER_SCORE_EVENT,
             RoundPlayerTeam.ROUND_PLAYER_TEAM,
