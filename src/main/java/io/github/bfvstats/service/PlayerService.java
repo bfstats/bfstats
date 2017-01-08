@@ -57,6 +57,7 @@ public class PlayerService {
         .where(ROUND_PLAYER_DEATH.KILL_WEAPON.isNotNull())
         .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
         .groupBy(ROUND_PLAYER_DEATH.KILL_WEAPON)
+        .orderBy(DSL.count().desc())
         .fetch();
 
     Integer totalTimesUsed = records.stream()
@@ -81,6 +82,7 @@ public class PlayerService {
         .from(ROUND_PLAYER_PICKUP_KIT)
         .where(ROUND_PLAYER_PICKUP_KIT.PLAYER_ID.eq(playerId))
         .groupBy(ROUND_PLAYER_PICKUP_KIT.KIT)
+        .orderBy(DSL.count().desc())
         .fetch();
 
     Integer totalTimesUsed = records.stream()

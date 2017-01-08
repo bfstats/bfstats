@@ -6,6 +6,7 @@
 <h3>{{ player.name }}</h3>
 
 {% include "players/weapons" %}
+{% include "players/kits" %}
 {% include "players/vehicles" %}
 {% include "players/maps" %}
 

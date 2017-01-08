@@ -6,8 +6,9 @@ import io.github.bfvstats.model.Location;
 import io.github.bfvstats.model.MapStatsInfo;
 import io.github.bfvstats.model.MapUsage;
 import org.jooq.Record;
-import org.jooq.Record2;
+import org.jooq.Record3;
 import org.jooq.Result;
+import org.jooq.impl.DSL;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -120,11 +121,12 @@ public class MapService {
   }
 
   public List<MapUsage> getMapUsagesForPlayer(int playerId) {
-    Result<Record2<String, Integer>> records = getDslContext().select(ROUND.MAP_CODE, ROUND_END_STATS_PLAYER.SCORE)
+    Result<Record3<String, Integer, Integer>> records = getDslContext().select(ROUND.MAP_CODE, ROUND_END_STATS_PLAYER.SCORE, DSL.count().as("times_used"))
         .from(ROUND_END_STATS_PLAYER)
         .join(ROUND).on(ROUND.ID.eq(ROUND_END_STATS_PLAYER.ROUND_ID))
         .where(ROUND_END_STATS_PLAYER.PLAYER_ID.eq(playerId))
         .groupBy(ROUND.MAP_CODE)
+        .orderBy(ROUND_END_STATS_PLAYER.SCORE.desc())
         .fetch();
 
     float totalMapsScore = records.stream()
@@ -144,6 +146,7 @@ public class MapService {
         .setCode(mapCode)
         .setName(mapName(mapCode))
         .setScore(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class))
-        .setPercentage(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class) * 100 / totalMapsScore);
+        .setPercentage(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class) * 100 / totalMapsScore)
+        .setTimesUsed(r.get("times_used", Integer.class));
   }
 }
