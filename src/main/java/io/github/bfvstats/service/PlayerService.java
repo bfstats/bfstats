@@ -9,10 +9,12 @@ import io.github.bfvstats.model.VehicleUsage;
 import io.github.bfvstats.model.WeaponUsage;
 import org.jooq.Record;
 import org.jooq.Record2;
+import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -103,28 +105,37 @@ public class PlayerService {
   }
 
   public List<VehicleUsage> getVehicleUsages(int playerId) {
-    return new ArrayList<>();
-  }
-    /*
-    Result<SelectbfDrivesRecord> records = getDslContext().selectFrom(SELECTBF_DRIVES)
-        .where(SELECTBF_DRIVES.PLAYER_ID.eq(playerId))
-        .orderBy(SELECTBF_DRIVES.DRIVETIME.desc())
+    Result<Record3<String, BigDecimal, Integer>> records = getDslContext()
+        .select(
+            ROUND_PLAYER_VEHICLE.VEHICLE,
+            DSL.sum(ROUND_PLAYER_VEHICLE.DURATION_SECONDS).as("total_duration"),
+            DSL.count().as("times_used")
+        )
+        .from(ROUND_PLAYER_VEHICLE)
+        .where(ROUND_PLAYER_VEHICLE.PLAYER_ID.eq(playerId))
+        .groupBy(ROUND_PLAYER_VEHICLE.VEHICLE)
+        .orderBy(DSL.field("total_duration").desc())
         .fetch();
 
-    float totalVehiclesDriveTime = records.stream().map(SelectbfDrivesRecord::getDrivetime).reduce(0f, Float::sum);
-    return records.stream().map(r -> toVehicleUsage(r, totalVehiclesDriveTime)).collect(Collectors.toList());
+    int totalVehiclesDriveTimeInSeconds = records.stream()
+        .map(r -> r.get("total_duration", Integer.class))
+        .reduce(0, Integer::sum);
+
+    return records.stream().map(r -> toVehicleUsage(r, totalVehiclesDriveTimeInSeconds))
+        .collect(Collectors.toList());
   }
 
-  private static VehicleUsage toVehicleUsage(SelectbfDrivesRecord r, float totalVehiclesDriveTime) {
+  private static VehicleUsage toVehicleUsage(Record r, float totalVehiclesDriveTimeInSeconds) {
+    int driveTime = r.get("total_duration", Integer.class);
     return new VehicleUsage()
-        .setName(r.getVehicle().toString())
-        .setDriveTime(convertSecondToHHMMSSString(r.getDrivetime().intValue())) // seconds
-        .setTimesUsed(r.getTimesUsed())
-        .setPercentage(r.getDrivetime() * 100 / totalVehiclesDriveTime);
+        .setName(r.get(ROUND_PLAYER_VEHICLE.VEHICLE))
+        .setDriveTime(convertSecondToHHMMSSString(driveTime)) // seconds
+        .setPercentage(driveTime * 100 / totalVehiclesDriveTimeInSeconds)
+        .setTimesUsed(r.get("times_used", Integer.class));
   }
 
   private static String convertSecondToHHMMSSString(int nSecondTime) {
     return LocalTime.MIN.plusSeconds(nSecondTime).toString();
-  }*/
+  }
 
 }
