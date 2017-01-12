@@ -7,6 +7,14 @@
   <script src="http://code.highcharts.com/themes/dark-unica.js"></script>
 </head>
 <body>
+
+<div id="navigation">
+  <a href="/ranking">Ranks</a>
+  <a href="/rounds">Rounds</a>
+  <a href="/players">Players</a>
+  <a href="/chat">Chat</a>
+</div>
+
 <div id="content">
   {% block content %}{% endblock %}
 </div>

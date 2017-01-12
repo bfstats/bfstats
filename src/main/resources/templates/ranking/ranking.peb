@@ -56,7 +56,7 @@ There are no players.
   {% for player in players %}
   <tr>
     <td>{{ player.rank }}</td>
-    <td><a href="/players/{{ player.id }}">{{ player.name }}</a></td>
+    <td><a href="/players/{{ player.playerId }}">{{ player.name }}</a></td>
     {#
     <td>{{ player.points }}</td>
     #}

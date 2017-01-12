@@ -1,0 +1,30 @@
+<table class="styled_table">
+  <thead>
+  <tr>
+    <th>Rank</th>
+    <th>Player</th>
+    <th>Team</th>
+    <th>Score</th>
+    <th>K</th>
+    <th>D</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for playerStat in playerStats %}
+  <tr>
+    <td>{{ playerStat.rank }}</td>
+    <td><a href="/players/{{ playerStat.playerId }}">{{ playerStat.playerName }}</a></td>
+    <td>{{ playerStat.team }}</td>
+    <td>{{ playerStat.score }}</td>
+    <td>{{ playerStat.kills }}</td>
+    <td>{{ playerStat.deaths }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+private boolean bot;
+private int tks;
+private int captures;
+private int attacks;
+private int defences;

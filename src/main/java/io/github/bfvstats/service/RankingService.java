@@ -64,7 +64,7 @@ public class RankingService {
     Double kdRate = kdRateBigDec == null ? 0.0 : kdRateBigDec.doubleValue();
 
     return new PlayerStats()
-        .setId(r.get("player_id", Integer.class))
+        .setPlayerId(r.get("player_id", Integer.class))
         .setName(r.get("player_name", String.class))
         .setRank(r.get("player_rank", Integer.class))
         .setPoints(1)

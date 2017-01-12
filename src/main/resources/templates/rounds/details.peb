@@ -10,4 +10,13 @@
   {% include "fragments/chat" %}
 </div>
 
+
+End time: {{ roundEndStats.endTime }}
+Winning team: {{ roundEndStats.winningTeam }}
+Victory type: {{ roundEndStats.victoryType }}
+end t1: {{ roundEndStats.endTicketsTeam1 }}
+end t2: {{ roundEndStats.endTicketsTeam2 }}
+
+{% include "rounds/score" %}
+
 {% endblock %}

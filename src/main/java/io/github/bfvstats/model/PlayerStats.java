@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class PlayerStats {
-  int id;
+  int playerId;
   int rank;
   String name;
   int points;
