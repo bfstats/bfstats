@@ -28,6 +28,7 @@ th {
   width: 21px;
   background: transparent url('../img/scrollbar/scroll_bg.png') repeat-y top left;
   background-size: 100% 100%;
+  background-color: #252826; /* chrome renders white background sometimes after refresh if transparent*/
 }
 ::-webkit-scrollbar-corner {
   background-color: inherit;
