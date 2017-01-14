@@ -4,6 +4,7 @@
 package io.github.bfvstats.game.jooq;
 
 
+import io.github.bfvstats.game.jooq.tables.Configuration;
 import io.github.bfvstats.game.jooq.tables.Player;
 import io.github.bfvstats.game.jooq.tables.PlayerNickname;
 import io.github.bfvstats.game.jooq.tables.PlayerRank;
@@ -36,6 +37,11 @@ import javax.annotation.Generated;
 )
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
+
+    /**
+     * The table <code>configuration</code>.
+     */
+    public static final Configuration CONFIGURATION = io.github.bfvstats.game.jooq.tables.Configuration.CONFIGURATION;
 
     /**
      * The table <code>player</code>.

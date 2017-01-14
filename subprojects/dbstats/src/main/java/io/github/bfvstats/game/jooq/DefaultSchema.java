@@ -4,6 +4,7 @@
 package io.github.bfvstats.game.jooq;
 
 
+import io.github.bfvstats.game.jooq.tables.Configuration;
 import io.github.bfvstats.game.jooq.tables.Player;
 import io.github.bfvstats.game.jooq.tables.PlayerNickname;
 import io.github.bfvstats.game.jooq.tables.PlayerRank;
@@ -45,12 +46,17 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -860700788;
+    private static final long serialVersionUID = 357066725;
 
     /**
      * The reference instance of <code></code>
      */
     public static final DefaultSchema DEFAULT_SCHEMA = new DefaultSchema();
+
+    /**
+     * The table <code>configuration</code>.
+     */
+    public final Configuration CONFIGURATION = io.github.bfvstats.game.jooq.tables.Configuration.CONFIGURATION;
 
     /**
      * The table <code>player</code>.
@@ -157,6 +163,7 @@ public class DefaultSchema extends SchemaImpl {
 
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
+            Configuration.CONFIGURATION,
             Player.PLAYER,
             PlayerNickname.PLAYER_NICKNAME,
             PlayerRank.PLAYER_RANK,

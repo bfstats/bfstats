@@ -233,6 +233,11 @@ CREATE TABLE IF NOT EXISTS round_player_pickup_kit (
 CREATE INDEX IF NOT EXISTS round_player_pickup_kit_round_id_idx ON round_player_pickup_kit(round_id);
 CREATE INDEX IF NOT EXISTS round_player_pickup_kit_player_id_idx ON round_player_pickup_kit(player_id);
 
+CREATE TABLE IF NOT EXISTS configuration (
+  last_parsed_datetime VARCHAR(30)
+);
+INSERT INTO configuration (last_parsed_datetime) VALUES (null);
+
 CREATE TABLE IF NOT EXISTS player_rank (
   rank INTEGER PRIMARY KEY AUTOINCREMENT,
   player_id INTEGER NOT NULL,

@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
 import org.jooq.impl.DSL;
 
 import javax.xml.bind.JAXBException;
@@ -97,8 +98,14 @@ public class DbFiller {
     int totalNumberOfFiles = dirFiles.length;
     int numberOfFilesCompleted = 0;
 
-    LocalDateTime latestAdded = LocalDateTime.parse("20170108_0152", DATE_TIME_FORMATTER);
+    LocalDateTime latestAdded = null;
+    Record1<String> lastParsedDatetimeRecord = dslContext.select(CONFIGURATION.LAST_PARSED_DATETIME).from(CONFIGURATION).fetchOne();
+    String lastParsedDateTime = lastParsedDatetimeRecord.get(CONFIGURATION.LAST_PARSED_DATETIME);
+    if (lastParsedDateTime != null) {
+      latestAdded = LocalDateTime.parse(lastParsedDateTime, DATE_TIME_FORMATTER);
+    }
 
+    String lastValidDateTimeStr = null;
     for (File fileI : dirFiles) {
       if (numberOfFilesCompleted % 30 == 0) {
         System.out.println(numberOfFilesCompleted + "/" + totalNumberOfFiles);
@@ -109,7 +116,7 @@ public class DbFiller {
       String dateTimeStr = dtsAndExtStr.split("\\.")[0];
       LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, DATE_TIME_FORMATTER);
 
-      if (!dateTime.isAfter(latestAdded)) {
+      if (latestAdded != null && !dateTime.isAfter(latestAdded)) {
         continue;
       }
 
@@ -117,7 +124,14 @@ public class DbFiller {
       filePath = extractIfNecessary(filePath);
       if (filePath != null) {
         addFromXmlFile(filePath);
+        lastValidDateTimeStr = dateTimeStr;
       }
+    }
+
+    if (lastValidDateTimeStr != null) {
+      dslContext.update(CONFIGURATION)
+          .set(CONFIGURATION.LAST_PARSED_DATETIME, lastValidDateTimeStr)
+          .execute();
     }
   }
 
