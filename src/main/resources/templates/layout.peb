@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<div id="navigation">
+<div id="navigation" style="position:fixed; top:0;left:0;height: 20px;margin:0 8px;background-color:inherit;border-bottom:1px solid #000;right:0">
   <a href="/ranking">Ranks</a>
   <a href="/rounds">Rounds</a>
   <a href="/players">Players</a>
@@ -16,7 +16,7 @@
   <a href="/chat">Chat</a>
 </div>
 
-<div id="content">
+<div id="content" style="margin-top:20px;">
   {% block content %}{% endblock %}
 </div>
 
