@@ -126,6 +126,17 @@ tr.team-3 {
   color: #ffff00;
 }
 
+tr.team-1 .name, tr.team-2 .name, tr.team-3 .name {
+  padding-left: 16px;
+  background: transparent url('../img/roundflagicons/nva_hud_flag.png') no-repeat center left;
+}
+tr.team-2 .name {
+  background-image: url('../img/roundflagicons/us_hud_flag.png');
+}
+tr.team-3 .name {
+  background-image: url('../img/roundflagicons/spec_hud_flag.png');
+}
+
 .chat_table th, .chat_table td {
   border-left: 0;
   border-right: 0;
