@@ -26,14 +26,13 @@ public class RoundController extends Controller {
   }
 
   public void list() {
-    List<Round> rounds = roundService.getRounds();
+    List<Round> rounds = roundService.getRounds(null);
     getResponse().bind("rounds", rounds).render("rounds/list");
   }
 
   public void details(@Param("id") int roundId) {
     Round round = roundService.getRound(roundId);
     List<RoundService.RoundPlayerStats> roundPlayerStats = roundService.getRoundPlayerStats(roundId);
-    RoundService.RoundEndStatistics roundEndStats = roundService.getRoundEndStats(roundId);
 
     MapStatsInfo mapStatsInfo = mapService.getMapStatsInfoForPlayer(round.getMapCode(), null, roundId);
 
@@ -41,7 +40,6 @@ public class RoundController extends Controller {
 
     getResponse()
         .bind("round", round)
-        .bind("roundEndStats", roundEndStats)
         .bind("playerStats", roundPlayerStats)
         .bind("mapInfo", mapStatsInfo)
         .bind("chatMessages", chatMessages)

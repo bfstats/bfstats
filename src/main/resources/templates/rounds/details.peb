@@ -11,11 +11,11 @@
 </div>
 
 
-End time: {{ roundEndStats.endTime }}
-Winning team: {{ roundEndStats.winningTeam }}
-Victory type: {{ roundEndStats.victoryType }}
-end t1: {{ roundEndStats.endTicketsTeam1 }}
-end t2: {{ roundEndStats.endTicketsTeam2 }}
+End time: {{ round.endTime }}
+Winning team: {{ round.winningTeam }}
+Victory type: {{ round.victoryType }}
+end t1: {{ round.endTicketsTeam1 }}
+end t2: {{ round.endTicketsTeam2 }}
 
 {% include "rounds/score" %}
 

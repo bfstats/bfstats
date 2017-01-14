@@ -6,6 +6,7 @@ import io.github.bfvstats.model.Location;
 import io.github.bfvstats.model.MapStatsInfo;
 import io.github.bfvstats.model.MapUsage;
 import org.jooq.Record;
+import org.jooq.Record2;
 import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
@@ -120,6 +121,32 @@ public class MapService {
         .setDeathLocations(deathLocations);
   }
 
+  public List<MapUsage> getMapUsages() {
+    Result<Record2<String, Integer>> records = getDslContext().select(ROUND.MAP_CODE, DSL.count().as("times_used"))
+        .from(ROUND)
+        .join(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID)) // to ignore empty rounds
+        .groupBy(ROUND.MAP_CODE)
+        .orderBy(DSL.count().desc())
+        .fetch();
+
+    int totalTimesUsed = records.stream()
+        .map(r -> r.get("times_used", Integer.class))
+        .reduce(0, Integer::sum);
+
+    return records.stream()
+        .map(r -> {
+              String mapCode = r.get(ROUND.MAP_CODE);
+              Integer timesUsed = r.get("times_used", Integer.class);
+              return new MapUsage()
+                  .setCode(mapCode)
+                  .setName(mapName(mapCode))
+                  .setPercentage(timesUsed * 100 / totalTimesUsed)
+                  .setTimesUsed(timesUsed);
+            }
+        )
+        .collect(Collectors.toList());
+  }
+
   public List<MapUsage> getMapUsagesForPlayer(int playerId) {
     Result<Record3<String, Integer, Integer>> records = getDslContext().select(ROUND.MAP_CODE, ROUND_END_STATS_PLAYER.SCORE, DSL.count().as("times_used"))
         .from(ROUND_END_STATS_PLAYER)
@@ -129,7 +156,7 @@ public class MapService {
         .orderBy(ROUND_END_STATS_PLAYER.SCORE.desc())
         .fetch();
 
-    float totalMapsScore = records.stream()
+    int totalMapsScore = records.stream()
         .map(r -> r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class))
         .reduce(0, Integer::sum);
 
@@ -141,7 +168,7 @@ public class MapService {
   }
 
   private static MapUsage toMapUsage(Record r, float totalMapsScore) {
-    String mapCode = r.get(ROUND.MAP_CODE, String.class);
+    String mapCode = r.get(ROUND.MAP_CODE);
     return new MapUsage()
         .setCode(mapCode)
         .setName(mapName(mapCode))

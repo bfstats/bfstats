@@ -2,10 +2,7 @@ package io.github.bfvstats;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import io.github.bfvstats.controller.ChatController;
-import io.github.bfvstats.controller.PlayerController;
-import io.github.bfvstats.controller.RankingController;
-import io.github.bfvstats.controller.RoundController;
+import io.github.bfvstats.controller.*;
 import io.github.bfvstats.util.DbUtils;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.guice.GuiceControllerFactory;
@@ -36,6 +33,8 @@ public class BasicApplication extends ControllerApplication {
 
     GET("/rounds(/?)", RoundController.class, "list");
     GET("/rounds/{id}", RoundController.class, "details");
+
+    GET("/maps(/?)", MapController.class, "list");
 
     closeDbConnections();
   }

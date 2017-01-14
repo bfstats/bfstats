@@ -7,67 +7,60 @@ import io.github.bfvstats.model.Round;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.jooq.Result;
+import org.jooq.impl.DSL;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class RoundService {
-  public List<Round> getRounds() {
-    Result<RoundRecord> records = getDslContext().select().from(ROUND)
-        .join(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID)) // skips rounds which don't have end result
+  public List<Round> getRounds(Integer roundId) {
+    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getDslContext()
+        .select(ROUND.fields())
+        .select(ROUND_END_STATS.fields())
+        .from(ROUND)
+        .join(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID)) // also skips rounds which don't have end result
+        .where(roundId == null ? DSL.trueCondition() : ROUND.ID.eq(roundId))
         .orderBy(ROUND.START_TIME.desc())
-        .fetch()
-        .into(ROUND);
-    return records.stream().map(RoundService::toRound).collect(Collectors.toList());
+        .fetchMap(
+            r -> r.into(ROUND),
+            r -> r.into(ROUND_END_STATS)
+        );
+
+    return roundWithStats.entrySet().stream()
+        .map(e -> toRound(e.getKey(), e.getValue()))
+        .collect(Collectors.toList());
   }
 
-  private static Round toRound(RoundRecord roundRecord) {
+  private static Round toRound(RoundRecord roundRecord, RoundEndStatsRecord roundEndStatsRecord) {
     String mapCode = roundRecord.getMapCode();
     String mapName = MapService.mapName(mapCode);
+
+    LocalDateTime startTime = roundRecord.getStartTime().toLocalDateTime();
+    LocalDateTime endTime = roundEndStatsRecord.getEndTime().toLocalDateTime();
+    long durationMinutes = startTime.until(endTime, ChronoUnit.MINUTES);
+    //long durationMinutes = ChronoUnit.MINUTES.between(startTime, endTime);
 
     return new Round()
         .setId(roundRecord.getId())
         .setMapCode(mapCode)
         .setMapName(mapName)
-        .setStartTime(roundRecord.getStartTime().toLocalDateTime());
+        .setStartTime(startTime)
+        .setEndTime(endTime)
+        .setDurationInMinutes(durationMinutes)
+        .setWinningTeam(roundEndStatsRecord.getWinningTeam())
+        .setVictoryType(roundEndStatsRecord.getVictoryType())
+        .setEndTicketsTeam1(roundEndStatsRecord.getEndTicketsTeam_1())
+        .setEndTicketsTeam2(roundEndStatsRecord.getEndTicketsTeam_2());
   }
 
   public Round getRound(int roundId) {
-    RoundRecord roundRecord = getDslContext().selectFrom(ROUND).where(ROUND.ID.eq(roundId)).fetchOne();
-
-    return toRound(roundRecord);
-  }
-
-  public RoundEndStatistics getRoundEndStats(int roundId) {
-    RoundEndStatsRecord roundEndStatsRecord = getDslContext().selectFrom(ROUND_END_STATS)
-        .where(ROUND_END_STATS.ROUND_ID.eq(roundId)).fetchOne();
-
-    return toRoundEndStats(roundEndStatsRecord);
-  }
-
-  private RoundEndStatistics toRoundEndStats(RoundEndStatsRecord r) {
-    return new RoundEndStatistics()
-        .setRoundId(r.getRoundId())
-        .setEndTime(r.getEndTime().toLocalDateTime())
-        .setWinningTeam(r.getWinningTeam())
-        .setVictoryType(r.getVictoryType())
-        .setEndTicketsTeam1(r.getEndTicketsTeam_1())
-        .setEndTicketsTeam2(r.getEndTicketsTeam_2());
-  }
-
-  @Data
-  @Accessors(chain = true)
-  public static class RoundEndStatistics {
-    private int roundId;
-    private LocalDateTime endTime;
-    private int winningTeam;
-    private int victoryType;
-    private int endTicketsTeam1;
-    private int endTicketsTeam2;
+    return getRounds(roundId).get(0);
   }
 
   public List<RoundPlayerStats> getRoundPlayerStats(int roundId) {
