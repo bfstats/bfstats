@@ -1,11 +1,10 @@
 <table class="styled_table">
   <thead>
   <tr>
-    <th>#</th>
-    <th>Weapon</th>
-    <th>Times used</th>
-    <th>%</th>
-    <th></th>
+    <th><span class="label">#</span></th>
+    <th><span class="label">Weapon</span></th>
+    <th><span class="label">Times used</span></th>
+    <th colspan="2"><span class="label">%</span></th>
   </tr>
   </thead>
   <tbody>

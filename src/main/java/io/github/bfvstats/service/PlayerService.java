@@ -79,6 +79,10 @@ public class PlayerService {
         .limit(1)
         .fetchOne();
 
+    if (roundPlayerRecord == null) {
+      return null;
+    }
+
     return new PlayerDetails()
         .setLastSeen(roundPlayerRecord.getEndTime().toLocalDateTime());
   }

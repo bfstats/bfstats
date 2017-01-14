@@ -11,11 +11,10 @@ There are no maps.
 <table class="styled_table">
   <thead>
   <tr>
-    <th>#</th>
-    <th>Map</th>
-    <th>Round played</th>
-    <th>%</th>
-    <th></th>
+    <th><span class="label">#</span></th>
+    <th><span class="label">Map</span></th>
+    <th><span class="label">Round played</span></th>
+    <th colspan="2"><span class="label">%</span></th>
   </tr>
   </thead>
   <tbody>

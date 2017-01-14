@@ -1,11 +1,10 @@
 <table class="styled_table">
   <thead>
   <tr>
-    <th>#</th>
-    <th>Map</th>
-    <th>Score</th>
-    <th>%</th>
-    <th></th>
+    <th><span class="label">#</span></th>
+    <th><span class="label">Map</span></th>
+    <th><span class="label">Score</span></th>
+    <th colspan="2"><span class="label">%</span></th>
   </tr>
   </thead>
   <tbody>

@@ -1,11 +1,10 @@
 <table class="styled_table">
   <thead>
   <tr>
-    <th>#</th>
-    <th>Killed by</th>
-    <th>Kills</th>
-    <th>%</th>
-    <th></th>
+    <th><span class="label">#</span></th>
+    <th><span class="label">Killed by</span></th>
+    <th><span class="label">Kills</span></th>
+    <th colspan="2"><span class="label">%</span></th>
   </tr>
   </thead>
   <tbody>

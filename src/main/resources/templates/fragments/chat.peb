@@ -8,13 +8,6 @@
 There are no chat messages
 {% else %}
 <table class="styled_table chat_table">
-  <thead>
-  <tr>
-    <th></th>
-    <th style="text-align:right">Name</th>
-    <th style="text-align:left">Message</th>
-  </tr>
-  </thead>
   <tbody>
   {% for chatMessage in chatMessages %}
   <tr class="chat-team team-{{ chatMessage.playerTeam }}">
