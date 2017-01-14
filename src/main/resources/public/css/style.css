@@ -111,20 +111,22 @@ th {
 }
 
 th .sorted {
-  font-size: 0.6em;
-  display:inline-block;
-  width: 16px;
-  height: 12px;
-  text-indent: 100%;
+  position: absolute;
+  top: -20px;
+  right: 0;
+  text-indent: -100px;
+  width: 21px;
+  height: 16px;
+  z-index: 333;
   overflow: hidden;
 }
 
 .sorted.order-descending {
-  background-image: url('../img/descending.png');
+  background-image: url('../img/descending4.png');
 }
 
 .sorted.order-ascending {
-  background-image: url('../img/ascending.png');
+  background-image: url('../img/ascending4.png');
 }
 
 
@@ -149,12 +151,13 @@ th .sorted {
 }
 
 table.styled_table {
-  margin-top: 50px;
+  margin-top: 30px;
 }
 
 .styled_table th {
   border: 0 solid transparent;
   overflow: hidden;
+  padding-top: 20px;
 }
 .styled_table th:before, .styled_table th:after {
   content: "";
@@ -189,6 +192,7 @@ table.styled_table {
   background-color: rgba(255, 245, 255, 0.54);
   border: 1px solid rgba(0, 0, 0, 0.83);
   color: black;
+  position: relative;
 }
 
 .styled_table th span.label a {

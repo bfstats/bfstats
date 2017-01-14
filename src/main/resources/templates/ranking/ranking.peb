@@ -48,8 +48,8 @@ There are no players.
     <th title="Number of silver medals" class="medals silver_medals">{{sortableLink('Silver','silver_count',sortingColumn,sortingOrder)}}</th>
     <th title="Number of bronze medals" class="medals bronze_medals">{{sortableLink('Bronze','bronze_count',sortingColumn,sortingOrder)}}</th>
     <th title="Team kills">{{sortableLink('TKs','tks',sortingColumn,sortingOrder)}}</th>
-    <th>{{sortableLink('Flag Captures','captures',sortingColumn,sortingOrder)}}</th>
-    <th>{{sortableLink('Rounds Played','rounds_played',sortingColumn,sortingOrder)}}</th>
+    <th title="Flag captures">{{sortableLink('FCs','captures',sortingColumn,sortingOrder)}}</th>
+    <th title="Rounds played">{{sortableLink('Rounds','rounds_played',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Heals','heals_count',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Repairs','repairs_count',sortingColumn,sortingOrder)}}</th>
   </tr>

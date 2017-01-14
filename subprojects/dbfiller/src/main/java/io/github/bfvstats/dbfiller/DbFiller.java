@@ -86,6 +86,7 @@ public class DbFiller {
       closeConnection();
     }
 
+    CacheFiller.fillCacheTables();
   }
 
   public static void parseAllInDir(String logDirPath) {
