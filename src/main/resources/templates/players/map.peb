@@ -1,9 +1,9 @@
 {% extends "layout" %}
 
-{% block title %}Map {{ mapInfo.mapName }} stats for {{ player.name }}{% endblock %}
+{% block title %}Map {{ map.mapName }} stats for {{ player.name }}{% endblock %}
 
 {% block content %}
-<h3>Map {{ mapInfo.mapCode }} stats for {{ player.name }}</h3>
+<h3>Map {{ map.mapName }} stats for {{ player.name }}</h3>
 
 {% include "fragments/map" %}
 

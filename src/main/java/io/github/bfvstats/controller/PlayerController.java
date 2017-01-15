@@ -69,7 +69,7 @@ public class PlayerController extends Controller {
 
     getResponse()
         .bind("player", player)
-        .bind("mapInfo", mapStatsInfo)
+        .bind("map", mapStatsInfo)
         .render("players/map");
   }
 

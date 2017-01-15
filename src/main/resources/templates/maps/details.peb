@@ -1,0 +1,10 @@
+{% extends "layout" %}
+
+{% block title %} Map {{ map.mapName }} {% endblock %}
+
+{% block content %}
+<h3>{{ map.mapName }}</h3>
+
+{% include "fragments/map" %}
+
+{% endblock %}

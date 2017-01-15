@@ -41,7 +41,7 @@ public class RoundController extends Controller {
     getResponse()
         .bind("round", round)
         .bind("playerStats", roundPlayerStats)
-        .bind("mapInfo", mapStatsInfo)
+        .bind("map", mapStatsInfo)
         .bind("chatMessages", chatMessages)
         .render("rounds/details");
   }

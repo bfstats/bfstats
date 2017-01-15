@@ -35,6 +35,7 @@ public class BasicApplication extends ControllerApplication {
     GET("/rounds/{id}", RoundController.class, "details");
 
     GET("/maps(/?)", MapController.class, "list");
+    GET("/maps/{mapCode}", MapController.class, "details");
 
     closeDbConnections();
   }
