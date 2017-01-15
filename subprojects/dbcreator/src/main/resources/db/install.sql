@@ -129,6 +129,7 @@ CREATE TABLE IF NOT EXISTS round_player_team (
 );
 CREATE INDEX IF NOT EXISTS round_player_team_id_idx ON round_player_team(round_id);
 CREATE INDEX IF NOT EXISTS round_player_team_id_idx ON round_player_team(player_id);
+CREATE INDEX IF NOT EXISTS round_player_start_end_time_idx ON round_player_team(start_time, end_time);
 
 CREATE TABLE IF NOT EXISTS round_player_death (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

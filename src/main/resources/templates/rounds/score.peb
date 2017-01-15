@@ -1,12 +1,12 @@
 <table class="styled_table">
   <thead>
   <tr>
-    <th><span class="label">Rank</span></th>
-    <th><span class="label">Player</span></th>
-    <th><span class="label">Team</span></th>
-    <th><span class="label">Score</span></th>
-    <th><span class="label">K</span></th>
-    <th><span class="label">D</span></th>
+    <th><div><span class="label">Rank</span></div></th>
+    <th><div><span class="label">Player</span></div></th>
+    <th><div><span class="label">Team</span></div></th>
+    <th><div><span class="label">Score</span></div></th>
+    <th><div><span class="label">K</span></div></th>
+    <th><div><span class="label">D</span></div></th>
   </tr>
   </thead>
   <tbody>

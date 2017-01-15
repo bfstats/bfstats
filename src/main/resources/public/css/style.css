@@ -120,7 +120,6 @@ th .sorted {
   text-indent: -100px;
   width: 15px;
   height: 12px;
-  z-index: 333;
   overflow: hidden;
 
   background-repeat: no-repeat;
@@ -162,45 +161,43 @@ table.styled_table {
 
 .styled_table th {
   border: 0 solid transparent;
-  overflow: hidden;
+  padding: 0;
   padding-top: 20px;
   text-transform: uppercase;
   font-weight: bold;
 }
-.styled_table th:before, .styled_table th:after {
+
+.styled_table th div {
+  display: flex;
+}
+
+.styled_table th div:before, .styled_table th div:after {
   content: "";
-  display: inline-block;
-  width: 50%;
+  flex: 1 1 auto;
+  min-width: 5px;
   height: 10px;
-  margin-top: 0;
-  margin-bottom: -5px;
-  margin-right: 1px;
-  margin-left: -55%;
-  xvertical-align: top;
-  border-top: 1px solid;
-}
-.styled_table th:after {
-  margin-right: -55%;
-  margin-left: 1px;
+  margin-top: 10px;
+  border-top: 1px solid #fff;
+  background-color: rgba(35, 57, 66, 0.75);
 }
 
-.styled_table th:first-child:before {
-  border-left: 8px solid #fff;
+.styled_table th:first-child div:before {
+  border-left: 1px solid #fff;
 }
 
-.styled_table th:last-child:after {
-  border-right: 16px solid #fff;
+.styled_table th:last-child div:after {
+  border-right: 1px solid #fff;
 }
 
 /* adds 4px to width */
-.styled_table th span.label {
-  xvertical-align: middle;
-  display: inline-block;
+.styled_table th div span.label {
+  flex: 0 1 auto;
   padding: 2px;
   background-color: rgba(255, 245, 255, 0.54);
   border: 1px solid rgba(0, 0, 0, 0.83);
   color: black;
   position: relative;
+  white-space: nowrap;
 }
 
 .styled_table th span.label a {
@@ -211,6 +208,7 @@ table.styled_table {
   display: inline-block;
   width: 8px;
   text-indent: -300px;
+  overflow: hidden;
   filter: drop-shadow(0 0 2px #000);
 }
 

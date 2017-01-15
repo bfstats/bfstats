@@ -1,11 +1,11 @@
 <table class="styled_table">
   <thead>
   <tr>
-    <th><span class="label">#</span></th>
-    <th><span class="label">Vehicle</span></th>
-    <th><span class="label">Drive time</span></th>
-    <th><span class="label">Times used</span></th>
-    <th colspan="2"><span class="label">%</span></th>
+    <th><div><span class="label">#</span></div></th>
+    <th><div><span class="label">Vehicle</span></div></th>
+    <th><div><span class="label">Drive time</span></div></th>
+    <th><div><span class="label">Times used</span></div></th>
+    <th colspan="2"><div><span class="label">%</span></div></th>
   </tr>
   </thead>
   <tbody>

@@ -21,9 +21,9 @@
 {% endmacro %}
 
 {% macro sortableLink(description, columnName, sortingColumn, sortingOrder) %}
-<span class="label"><a href="?{{sortingUrl(columnName,sortingColumn,sortingOrder)}}">{{description}}</a>
+<div><span class="label"><a href="?{{sortingUrl(columnName,sortingColumn,sortingOrder)}}">{{description}}</a>
 {{sortingIndicator(columnName, sortingColumn, sortingOrder)}}
-</span>
+</span></div>
 {% endmacro %}
 
 
@@ -36,9 +36,6 @@ There are no players.
   <tr>
     <th>{{sortableLink('Rank','player_rank',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Player','player_name',sortingColumn,sortingOrder)}}</th>
-    {#
-    <th>{{sortableLink('Points','score',sortingColumn,sortingOrder)}}</th>
-    #}
     <th title="Average score per round">{{sortableLink('S/R','average_score',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Score','score',sortingColumn,sortingOrder)}}</th>
     <th title="Kills">{{sortableLink('K','kills',sortingColumn,sortingOrder)}}</th>
@@ -59,13 +56,10 @@ There are no players.
   <tr>
     <td>{{ player.rank }}</td>
     <td style="width: 250px"><a href="/players/{{ player.playerId }}">{{ player.name }}</a></td>
-    {#
-    <td>{{ player.points }}</td>
-    #}
-    <td>{{ player.averageScore }}</td>
-    <td>{{ player.score }}</td>
-    <td>{{ player.kills }}</td>
-    <td>{{ player.deaths }}</td>
+    <td style="text-align: right;">{{ player.averageScore }}</td>
+    <td style="text-align: right;">{{ player.score }}</td>
+    <td style="width: 4em; text-align: right;">{{ player.kills }}</td>
+    <td style="width: 4em; text-align: right;">{{ player.deaths }}</td>
     <td>{{ player.killDeathRatio }}</td>
     <td>{{ player.goldCount }}</td>
     <td>{{ player.silverCount }}</td>
