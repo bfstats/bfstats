@@ -13,7 +13,7 @@
     <td>{{ loop.index + 1 }}</td>
     <td>{{ weapon.name }}</td>
     <td>{{ weapon.timesUsed }}</td>
-    <td>{{ weapon.percentage }}</td>
+    <td class="percent">{{ weapon.percentage | numberformat("0.0") }}</td>
     <td>
       <div class="meter">
         <span style="width: {{ weapon.percentage }}%"></span>

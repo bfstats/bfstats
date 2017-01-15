@@ -13,7 +13,7 @@ There are no maps.
   <tr>
     <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Map</span></div></th>
-    <th><div><span class="label">Round played</span></div></th>
+    <th><div><span class="label">Rounds played</span></div></th>
     <th colspan="2"><div><span class="label">%</span></div></th>
   </tr>
   </thead>
@@ -23,7 +23,7 @@ There are no maps.
     <td>{{ loop.index + 1 }}</td>
     <td>{{ map.name }}</td>
     <td>{{ map.timesUsed }}</td>
-    <td>{{ map.percentage }}</td>
+    <td class="percent">{{ map.percentage | numberformat("0.0") }}</td>
     <td>
       <div class="meter">
         <span style="width: {{ map.percentage }}%"></span>

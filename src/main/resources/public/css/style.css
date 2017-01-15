@@ -1,5 +1,12 @@
 body {
   background-color: #252826;
+
+  background-color: #000;
+  background-image: url('../img/bg.png');
+  background-position: top right;
+  background-size: contain;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: #f0f0f0;
   font-family: Helvetica;
   font-size: 12px;
@@ -93,6 +100,29 @@ th {
   background-color: #917e4e;
 }
 
+#navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 100%;
+  width: 90px;
+  padding: 10px;
+  margin-right: 10px;
+  line-height: 20px;
+  margin: 0 8px;
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.7) 70%, rgba(0,0,0,0)); ;
+  font-weight: bold;
+}
+#navigation a {
+  display: block;
+  text-decoration: none;
+}
+
+#content {
+  margin-left: 120px;
+}
+
 .meter {
   margin: 3px;
 	height: 7px;  /* Can be anything */
@@ -135,11 +165,16 @@ th .sorted {
 }
 
 
+
+.styled_table {
+  margin-top: 30px;
+}
+
 .styled_table tbody {
   background-color: rgba(35, 57, 66, 0.75);
 }
 
-.styled_table tbody tr:nth-child(odd) td {
+.styled_table tbody tr:nth-child(even) td {
   background-color: #121212;
 }
 
@@ -154,9 +189,8 @@ th .sorted {
 .styled_table td:last-child {
   border-right: 0;
 }
-
-table.styled_table {
-  margin-top: 30px;
+.styled_table td.percent {
+  text-align: right;
 }
 
 .styled_table th {
@@ -198,10 +232,16 @@ table.styled_table {
   color: black;
   position: relative;
   white-space: nowrap;
+  box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.2), -2px 2px 2px 0 rgba(0, 0, 0, 0.19);
+  /* translated3d is for font smoothing (though also blurries it)*/
+  /*xtransform: rotate(-0.5deg) translate3d( 0, 0, 0);*/
+  backface-visibility: hidden;
+  transform: rotate(-0.5deg);
 }
 
 .styled_table th span.label a {
   color: #030008;
+  text-decoration: none;
 }
 
 .ranking_table th.medals a {

@@ -140,7 +140,7 @@ public class MapService {
               return new MapUsage()
                   .setCode(mapCode)
                   .setName(mapName(mapCode))
-                  .setPercentage(timesUsed * 100 / totalTimesUsed)
+                  .setPercentage(timesUsed * 100f / totalTimesUsed)
                   .setTimesUsed(timesUsed);
             }
         )
@@ -173,7 +173,7 @@ public class MapService {
         .setCode(mapCode)
         .setName(mapName(mapCode))
         .setScore(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class))
-        .setPercentage(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class) * 100 / totalMapsScore)
+        .setPercentage(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class) * 100f / totalMapsScore)
         .setTimesUsed(r.get("times_used", Integer.class));
   }
 }

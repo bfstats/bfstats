@@ -121,7 +121,7 @@ public class PlayerService {
           .setPlayerId(r.get(ROUND_PLAYER_DEATH.PLAYER_ID))
           .setPlayerName(r.get(PLAYER.NAME))
           .setTotal(killCount)
-          .setPercentage(killCount * 100 / totalKillCount);
+          .setPercentage(killCount * 100f / totalKillCount);
     }).collect(Collectors.toList());
   }
 
@@ -147,7 +147,7 @@ public class PlayerService {
               .setPlayerId(r.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
               .setPlayerName(r.get(PLAYER.NAME))
               .setTotal(deathCount)
-              .setPercentage(deathCount * 100 / totalDeathCount);
+              .setPercentage(deathCount * 100f / totalDeathCount);
         }
     ).collect(Collectors.toList());
   }
@@ -175,7 +175,7 @@ public class PlayerService {
     return new WeaponUsage()
         .setName(r.get(ROUND_PLAYER_DEATH.KILL_WEAPON))
         .setTimesUsed(timesUsed)
-        .setPercentage(timesUsed * 100 / totalTimesUsed);
+        .setPercentage(timesUsed * 100f / totalTimesUsed);
   }
 
   public List<KitUsage> getKitUsages(int playerId) {
@@ -200,7 +200,7 @@ public class PlayerService {
     return new KitUsage()
         .setName(r.get(ROUND_PLAYER_PICKUP_KIT.KIT))
         .setTimesUsed(timesUsed)
-        .setPercentage(timesUsed * 100 / totalTimesUsed);
+        .setPercentage(timesUsed * 100f / totalTimesUsed);
   }
 
   public List<VehicleUsage> getVehicleUsages(int playerId) {
@@ -229,7 +229,7 @@ public class PlayerService {
     return new VehicleUsage()
         .setName(r.get(ROUND_PLAYER_VEHICLE.VEHICLE))
         .setDriveTime(convertSecondToHHMMSSString(driveTime)) // seconds
-        .setPercentage(driveTime * 100 / totalVehiclesDriveTimeInSeconds)
+        .setPercentage(driveTime * 100f / totalVehiclesDriveTimeInSeconds)
         .setTimesUsed(r.get("times_used", Integer.class));
   }
 

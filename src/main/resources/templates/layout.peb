@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>{% block title %}My Website{% endblock %}</title>
+  <title>{% block title %}Statistics{% endblock %}</title>
   <link href="{{ publicAt('css/style.css') }}" rel="stylesheet">
 
   <script src="http://code.highcharts.com/highcharts.js"></script>
@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<div id="navigation" style="position:fixed; top:0;left:0;height: 20px;margin:0 8px;background-color:inherit;border-bottom:1px solid #000;right:0">
+<div id="navigation">
   <a href="/ranking">Ranks</a>
   <a href="/rounds">Rounds</a>
   <a href="/players">Players</a>
@@ -16,7 +16,8 @@
   <a href="/chat">Chat</a>
 </div>
 
-<div id="content" style="margin-top:20px;">
+<div id="content">
+  <h1>{% block title %}Statistics{% endblock %}</h1>
   {% block content %}{% endblock %}
 </div>
 

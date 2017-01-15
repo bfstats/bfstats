@@ -15,7 +15,7 @@
     <td>{{ vehicle.name }}</td>
     <td>{{ vehicle.driveTime }}</td>
     <td>{{ vehicle.timesUsed }}</td>
-    <td>{{ vehicle.percentage }}</td>
+    <td class="percent">{{ vehicle.percentage | numberformat("0.0") }}</td>
     <td>
       <div class="meter">
         <span style="width: {{ vehicle.percentage }}%"></span>
