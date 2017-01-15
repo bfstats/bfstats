@@ -124,6 +124,7 @@ public class DbFiller {
       String filePath = fileI.getPath();
       filePath = extractIfNecessary(filePath);
       if (filePath != null) {
+        // TODO: skip live-file!
         addFromXmlFile(filePath);
         lastValidDateTimeStr = dateTimeStr;
       }
@@ -149,11 +150,17 @@ public class DbFiller {
         return filePath;
       }
     } else if (filePath.endsWith(".zxml")) {
+      String xmlFilePath = filePath.substring(0, filePath.length() - 5) + ".xml";
+
       try {
         return unzip(filePath); // replace with .xml counterpart
       } catch (IOException e) {
         log.warn("looks like " + filePath + " is not complete. " + e.getMessage());
-        return null;
+        File xmlFile = new File(xmlFilePath);
+        if (xmlFile.length() == 0) {
+          return null;
+        }
+        return xmlFilePath;
       }
     }
     return null;
@@ -184,7 +191,7 @@ public class DbFiller {
       BfLog bfLog = XmlParser.parseXmlLogFile(file);
       DbFiller dbFiller = new DbFiller(bfLog);
       dbFiller.fillDb();
-    } catch (FileNotFoundException | SQLException | JAXBException e) {
+    } catch (SQLException | JAXBException | IOException e) {
       throw new RuntimeException(e);
     }
   }
