@@ -2,7 +2,7 @@ body {
   background-color: #252826;
 
   background-color: #000;
-  background-image: url('../img/bg.png');
+  background-image: url('../img/bg/bg.png');
   background-position: top right;
   background-size: contain;
   background-attachment: fixed;
@@ -10,6 +10,14 @@ body {
   color: #f0f0f0;
   font-family: Helvetica;
   font-size: 12px;
+}
+
+body.bg1 {
+  background-image: url('../img/bg/bg.png'), url('../img/bg/khe_sahn.png');
+}
+
+body.bg2 {
+  background-image: url('../img/bg/bg.png'), url('../img/bg/hue_alt.png');
 }
 
 a {
@@ -124,6 +132,7 @@ th {
 }
 
 .meter {
+  display: inline-block;
   margin: 3px;
 	height: 7px;  /* Can be anything */
   width: 70px;
@@ -175,14 +184,19 @@ th .sorted {
 }
 
 .styled_table tbody tr:nth-child(even) td {
-  background-color: #121212;
+  background-color: rgba(0,0,0,0.5);
 }
 
 .styled_table td {
-  border-color: #969696;
+  border-color: rgba(255,255,255,0.1);
   border-top: 0;
   border-bottom: 0;
+  text-align: right;
 }
+.styled_table td.left {
+  text-align: left;
+}
+
 .styled_table td:first-child {
   border-left: 0;
 }
@@ -244,22 +258,35 @@ th .sorted {
   text-decoration: none;
 }
 
-.ranking_table th.medals a {
+.ranking_table th.icon a {
   display: inline-block;
-  width: 8px;
+  width: 12px;
   text-indent: -300px;
   overflow: hidden;
   filter: drop-shadow(0 0 2px #000);
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
-.ranking_table th.gold_medals a {
-  background: transparent url('../img/gold.png') center center no-repeat;
+.ranking_table th.icon-gold a {
+  filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 2px #000);
+  background-image: url('../img/icons/gold.png');
 }
-.ranking_table th.silver_medals a {
-  background: transparent url('../img/silver.png') right center no-repeat;
+.ranking_table th.icon-silver a {
+  filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 2px #000);
+  background-image: url('../img/icons/silver.png');
 }
-.ranking_table th.bronze_medals a {
-  background: transparent url('../img/bronze.png') right center no-repeat;
+.ranking_table th.icon-bronze a {
+  filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 2px #000);
+  background-image: url('../img/icons/bronze.png');
+}
+.ranking_table th.icon-heals a {
+  background-image: url('../img/icons/map_medic.png');
+  xbackground-image: url('../img/icons/health_3dmap.png');
+}
+.ranking_table th.icon-repairs a {
+  background-image: url('../img/icons/map_engineer.png');
 }
 
 .chat_table {

@@ -21,5 +21,12 @@
   {% block content %}{% endblock %}
 </div>
 
+<script>
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+document.body.className = "bg" + getRandomInt(1,2);
+</script>
+
 </body>
 </html>

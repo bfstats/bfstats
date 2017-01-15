@@ -3,18 +3,18 @@
   <tr>
     <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Killed by</span></div></th>
-    <th><div><span class="label">Kills</span></div></th>
-    <th colspan="2"><div><span class="label">%</span></div></th>
+    <th><div><span class="label">Deaths</span></div></th>
+    <th><div><span class="label">%</span></div></th>
   </tr>
   </thead>
   <tbody>
   {% for playerAndTotal in deathsByKillers %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td>{{ playerAndTotal.playerName }}</td>
+    <td class="left"><a href="/players/{{ playerAndTotal.playerId }}">{{ playerAndTotal.playerName }}</a></td>
     <td>{{ playerAndTotal.total }}</td>
-    <td class="percent">{{ playerAndTotal.percentage | numberformat("0.0") }}</td>
-    <td>
+    <td class="percent">
+      {{ playerAndTotal.percentage | numberformat("0.0") }}
       <div class="meter">
         <span style="width: {{ playerAndTotal.percentage }}%"></span>
       </div>

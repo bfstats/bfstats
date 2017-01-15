@@ -5,18 +5,17 @@
     <th><div><span class="label">Vehicle</span></div></th>
     <th><div><span class="label">Drive time</span></div></th>
     <th><div><span class="label">Times used</span></div></th>
-    <th colspan="2"><div><span class="label">%</span></div></th>
+    <th><div><span class="label">%</span></div></th>
   </tr>
   </thead>
   <tbody>
   {% for vehicle in vehicles %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td>{{ vehicle.name }}</td>
+    <td class="left">{{ vehicle.name }}</td>
     <td>{{ vehicle.driveTime }}</td>
     <td>{{ vehicle.timesUsed }}</td>
-    <td class="percent">{{ vehicle.percentage | numberformat("0.0") }}</td>
-    <td>
+    <td class="percent">{{ vehicle.percentage | numberformat("0.0") }}
       <div class="meter">
         <span style="width: {{ vehicle.percentage }}%"></span>
       </div>

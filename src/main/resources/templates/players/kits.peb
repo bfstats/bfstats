@@ -4,17 +4,16 @@
     <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Kit</span></div></th>
     <th><div><span class="label">Times used</span></div></th>
-    <th colspan="2"><div><span class="label">%</span></div></th>
+    <th><div><span class="label">%</span></div></th>
   </tr>
   </thead>
   <tbody>
   {% for kit in kits %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td>{{ kit.name }}</td>
+    <td class="left">{{ kit.name }}</td>
     <td>{{ kit.timesUsed }}</td>
-    <td class="percent">{{ kit.percentage | numberformat("0.0") }}</td>
-    <td>
+    <td class="percent">{{ kit.percentage | numberformat("0.0") }}
       <div class="meter">
         <span style="width: {{ kit.percentage }}%"></span>
       </div>

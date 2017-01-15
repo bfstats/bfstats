@@ -41,25 +41,25 @@ There are no players.
     <th title="Kills">{{sortableLink('K','kills',sortingColumn,sortingOrder)}}</th>
     <th title="Deaths">{{sortableLink('D','deaths',sortingColumn,sortingOrder)}}</th>
     <th title="Kill/death ratio">{{sortableLink('K/D','kdrate',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of gold medals" class="medals gold_medals">{{sortableLink('Gold','gold_count',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of silver medals" class="medals silver_medals">{{sortableLink('Silver','silver_count',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of bronze medals" class="medals bronze_medals">{{sortableLink('Bronze','bronze_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of gold medals" class="icon icon-gold">{{sortableLink('Gold','gold_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of silver medals" class="icon icon-silver">{{sortableLink('Silver','silver_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of bronze medals" class="icon icon-bronze">{{sortableLink('Bronze','bronze_count',sortingColumn,sortingOrder)}}</th>
     <th title="Team kills">{{sortableLink('TKs','tks',sortingColumn,sortingOrder)}}</th>
-    <th title="Flag captures">{{sortableLink('FCs','captures',sortingColumn,sortingOrder)}}</th>
+    <th title="Captured flags">{{sortableLink('Captures','captures',sortingColumn,sortingOrder)}}</th>
     <th title="Rounds played">{{sortableLink('Rounds','rounds_played',sortingColumn,sortingOrder)}}</th>
-    <th>{{sortableLink('Heals','heals_count',sortingColumn,sortingOrder)}}</th>
-    <th>{{sortableLink('Repairs','repairs_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Heals" class="icon icon-heals">{{sortableLink('Heals','heals_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Repairs" class="icon icon-repairs">{{sortableLink('Repairs','repairs_count',sortingColumn,sortingOrder)}}</th>
   </tr>
   </thead>
   <tbody>
   {% for player in players %}
   <tr>
     <td>{{ player.rank }}</td>
-    <td style="width: 250px"><a href="/players/{{ player.playerId }}">{{ player.name }}</a></td>
-    <td style="text-align: right;">{{ player.averageScore }}</td>
-    <td style="text-align: right;">{{ player.score }}</td>
-    <td style="width: 4em; text-align: right;">{{ player.kills }}</td>
-    <td style="width: 4em; text-align: right;">{{ player.deaths }}</td>
+    <td class="left" style="width: 250px"><a href="/players/{{ player.playerId }}">{{ player.name }}</a></td>
+    <td>{{ player.averageScore }}</td>
+    <td>{{ player.score }}</td>
+    <td style="width: 4em">{{ player.kills }}</td>
+    <td style="width: 4em">{{ player.deaths }}</td>
     <td>{{ player.killDeathRatio }}</td>
     <td>{{ player.goldCount }}</td>
     <td>{{ player.silverCount }}</td>
