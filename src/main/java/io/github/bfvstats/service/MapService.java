@@ -164,7 +164,7 @@ public class MapService {
   }
 
   public static String mapName(String mapCode) {
-    return mapNameByMapCode.get(mapCode);
+    return mapNameByMapCode.getOrDefault(mapCode, mapCode);
   }
 
   private static MapUsage toMapUsage(Record r, float totalMapsScore) {

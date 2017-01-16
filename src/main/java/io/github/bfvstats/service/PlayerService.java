@@ -1,5 +1,6 @@
 package io.github.bfvstats.service;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.bfvstats.Player;
 import io.github.bfvstats.game.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfvstats.game.jooq.tables.records.PlayerRecord;
@@ -224,10 +225,22 @@ public class PlayerService {
         .collect(Collectors.toList());
   }
 
+  private static Map<String, String> vehicleNameByCode = ImmutableMap.<String, String>builder()
+      .put("Mi8", "Mi-8")
+      .put("PT76", "PT-76")
+      .put("F4Phantom", "F-4 Phantom")
+      .build();
+
+  public static String vehicleName(String vehicleCode) {
+    return vehicleNameByCode.getOrDefault(vehicleCode, vehicleCode);
+  }
+
   private static VehicleUsage toVehicleUsage(Record r, float totalVehiclesDriveTimeInSeconds) {
     int driveTime = r.get("total_duration", Integer.class);
+    String code = r.get(ROUND_PLAYER_VEHICLE.VEHICLE);
     return new VehicleUsage()
-        .setName(r.get(ROUND_PLAYER_VEHICLE.VEHICLE))
+        .setCode(code)
+        .setName(vehicleName(code))
         .setDriveTime(convertSecondToHHMMSSString(driveTime)) // seconds
         .setPercentage(driveTime * 100f / totalVehiclesDriveTimeInSeconds)
         .setTimesUsed(r.get("times_used", Integer.class));
