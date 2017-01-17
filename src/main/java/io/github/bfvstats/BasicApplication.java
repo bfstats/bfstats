@@ -2,12 +2,24 @@ package io.github.bfvstats;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.mitchellbosecke.pebble.PebbleEngine;
 import io.github.bfvstats.controller.*;
+import io.github.bfvstats.pebble.Java8Extension;
 import io.github.bfvstats.util.DbUtils;
 import ro.pippo.controller.ControllerApplication;
+import ro.pippo.core.Application;
 import ro.pippo.guice.GuiceControllerFactory;
+import ro.pippo.pebble.PebbleTemplateEngine;
 
 public class BasicApplication extends ControllerApplication {
+
+  public static class EnhancedPebbleTemplateEngine extends PebbleTemplateEngine {
+    @Override
+    protected void init(Application application, PebbleEngine.Builder builder) {
+      //builder.loader()
+      builder.extension(new Java8Extension());
+    }
+  }
 
   @Override
   protected void onInit() {
@@ -17,7 +29,11 @@ public class BasicApplication extends ControllerApplication {
     // registering GuiceControllerFactory
     setControllerFactory(new GuiceControllerFactory(injector));
 
+    EnhancedPebbleTemplateEngine enhancedPebbleTemplateEngine = new EnhancedPebbleTemplateEngine();
+    setTemplateEngine(enhancedPebbleTemplateEngine);
+
     addPublicResourceRoute();
+
     //addWebjarsResourceRoute();
 
     // send 'Hello World' as response
