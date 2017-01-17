@@ -1,3 +1,4 @@
+{% if maps is not empty %}
 <table class="styled_table">
   <thead>
   <tr>
@@ -22,3 +23,4 @@
   {% endfor %}
   </tbody>
 </table>
+{% endif %}

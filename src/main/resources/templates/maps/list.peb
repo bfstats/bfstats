@@ -13,7 +13,7 @@ There are no maps.
   <tr>
     <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Map</span></div></th>
-    <th><div><span class="label">Rounds played</span></div></th>
+    <th title="Rounds played"><div><span class="label">Rounds</span></div></th>
     <th><div><span class="label">%</span></div></th>
   </tr>
   </thead>

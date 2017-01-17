@@ -6,8 +6,8 @@
 <h3>{{ player.name }}</h3>
 
 
-<ul>
-  <li>Last seen: {{ playerDetails.lastSeen }}</li>
+<ul class="player-stats">
+  <li>Last seen: {{ playerDetails.lastSeen | dt("yyyy-MM-dd HH:mm") }}</li>
   <li>Rank {{ playerStats.rank }}</li>
   <li>Total score {{ playerStats.score }}</li>
   <li>Avg Score per round: {{ playerStats.averageScore }}</li>

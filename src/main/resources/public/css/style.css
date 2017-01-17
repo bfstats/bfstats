@@ -133,7 +133,6 @@ th {
 
 .meter {
   display: inline-block;
-  margin: 3px;
 	height: 7px;  /* Can be anything */
   width: 70px;
 	background: #555;
@@ -192,6 +191,7 @@ th .sorted {
   border-top: 0;
   border-bottom: 0;
   text-align: right;
+  padding: 1px 2px;
 }
 .styled_table td.left {
   text-align: left;
@@ -240,7 +240,9 @@ th .sorted {
 /* adds 4px to width */
 .styled_table th div span.label {
   flex: 0 1 auto;
-  padding: 2px;
+  padding: 0 2px;
+  height: inherit;
+  line-height: 1.5em;
   background-color: rgba(255, 245, 255, 0.54);
   border: 1px solid rgba(0, 0, 0, 0.83);
   color: black;
