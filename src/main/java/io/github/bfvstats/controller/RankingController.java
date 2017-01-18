@@ -5,9 +5,11 @@ import io.github.bfvstats.service.PlayerService;
 import io.github.bfvstats.service.RankingService;
 import io.github.bfvstats.util.Sort;
 import ro.pippo.controller.Controller;
+import ro.pippo.core.Request;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,12 +27,22 @@ public class RankingController extends Controller {
     this.playerService = playerService;
   }
 
+  public int getPageFromRequest(Request request) {
+    String page = Arrays.stream(request.getQueryParameter("page").getValues())
+        .findFirst()
+        .orElse("1");
+    return Integer.valueOf(page);
+  }
+
   public void ranking() {
     Sort sort = getSortColumnAndOrderFromRequest(getRequest());
     if (sort == null) {
       sort = new Sort("player_rank", Sort.SortOrder.ASC);
     }
-    List<PlayerStats> players = rankingService.getRankings(sort, null);
+    int page = getPageFromRequest(getRequest());
+    List<PlayerStats> players = rankingService.getRankings(sort, page, null);
+
+    int totalPlayerCount = rankingService.getTotalPlayerCount();
 
     Map<LocalDateTime, Integer> playersOnline = playerService.fetchPlayersOnlineTimes();
 
@@ -58,9 +70,11 @@ public class RankingController extends Controller {
 
     getResponse()
         .bind("playersOnline", playersOnlineForHighCharts)
+        .bind("totalPlayerCount", totalPlayerCount)
         .bind("players", players)
         .bind("sortingColumn", sort.getProperty())
         .bind("sortingOrder", sort.getOrder().name())
+        .bind("currentPage", page)
         .render("ranking/ranking");
   }
 }

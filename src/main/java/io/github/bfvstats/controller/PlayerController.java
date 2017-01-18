@@ -38,7 +38,7 @@ public class PlayerController extends Controller {
         .collect(Collectors.toList());
 
     Sort dummySort = new Sort("player_rank", Sort.SortOrder.ASC);
-    PlayerStats playerStats = rankingService.getRankings(dummySort, playerId).stream().findFirst().orElse(null);
+    PlayerStats playerStats = rankingService.getRankings(dummySort, 1, playerId).stream().findFirst().orElse(null);
     PlayerDetails playerDetails = playerService.getPlayerDetails(playerId);
 
     List<WeaponUsage> weapons = playerService.getWeaponUsages(playerId);

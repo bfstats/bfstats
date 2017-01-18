@@ -19,8 +19,16 @@ import static io.github.bfvstats.util.SortUtils.getSortableField;
 
 public class RankingService {
 
-  public List<PlayerStats> getRankings(@Nonnull Sort sort, @Nullable Integer playerId) {
+  public int getTotalPlayerCount() {
+    int totalNumberOfRows = getDslContext().selectCount().from(PLAYER_RANK).fetchOne(0, int.class);
+    return totalNumberOfRows;
+  }
+
+  public List<PlayerStats> getRankings(@Nonnull Sort sort, int page, @Nullable Integer playerId) {
     Field<?> sortableField = getSortableField(sort.getProperty());
+
+    int numberOfRows = 50;
+    int firstRowIndex = (page - 1) * numberOfRows;
 
     return getDslContext().select(
         DSL.count().as("rounds_played"),
@@ -52,7 +60,7 @@ public class RankingService {
         .where(playerId == null ? DSL.trueCondition() : ROUND_END_STATS_PLAYER.PLAYER_ID.eq(playerId))
         .groupBy(ROUND_END_STATS_PLAYER.PLAYER_ID)
         .orderBy(sortableField.sort(getJooqSortOrder(sort.getOrder())))
-        .limit(0, 50)
+        .limit(firstRowIndex, numberOfRows)
         .fetch()
         .stream()
         .map(this::toPlayerStats)
