@@ -1,5 +1,6 @@
 {% if killsByVictims is not empty %}
 <table class="styled_table">
+  <caption>Kills</caption>
   <thead>
   <tr>
     <th><div><span class="label">#</span></div></th>

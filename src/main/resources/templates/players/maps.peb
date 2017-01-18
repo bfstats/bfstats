@@ -1,5 +1,6 @@
 {% if maps is not empty %}
 <table class="styled_table">
+  <caption>Maps with best score</caption>
   <thead>
   <tr>
     <th><div><span class="label">#</span></div></th>

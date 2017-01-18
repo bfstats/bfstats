@@ -1,5 +1,6 @@
 {% if vehicles is not empty %}
 <table class="styled_table">
+  <caption>Most used vehicles</caption>
   <thead>
   <tr>
     <th><div><span class="label">#</span></div></th>

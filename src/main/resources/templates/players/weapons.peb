@@ -1,5 +1,6 @@
 {% if weapons is not empty %}
 <table class="styled_table">
+  <caption>Most used weapons</caption>
   <thead>
   <tr>
     <th><div><span class="label">#</span></div></th>
