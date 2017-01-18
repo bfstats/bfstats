@@ -4,6 +4,8 @@ import io.github.bfvstats.model.ChatMessage;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,12 +33,19 @@ public class ChatService {
   }
 
   private ChatMessage toChatMessage(Record r) {
+    Date eventTimeDate = r.get(ROUND_CHAT_LOG.EVENT_TIME, Date.class);
+
+
     return new ChatMessage()
         .setPlayerId(r.get(ROUND_CHAT_LOG.PLAYER_ID, Integer.class))
         .setPlayerName(r.get(PLAYER.NAME, String.class))
         .setText(r.get(ROUND_CHAT_LOG.MESSAGE, String.class))
-        .setTime(r.get(ROUND_CHAT_LOG.EVENT_TIME, Date.class))
+        .setTime(toLocalDateTime(eventTimeDate))
         .setToTeam(r.get(ROUND_CHAT_LOG.TO_TEAM))
         .setPlayerTeam(r.get(ROUND_PLAYER_TEAM.TEAM));
+  }
+
+  private static LocalDateTime toLocalDateTime(Date date) {
+    return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
   }
 }

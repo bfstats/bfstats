@@ -7,7 +7,7 @@ There are no rounds.
 {% else %}
 <ul>
   {% for round in rounds %}
-  <li>{{ round.id }} <a href="/rounds/{{ round.id }}">{{ round.mapName }}</a> {{ round.startTime }} - {{ round.endTime }} ({{ round.durationInMinutes }} min)</li>
+  <li>{{ round.id }} <a href="/rounds/{{ round.id }}">{{ round.mapName }}</a> {{ round.startTime | dt("yyyy-MM-dd HH:mm") }} - {{ round.endTime | dt("yyyy-MM-dd HH:mm") }} ({{ round.durationInMinutes }} min)</li>
   {% endfor %}
 </ul>
 {% endif %}
