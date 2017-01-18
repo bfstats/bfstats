@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
+import static io.github.bfvstats.util.Utils.percentage;
 
 public class PlayerService {
 
@@ -122,7 +123,7 @@ public class PlayerService {
           .setPlayerId(r.get(ROUND_PLAYER_DEATH.PLAYER_ID))
           .setPlayerName(r.get(PLAYER.NAME))
           .setTotal(killCount)
-          .setPercentage(killCount * 100f / totalKillCount);
+          .setPercentage(percentage(killCount, totalKillCount));
     }).collect(Collectors.toList());
   }
 
@@ -148,7 +149,7 @@ public class PlayerService {
               .setPlayerId(r.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
               .setPlayerName(r.get(PLAYER.NAME))
               .setTotal(deathCount)
-              .setPercentage(deathCount * 100f / totalDeathCount);
+              .setPercentage(percentage(deathCount, totalDeathCount));
         }
     ).collect(Collectors.toList());
   }
@@ -176,7 +177,7 @@ public class PlayerService {
     return new WeaponUsage()
         .setName(r.get(ROUND_PLAYER_DEATH.KILL_WEAPON))
         .setTimesUsed(timesUsed)
-        .setPercentage(timesUsed * 100f / totalTimesUsed);
+        .setPercentage(percentage(timesUsed, totalTimesUsed));
   }
 
   public List<KitUsage> getKitUsages(int playerId) {
@@ -201,7 +202,7 @@ public class PlayerService {
     return new KitUsage()
         .setName(r.get(ROUND_PLAYER_PICKUP_KIT.KIT))
         .setTimesUsed(timesUsed)
-        .setPercentage(timesUsed * 100f / totalTimesUsed);
+        .setPercentage(percentage(timesUsed, totalTimesUsed));
   }
 
   public List<VehicleUsage> getVehicleUsages(int playerId) {
@@ -235,14 +236,14 @@ public class PlayerService {
     return vehicleNameByCode.getOrDefault(vehicleCode, vehicleCode);
   }
 
-  private static VehicleUsage toVehicleUsage(Record r, float totalVehiclesDriveTimeInSeconds) {
+  private static VehicleUsage toVehicleUsage(Record r, int totalVehiclesDriveTimeInSeconds) {
     int driveTime = r.get("total_duration", Integer.class);
     String code = r.get(ROUND_PLAYER_VEHICLE.VEHICLE);
     return new VehicleUsage()
         .setCode(code)
         .setName(vehicleName(code))
         .setDriveTime(convertSecondToHHMMSSString(driveTime)) // seconds
-        .setPercentage(driveTime * 100f / totalVehiclesDriveTimeInSeconds)
+        .setPercentage(percentage(driveTime, totalVehiclesDriveTimeInSeconds))
         .setTimesUsed(r.get("times_used", Integer.class));
   }
 

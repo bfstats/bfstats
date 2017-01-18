@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
+import static io.github.bfvstats.util.Utils.percentage;
 import static org.jooq.impl.DSL.trueCondition;
 
 public class MapService {
@@ -140,7 +141,7 @@ public class MapService {
               return new MapUsage()
                   .setCode(mapCode)
                   .setName(mapName(mapCode))
-                  .setPercentage(timesUsed * 100f / totalTimesUsed)
+                  .setPercentage(percentage(timesUsed, totalTimesUsed))
                   .setTimesUsed(timesUsed);
             }
         )
@@ -167,13 +168,13 @@ public class MapService {
     return mapNameByMapCode.getOrDefault(mapCode, mapCode);
   }
 
-  private static MapUsage toMapUsage(Record r, float totalMapsScore) {
+  private static MapUsage toMapUsage(Record r, int totalMapsScore) {
     String mapCode = r.get(ROUND.MAP_CODE);
     return new MapUsage()
         .setCode(mapCode)
         .setName(mapName(mapCode))
         .setScore(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class))
-        .setPercentage(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class) * 100f / totalMapsScore)
+        .setPercentage(percentage(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class), totalMapsScore))
         .setTimesUsed(r.get("times_used", Integer.class));
   }
 }
