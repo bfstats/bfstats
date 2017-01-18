@@ -15,7 +15,6 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -36,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PlayerNickname extends TableImpl<PlayerNicknameRecord> {
 
-    private static final long serialVersionUID = -1918820005;
+    private static final long serialVersionUID = -1426226353;
 
     /**
      * The reference instance of <code>player_nickname</code>
@@ -67,6 +66,11 @@ public class PlayerNickname extends TableImpl<PlayerNicknameRecord> {
     public final TableField<PlayerNicknameRecord, String> NICKNAME = createField("nickname", org.jooq.impl.SQLDataType.VARCHAR.length(150).nullable(false), this, "");
 
     /**
+     * The column <code>player_nickname.times_used</code>.
+     */
+    public final TableField<PlayerNicknameRecord, Integer> TIMES_USED = createField("times_used", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
      * Create a <code>player_nickname</code> table reference
      */
     public PlayerNickname() {
@@ -94,14 +98,6 @@ public class PlayerNickname extends TableImpl<PlayerNicknameRecord> {
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Identity<PlayerNicknameRecord, Integer> getIdentity() {
-        return Keys.IDENTITY_PLAYER_NICKNAME;
     }
 
     /**

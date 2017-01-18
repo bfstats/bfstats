@@ -17,7 +17,6 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -38,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundChatLog extends TableImpl<RoundChatLogRecord> {
 
-    private static final long serialVersionUID = -950064813;
+    private static final long serialVersionUID = 1488538200;
 
     /**
      * The reference instance of <code>round_chat_log</code>
@@ -126,14 +125,6 @@ public class RoundChatLog extends TableImpl<RoundChatLogRecord> {
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Identity<RoundChatLogRecord, Integer> getIdentity() {
-        return Keys.IDENTITY_ROUND_CHAT_LOG;
     }
 
     /**

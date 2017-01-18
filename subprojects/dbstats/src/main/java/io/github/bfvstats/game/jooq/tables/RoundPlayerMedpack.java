@@ -17,7 +17,6 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -38,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerMedpack extends TableImpl<RoundPlayerMedpackRecord> {
 
-    private static final long serialVersionUID = -1769017026;
+    private static final long serialVersionUID = -984365001;
 
     /**
      * The reference instance of <code>round_player_medpack</code>
@@ -156,14 +155,6 @@ public class RoundPlayerMedpack extends TableImpl<RoundPlayerMedpackRecord> {
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Identity<RoundPlayerMedpackRecord, Integer> getIdentity() {
-        return Keys.IDENTITY_ROUND_PLAYER_MEDPACK;
     }
 
     /**

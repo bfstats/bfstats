@@ -34,7 +34,8 @@ public class PlayerController extends Controller {
   public void details(@Param("id") int playerId) {
     Player player = playerService.getPlayer(playerId);
     List<NicknameUsage> otherNicknames = playerService.getNicknameUsages(playerId).stream()
-        .filter(nu -> !nu.getName().equals(player.getName())).collect(Collectors.toList());
+        .filter(nu -> !nu.getName().equals(player.getName()))
+        .collect(Collectors.toList());
 
     Sort dummySort = new Sort("player_rank", Sort.SortOrder.ASC);
     PlayerStats playerStats = rankingService.getRankings(dummySort, playerId).stream().findFirst().orElse(null);

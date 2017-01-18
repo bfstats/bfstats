@@ -99,7 +99,7 @@ public class PlayerService {
   private static NicknameUsage toNicknameUsage(PlayerNicknameRecord r) {
     return new NicknameUsage()
         .setName(r.getNickname())
-        .setTimesUsed(0);
+        .setTimesUsed(r.getTimesUsed());
   }
 
   public List<PlayerAndTotal> getKillsByVictims(@Nullable Integer playerId) {

@@ -1,14 +1,14 @@
 {% extends "layout" %}
-{% block title %}Round {{ round.mapName }} at {{ round.startTime | dt("yyyy-MM-dd HH:mm") }}{% endblock %}
+{% block title %}Round {{ round.mapName }} at {{ round.startTime | dt("dd-MM-yyyy HH:mm") }}{% endblock %}
 
 {% block content %}
-<h3>{{ round.mapName }} {{ round.startTime | dt("yyyy-MM-dd HH:mm") }} - {{ round.endTime | dt("yyyy-MM-dd HH:mm") }} ({{ round.durationInMinutes }} min)</h3>
+<h3>{{ round.mapName }} {{ round.startTime | dt("dd-MM-yyyy HH:mm") }} - {{ round.endTime | dt("dd-MM-yyyy HH:mm") }} ({{ round.durationInMinutes }} min)</h3>
 
-{% include "fragments/map" %}
-
-<div style="overflow-y: auto; width: 700px; height: 400px;">
+<div style="float:right;overflow-y: auto; width: 700px; max-height: 400px;">
   {% include "fragments/chat" %}
 </div>
+
+{% include "fragments/map" %}
 
 
 End time: {{ round.endTime }}

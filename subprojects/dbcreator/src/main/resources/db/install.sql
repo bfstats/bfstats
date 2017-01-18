@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS player_nickname (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   player_id INTEGER NOT NULL,
   nickname VARCHAR(150) NOT NULL,
+  times_used INTEGER NOT NULL,
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
 CREATE INDEX IF NOT EXISTS player_nickname_player_id_idx ON player_nickname(player_id);

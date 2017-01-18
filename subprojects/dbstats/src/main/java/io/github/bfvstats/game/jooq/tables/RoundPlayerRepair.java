@@ -17,7 +17,6 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -38,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerRepair extends TableImpl<RoundPlayerRepairRecord> {
 
-    private static final long serialVersionUID = -1815340740;
+    private static final long serialVersionUID = -1352318391;
 
     /**
      * The reference instance of <code>round_player_repair</code>
@@ -161,14 +160,6 @@ public class RoundPlayerRepair extends TableImpl<RoundPlayerRepairRecord> {
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Identity<RoundPlayerRepairRecord, Integer> getIdentity() {
-        return Keys.IDENTITY_ROUND_PLAYER_REPAIR;
     }
 
     /**

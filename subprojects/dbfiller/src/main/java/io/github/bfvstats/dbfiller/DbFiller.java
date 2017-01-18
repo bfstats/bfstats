@@ -998,6 +998,9 @@ else: repair; number of repairs
       playerRecord.insert();
     } else if (!playerRecord.getName().equals(name)) {
       addNickname(playerRecord.getId(), name);
+      // also update the "active" nickname
+      playerRecord.setName(name);
+      playerRecord.update();
     }
 
     return playerRecord;
@@ -1013,7 +1016,10 @@ else: repair; number of repairs
       playerNicknameRecord = transaction().newRecord(PLAYER_NICKNAME);
       playerNicknameRecord.setPlayerId(playerId);
       playerNicknameRecord.setNickname(nickname);
+      playerNicknameRecord.setTimesUsed(1);
       playerNicknameRecord.insert();
+    } else {
+      playerNicknameRecord.setTimesUsed(playerNicknameRecord.getTimesUsed() + 1);
     }
 
     return playerNicknameRecord;

@@ -7,7 +7,7 @@
 
 
 <ul class="player-stats">
-  <li>Last seen: {{ playerDetails.lastSeen | dt("yyyy-MM-dd HH:mm") }}</li>
+  <li>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</li>
   <li>Rank {{ playerStats.rank }}</li>
   <li>Total score {{ playerStats.score }}</li>
   <li>Avg Score per round: {{ playerStats.averageScore }}</li>
