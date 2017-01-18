@@ -1,23 +1,41 @@
 package io.github.bfvstats;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.loader.DelegatingLoader;
+import com.mitchellbosecke.pebble.loader.FileLoader;
 import io.github.bfvstats.controller.*;
 import io.github.bfvstats.pebble.Java8Extension;
 import io.github.bfvstats.util.DbUtils;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.core.Application;
+import ro.pippo.core.PippoConstants;
 import ro.pippo.guice.GuiceControllerFactory;
 import ro.pippo.pebble.PebbleTemplateEngine;
+
+import java.nio.file.Paths;
 
 public class BasicApplication extends ControllerApplication {
 
   public static class EnhancedPebbleTemplateEngine extends PebbleTemplateEngine {
     @Override
     protected void init(Application application, PebbleEngine.Builder builder) {
-      //builder.loader()
       builder.extension(new Java8Extension());
+
+      FileLoader fileLoader = new FileLoader();
+      fileLoader.setCharset(PippoConstants.UTF8);
+
+      if (application.getPippoSettings().isDev()) {
+        String templatesAbsolutePath = Paths.get(".").toAbsolutePath().normalize()
+            .resolve("src\\main\\resources\\templates")
+            .normalize()
+            .toString();
+        fileLoader.setPrefix(templatesAbsolutePath);
+        fileLoader.setSuffix("." + "peb");
+        builder.loader(new DelegatingLoader(Lists.newArrayList(fileLoader)));
+      }
     }
   }
 
