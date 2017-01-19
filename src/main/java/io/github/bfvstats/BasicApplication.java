@@ -13,6 +13,7 @@ import io.github.bfvstats.util.DbUtils;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.core.Application;
 import ro.pippo.core.PippoConstants;
+import ro.pippo.core.route.RouteGroup;
 import ro.pippo.guice.GuiceControllerFactory;
 import ro.pippo.pebble.PebbleTemplateEngine;
 
@@ -69,10 +70,8 @@ public class BasicApplication extends ControllerApplication {
 
     // send 'Hello World' as response
     GET("/", routeContext -> routeContext.send("Hello World"));
-    GET("/players/json", PlayerController.class, "jsonRandom");
-    GET("/players(/?)", PlayerController.class, "list");
-    GET("/players/{id}", PlayerController.class, "details");
-    GET("/players/{id}/map/{mapCode}", PlayerController.class, "mapStats");
+
+    addRouteGroup(new PlayerRoutes());
 
     GET("/ranking(/?)", RankingController.class, "ranking");
 
@@ -92,4 +91,21 @@ public class BasicApplication extends ControllerApplication {
         .runAsFinally();
   }
 
+  public class PlayerRoutes extends RouteGroup {
+
+    public PlayerRoutes() {
+      super("/players");
+
+      GET("/json", createRouteHandler(PlayerController.class, "jsonRandom"));
+
+      GET("/", createRouteHandler(PlayerController.class, "list"));
+
+      GET("/search", createRouteHandler(PlayerController.class, "search"));
+      POST("/search", createRouteHandler(PlayerController.class, "search"));
+
+      GET("/{id: [0-9]+}", createRouteHandler(PlayerController.class, "details"));
+      GET("/{id: [0-9]+}/map/{mapCode}", createRouteHandler(PlayerController.class, "mapStats"));
+    }
+
+  }
 }

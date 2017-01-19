@@ -35,6 +35,13 @@ public class PlayerService {
     return records.stream().map(PlayerService::toPlayer).collect(Collectors.toList());
   }
 
+  public List<Player> findPlayers(String partialName) {
+    Result<PlayerRecord> records = getDslContext().selectFrom(PLAYER)
+        .where(PLAYER.NAME.likeIgnoreCase("%" + partialName + "%"))
+        .fetch();
+    return records.stream().map(PlayerService::toPlayer).collect(Collectors.toList());
+  }
+
   public Player getPlayer(int id) {
     PlayerRecord r = getDslContext().selectFrom(PLAYER).
         where(PLAYER.ID.eq(id)).fetchOne();
@@ -250,5 +257,4 @@ public class PlayerService {
   private static String convertSecondToHHMMSSString(int nSecondTime) {
     return LocalTime.MIN.plusSeconds(nSecondTime).toString();
   }
-
 }

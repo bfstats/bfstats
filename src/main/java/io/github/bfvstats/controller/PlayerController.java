@@ -9,6 +9,7 @@ import io.github.bfvstats.util.Sort;
 import ro.pippo.controller.Controller;
 import ro.pippo.core.Param;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,16 @@ public class PlayerController extends Controller {
     this.playerService = playerService;
     this.mapService = mapService;
     this.rankingService = rankingService;
+  }
+
+  public void search(@Nullable @Param("query") String partialName) {
+    List<Player> players;
+    if (partialName != null) {
+      players = playerService.findPlayers(partialName);
+    } else {
+      players = playerService.getPlayers();
+    }
+    getResponse().bind("players", players).render("players/search");
   }
 
   public void list() {

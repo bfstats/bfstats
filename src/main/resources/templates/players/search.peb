@@ -1,0 +1,21 @@
+{% extends "layout" %}
+
+{% block title %}Search Players{% endblock %}
+
+{% block content %}
+
+<form>
+<input type="text" name="query" value="" />
+</form>
+
+{% if players is empty %}
+  There are no players.
+{% else %}
+  <ul>
+    {% for player in players %}
+    <li><a href="/players/{{ player.id }}">{{ player.name }}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% endblock %}
