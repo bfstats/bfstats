@@ -11,7 +11,6 @@
 <div id="navigation">
   <a href="/ranking">Ranks</a>
   <a href="/rounds">Rounds</a>
-  <a href="/players">Players</a>
   <a href="/players/search">Search players</a>
   <a href="/maps">Maps</a>
   <a href="/chat">Chat</a>

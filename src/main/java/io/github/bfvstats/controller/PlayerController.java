@@ -40,11 +40,6 @@ public class PlayerController extends Controller {
         .render("players/search");
   }
 
-  public void list() {
-    List<Player> players = playerService.getPlayers();
-    getResponse().bind("players", players).render("players/list");
-  }
-
   public void details(@Param("id") int playerId) {
     Player player = playerService.getPlayer(playerId);
     List<NicknameUsage> otherNicknames = playerService.getNicknameUsages(playerId).stream()

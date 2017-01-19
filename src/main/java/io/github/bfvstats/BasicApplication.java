@@ -98,8 +98,7 @@ public class BasicApplication extends ControllerApplication {
 
       GET("/json", createRouteHandler(PlayerController.class, "jsonRandom"));
 
-      GET("/", createRouteHandler(PlayerController.class, "list"));
-
+      GET("/", createRouteHandler(PlayerController.class, "search"));
       GET("/search", createRouteHandler(PlayerController.class, "search"));
       POST("/search", createRouteHandler(PlayerController.class, "search"));
 
