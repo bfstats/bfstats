@@ -997,11 +997,12 @@ else: repair; number of repairs
       playerRecord.setKeyhash(keyHash);
       playerRecord.insert();
     } else {
-      addNickname(playerRecord.getId(), name);
-      // also update the "active" nickname
+      // update the "active" nickname
       playerRecord.setName(name);
       playerRecord.update();
     }
+
+    addNickname(playerRecord.getId(), name);
 
     return playerRecord;
   }
