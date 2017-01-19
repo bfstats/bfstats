@@ -36,9 +36,14 @@ public class PlayerService {
   }
 
   public List<Player> findPlayers(String partialName) {
-    Result<PlayerRecord> records = getDslContext().selectFrom(PLAYER)
+    Result<PlayerRecord> records = getDslContext()
+        .select(PLAYER.ID, PLAYER_NICKNAME.NICKNAME.as("name"), PLAYER.KEYHASH)
+        .from(PLAYER)
+        .leftJoin(PLAYER_NICKNAME).on(PLAYER_NICKNAME.PLAYER_ID.eq(PLAYER.ID))
         .where(PLAYER.NAME.likeIgnoreCase("%" + partialName + "%"))
-        .fetch();
+        .or(PLAYER_NICKNAME.NICKNAME.likeIgnoreCase("%" + partialName + "%"))
+        .fetchInto(PLAYER);
+
     return records.stream().map(PlayerService::toPlayer).collect(Collectors.toList());
   }
 

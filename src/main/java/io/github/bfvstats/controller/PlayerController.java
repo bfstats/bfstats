@@ -34,7 +34,10 @@ public class PlayerController extends Controller {
     } else {
       players = playerService.getPlayers();
     }
-    getResponse().bind("players", players).render("players/search");
+
+    getResponse().bind("players", players)
+        .bind("query", partialName)
+        .render("players/search");
   }
 
   public void list() {
