@@ -42,8 +42,7 @@ public class PlayerController extends Controller {
 
   public void details(@Param("id") int playerId) {
     Player player = playerService.getPlayer(playerId);
-    List<NicknameUsage> otherNicknames = playerService.getNicknameUsages(playerId).stream()
-        .filter(nu -> !nu.getName().equals(player.getName()))
+    List<NicknameUsage> nicknameUsages = playerService.getNicknameUsages(playerId).stream()
         .collect(Collectors.toList());
 
     Sort dummySort = new Sort("player_rank", Sort.SortOrder.ASC);
@@ -60,7 +59,7 @@ public class PlayerController extends Controller {
 
     getResponse()
         .bind("player", player)
-        .bind("otherNicknames", otherNicknames)
+        .bind("nicknames", nicknameUsages)
         .bind("playerStats", playerStats)
         .bind("playerDetails", playerDetails)
         .bind("killsByVictims", killsByVictims)
