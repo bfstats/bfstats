@@ -10,7 +10,11 @@ import ro.pippo.controller.Controller;
 import ro.pippo.core.Param;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RoundController extends Controller {
 
@@ -27,7 +31,11 @@ public class RoundController extends Controller {
 
   public void list() {
     List<Round> rounds = roundService.getRounds(null);
-    getResponse().bind("rounds", rounds).render("rounds/list");
+
+    Map<LocalDate, List<Round>> roundsByDay = rounds.stream()
+        .collect(Collectors.groupingBy(r -> r.getStartTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
+
+    getResponse().bind("rounds", roundsByDay).render("rounds/list");
   }
 
   public void details(@Param("id") int roundId) {

@@ -4,6 +4,7 @@ import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.escaper.SafeString;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -31,6 +32,7 @@ public class Java8DateFilter implements Filter {
     if (input == null) {
       return null;
     }
+
     LocalDateTime dateTime;
     DateTimeFormatter existingDateTimeFormatter;
     DateTimeFormatter intendedDateTimeFormatter;
@@ -44,12 +46,20 @@ public class Java8DateFilter implements Filter {
       existingDateTimeFormatter = DateTimeFormatter.ofPattern((String) args.get("existingFormat"), locale);
       try {
         dateTime = LocalDateTime.parse((String) input, existingDateTimeFormatter);
+        return new SafeString(dateTime.format(intendedDateTimeFormatter));
       } catch (DateTimeParseException e) {
         throw new RuntimeException("Could not parse date", e);
       }
     } else {
-      dateTime = (LocalDateTime) input;
+      if (input instanceof LocalDateTime) {
+        dateTime = (LocalDateTime) input;
+        return new SafeString(dateTime.format(intendedDateTimeFormatter));
+      } else if (input instanceof LocalDate) {
+        LocalDate localDate = (LocalDate) input;
+        return new SafeString(localDate.format(intendedDateTimeFormatter));
+      } else {
+        throw new IllegalArgumentException("Unsupported date time type " + input.getClass());
+      }
     }
-    return new SafeString(dateTime.format(intendedDateTimeFormatter));
   }
 }

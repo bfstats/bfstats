@@ -5,11 +5,17 @@
 {% if rounds is empty %}
 There are no rounds.
 {% else %}
-<ul>
-  {% for round in rounds %}
-  <li>{{ round.id }} <a href="/rounds/{{ round.id }}">{{ round.mapName }}</a> {{ round.startTime | dt("dd-MM-yyyy HH:mm") }} - {{ round.endTime | dt("dd-MM-yyyy HH:mm") }} ({{ round.durationInMinutes }} min)</li>
+  {% for entry in rounds %}
+    <strong>{{ entry.key | dt("dd-MM-yyyy") }}</strong>
+    <ul>
+    {% for round in entry.value %}
+    <li>
+    {{ round.id }} <a href="/rounds/{{ round.id }}">{{ round.mapName }}</a>
+    {{ round.startTime | dt("dd-MM-yyyy HH:mm") }} - {{ round.endTime | dt("dd-MM-yyyy HH:mm") }} ({{ round.durationInMinutes }} min)
+    </li>
+    {% endfor %}
+    </ul>
   {% endfor %}
-</ul>
 {% endif %}
 
 {% endblock %}
