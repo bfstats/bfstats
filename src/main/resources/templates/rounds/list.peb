@@ -10,8 +10,8 @@ There are no rounds.
     <ul>
     {% for round in entry.value %}
     <li>
+    {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)
     {{ round.id }} <a href="/rounds/{{ round.id }}">{{ round.mapName }}</a>
-    {{ round.startTime | dt("dd-MM-yyyy HH:mm") }} - {{ round.endTime | dt("dd-MM-yyyy HH:mm") }} ({{ round.durationInMinutes }} min)
     </li>
     {% endfor %}
     </ul>

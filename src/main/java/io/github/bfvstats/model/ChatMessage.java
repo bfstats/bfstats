@@ -15,4 +15,5 @@ public class ChatMessage {
   private LocalDateTime time;
   private Integer toTeam;
   private Integer playerTeam;
+  private Integer roundId;
 }

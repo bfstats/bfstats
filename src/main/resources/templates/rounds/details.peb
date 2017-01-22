@@ -2,7 +2,13 @@
 {% block title %}Round {{ round.mapName }} at {{ round.startTime | dt("dd-MM-yyyy HH:mm") }}{% endblock %}
 
 {% block content %}
-<h3>{{ round.mapName }} {{ round.startTime | dt("dd-MM-yyyy HH:mm") }} - {{ round.endTime | dt("dd-MM-yyyy HH:mm") }} ({{ round.durationInMinutes }} min)</h3>
+<h3>{{ round.mapName }} {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)</h3>
+
+<p>
+Tickets left:
+  {% if round.winningTeam == 1 %}<strong>{%endif%} NVA - {{ round.endTicketsTeam1 }} {% if round.winningTeam == 1 %}</strong>{%endif%}
+  {% if round.winningTeam == 2 %}<strong>{%endif%}USA - {{ round.endTicketsTeam2 }} {% if round.winningTeam == 2 %}</strong>{%endif%}
+</p>
 
 <div style="float:right;overflow-y: auto; width: 700px; max-height: 400px;">
   {% include "fragments/chat" %}
@@ -10,12 +16,7 @@
 
 {% include "fragments/map" %}
 
-
-End time: {{ round.endTime }}
-Winning team: {{ round.winningTeam }}
-Victory type: {{ round.victoryType }}
-end t1: {{ round.endTicketsTeam1 }}
-end t2: {{ round.endTicketsTeam2 }}
+<!--<li>Victory type: {{ round.victoryType }}</li>-->
 
 {% include "rounds/score" %}
 

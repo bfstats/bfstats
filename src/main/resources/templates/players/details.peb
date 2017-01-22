@@ -24,14 +24,6 @@
   <li>Repairs: {{ playerStats.repairs }}</li>
 </ul>
 
-{% include "players/deaths" %}
-{% include "players/kills" %}
-
-{% include "players/weapons" %}
-{% include "players/kits" %}
-{% include "players/vehicles" %}
-{% include "players/maps" %}
-
 {% if nicknames is not empty %}
 <div>
   Played with nicknames:
@@ -42,5 +34,12 @@
 </div>
 {% endif %}
 
+{% include "players/deaths" %}
+{% include "players/kills" %}
+
+{% include "players/weapons" %}
+{% include "players/kits" %}
+{% include "players/vehicles" %}
+{% include "players/maps" %}
 
 {% endblock %}

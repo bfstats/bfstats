@@ -45,12 +45,14 @@ public class RoundController extends Controller {
     MapStatsInfo mapStatsInfo = mapService.getMapStatsInfoForPlayer(round.getMapCode(), null, roundId);
 
     List<ChatMessage> chatMessages = chatService.getChatMessages(roundId);
+    Map<LocalDate, List<ChatMessage>> messagesByDay = chatMessages.stream()
+        .collect(Collectors.groupingBy(r -> r.getTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
 
     getResponse()
         .bind("round", round)
         .bind("playerStats", roundPlayerStats)
         .bind("map", mapStatsInfo)
-        .bind("chatMessages", chatMessages)
+        .bind("chatMessages", messagesByDay)
         .render("rounds/details");
   }
 }

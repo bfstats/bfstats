@@ -16,7 +16,8 @@ import static io.github.bfvstats.util.DbUtils.getDslContext;
 public class ChatService {
 
   public List<ChatMessage> getChatMessages(Integer roundId) {
-    return getDslContext().select(ROUND_CHAT_LOG.PLAYER_ID, ROUND_CHAT_LOG.MESSAGE, ROUND_CHAT_LOG.EVENT_TIME, ROUND_CHAT_LOG.TO_TEAM, PLAYER.NAME, ROUND_PLAYER_TEAM.TEAM)
+    return getDslContext()
+        .select(ROUND_CHAT_LOG.PLAYER_ID, ROUND_CHAT_LOG.MESSAGE, ROUND_CHAT_LOG.EVENT_TIME, ROUND_CHAT_LOG.TO_TEAM, PLAYER.NAME, ROUND_PLAYER_TEAM.TEAM, ROUND_PLAYER_TEAM.ROUND_ID)
         .from(ROUND_CHAT_LOG)
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_CHAT_LOG.PLAYER_ID))
         .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_CHAT_LOG.ROUND_ID)
@@ -35,14 +36,14 @@ public class ChatService {
   private ChatMessage toChatMessage(Record r) {
     Date eventTimeDate = r.get(ROUND_CHAT_LOG.EVENT_TIME, Date.class);
 
-
     return new ChatMessage()
         .setPlayerId(r.get(ROUND_CHAT_LOG.PLAYER_ID, Integer.class))
         .setPlayerName(r.get(PLAYER.NAME, String.class))
         .setText(r.get(ROUND_CHAT_LOG.MESSAGE, String.class))
         .setTime(toLocalDateTime(eventTimeDate))
         .setToTeam(r.get(ROUND_CHAT_LOG.TO_TEAM))
-        .setPlayerTeam(r.get(ROUND_PLAYER_TEAM.TEAM));
+        .setPlayerTeam(r.get(ROUND_PLAYER_TEAM.TEAM))
+        .setRoundId(r.get(ROUND_PLAYER_TEAM.ROUND_ID));
   }
 
   private static LocalDateTime toLocalDateTime(Date date) {

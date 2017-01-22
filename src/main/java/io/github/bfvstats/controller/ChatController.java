@@ -5,7 +5,11 @@ import io.github.bfvstats.service.ChatService;
 import ro.pippo.controller.Controller;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ChatController extends Controller {
 
@@ -18,6 +22,9 @@ public class ChatController extends Controller {
 
   public void list() {
     List<ChatMessage> chatMessages = chatService.getChatMessages(null);
-    getResponse().bind("chatMessages", chatMessages).render("chat/list");
+
+    Map<LocalDate, List<ChatMessage>> messagesByDay = chatMessages.stream()
+        .collect(Collectors.groupingBy(r -> r.getTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
+    getResponse().bind("chatMessages", messagesByDay).render("chat/list");
   }
 }

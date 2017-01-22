@@ -7,16 +7,19 @@
 {% if chatMessages is empty %}
 There are no chat messages
 {% else %}
-<table class="styled_table chat_table">
+{% for entry in chatMessages %}
+<strong>{{ entry.key | dt("dd-MM-yyyy") }}</strong>
+<table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
-  {% for chatMessage in chatMessages %}
+  {% for chatMessage in entry.value %}
   <tr class="chat-team team-{{ chatMessage.playerTeam }}">
-    <td class="time">{{ chatMessage.time | dt('dd-MM-yyyy HH:mm') }} </td>
+    <td class="time"><a href="/rounds/{{ chatMessage.roundId }}">{{ chatMessage.time | dt('HH:mm') }}</a></td>
     <td class="name" style="text-align:right"><a href="/players/{{ chatMessage.playerId }}">{{ chatMessage.playerName }}</a> {{ teamName(chatMessage.toTeam) }}:</td>
     <td class="message left">{{ chatMessage.text }}</td>
   </tr>
   {% endfor %}
   </tbody>
 </table>
+{% endfor %}
 
 {% endif %}
