@@ -5,9 +5,5 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class WeaponUsage {
-  private String code;
-  private String name;
-  private int timesUsed;
-  private float percentage;
+public class Kit {
 }

@@ -1,0 +1,8 @@
+{% extends "layout" %}
+
+{% block title %}Weapon {{ weapon.name}}{% endblock %}
+
+{% block content %}
+<h3>{{ weapon.name}}</h3>
+
+{% endblock %}

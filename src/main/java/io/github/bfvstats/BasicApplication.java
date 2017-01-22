@@ -83,6 +83,10 @@ public class BasicApplication extends ControllerApplication {
     GET("/maps(/?)", MapController.class, "list");
     GET("/maps/{mapCode}", MapController.class, "details");
 
+    GET("/kits/{code}", KitController.class, "details");
+    GET("/vehicles/{code}", VehicleController.class, "details");
+    GET("/weapons/{code}", WeaponController.class, "details");
+
     closeDbConnections();
   }
 

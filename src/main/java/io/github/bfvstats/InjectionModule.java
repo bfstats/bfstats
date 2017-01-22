@@ -9,9 +9,12 @@ public class InjectionModule extends AbstractModule {
   protected void configure() {
     bind(BasicApplication.class).asEagerSingleton();
     bind(ChatService.class).asEagerSingleton();
+    bind(KitService.class).asEagerSingleton();
     bind(MapService.class).asEagerSingleton();
     bind(PlayerService.class).asEagerSingleton();
     bind(RankingService.class).asEagerSingleton();
     bind(RoundService.class).asEagerSingleton();
+    bind(VehicleService.class).asEagerSingleton();
+    bind(WeaponService.class);
   }
 }

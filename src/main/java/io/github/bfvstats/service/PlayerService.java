@@ -184,10 +184,20 @@ public class PlayerService {
         .collect(Collectors.toList());
   }
 
+  private static Map<String, String> weaponNameByCode = ImmutableMap.<String, String>builder()
+      .put("Car15", "CAR-15")
+      .build();
+
+  public static String weaponName(String weaponCode) {
+    return weaponNameByCode.getOrDefault(weaponCode, weaponCode);
+  }
+
   private static WeaponUsage toWeaponUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
+    String code = r.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
     return new WeaponUsage()
-        .setName(r.get(ROUND_PLAYER_DEATH.KILL_WEAPON))
+        .setCode(code)
+        .setName(weaponName(code))
         .setTimesUsed(timesUsed)
         .setPercentage(percentage(timesUsed, totalTimesUsed));
   }
@@ -209,10 +219,20 @@ public class PlayerService {
         .collect(Collectors.toList());
   }
 
+  private static Map<String, String> kitNameByCode = ImmutableMap.<String, String>builder()
+      .put("NVA_Assault", "NVA Assault")
+      .build();
+
+  public static String kitName(String kitCode) {
+    return kitNameByCode.getOrDefault(kitCode, kitCode);
+  }
+
   private static KitUsage toKitUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
+    String code = r.get(ROUND_PLAYER_PICKUP_KIT.KIT);
     return new KitUsage()
-        .setName(r.get(ROUND_PLAYER_PICKUP_KIT.KIT))
+        .setCode(code)
+        .setName(kitName(code))
         .setTimesUsed(timesUsed)
         .setPercentage(percentage(timesUsed, totalTimesUsed));
   }
