@@ -3,6 +3,7 @@ package io.github.bfvstats.service;
 import com.google.common.collect.ImmutableMap;
 import io.github.bfvstats.model.WeaponUsage;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 public class WeaponService {
@@ -55,6 +56,11 @@ public class WeaponService {
       .put("M21", "M21")
       .put("M40", "M40")
       .build();
+
+  @Nullable
+  public static String weaponNameStrict(String weaponCode) {
+    return weaponNameByCode.get(weaponCode);
+  }
 
   public static String weaponName(String weaponCode) {
     return weaponNameByCode.getOrDefault(weaponCode, weaponCode);

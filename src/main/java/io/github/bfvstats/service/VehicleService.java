@@ -17,7 +17,7 @@ public class VehicleService {
       .put("Mig21", "MiG-21")
       .put("UH1Assault", "Huey Gunship")
       .put("UH1Transport", "Huey Slick")
-      .put("BM21sam", "BM-21")
+      .put("BM21SAM", "BM-21")
       .put("BTR60", "BTR-60")
       .put("Logtrap", "Logtrap")
       .put("M110", "M-110")

@@ -186,9 +186,13 @@ public class PlayerService {
   private static WeaponUsage toWeaponUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
     String code = r.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
+    String weaponName = WeaponService.weaponNameStrict(code);
+    if (weaponName == null) {
+      weaponName = VehicleService.vehicleName(code);
+    }
     return new WeaponUsage()
         .setCode(code)
-        .setName(WeaponService.weaponName(code))
+        .setName(weaponName)
         .setTimesUsed(timesUsed)
         .setPercentage(percentage(timesUsed, totalTimesUsed));
   }
