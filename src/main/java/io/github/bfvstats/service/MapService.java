@@ -46,7 +46,7 @@ public class MapService {
       .build();
 
   public static Map<String, String> mapNameByMapCode = ImmutableMap.<String, String>builder()
-      .put("defense_of_con_thien", "Defence of Con Thien")
+      .put("defense_of_con_thien", "Defense of Con Thien")
       .put("fall_of_saigon", "Fall of Saigon")
       .put("ho_chi_minh_trail", "Ho Chi Minh Trail")
       .put("ho_chi_minh_trail_alt", "Cambodian Incursion")
@@ -63,7 +63,12 @@ public class MapService {
       .put("operation_irving", "Operation Irving")
       .put("quang_tri", "Quang Tri - 1968")
       .put("quang_tri_alt", "Quang Tri - 1972")
-      .put("saigon68", "Saigon 1968")
+      .put("saigon68", "Saigon - 1968")
+
+      // WWII mod
+      .put("wake", "Wake Island")
+      .put("iwo_jima", "Iwo Jima")
+      .put("invasion_of_the_philippines", "Invasion of the Philippines")
       .build();
 
   public MapStatsInfo getMapStatsInfoForPlayer(String mapCode, Integer playerId, Integer roundId) {

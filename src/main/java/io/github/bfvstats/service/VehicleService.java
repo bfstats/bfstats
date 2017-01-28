@@ -39,6 +39,18 @@ public class VehicleService {
       .put("PBR", "P.B.R.")
       .put("Sampan", "Sampan")
       .put("Tango", "Tango")
+      .put("Stationary_M60", "Stationary M60")
+      .put("OH-6", "OH-6 Loach")
+      .put("Ka-25", "Ka-25 Hormone")
+      .put("mutt2", "M.U.T.T.")
+      .put("A1Skyraider", "A1 Skyraider")
+      .put("A1Skyraider_Alt", "A1 Skyraider")
+      .put("BRDM", "BRDM")
+      .put("Quad50", "Quad 0.50 MG")
+      .put("AC-47", "AC-47 Gunship")
+      .put("BM21Cargo", "BM21 Transport")
+      .put("Nancy", "M35A1 Nancy")
+      .put("T72", "T-72")
       .build();
 
   public static String vehicleName(String vehicleCode) {
