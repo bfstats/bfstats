@@ -211,20 +211,12 @@ public class PlayerService {
         .collect(Collectors.toList());
   }
 
-  private static Map<String, String> kitNameByCode = ImmutableMap.<String, String>builder()
-      .put("NVA_Assault", "NVA Assault")
-      .build();
-
-  public static String kitName(String kitCode) {
-    return kitNameByCode.getOrDefault(kitCode, kitCode);
-  }
-
   private static KitUsage toKitUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
     String code = r.get(ROUND_PLAYER_PICKUP_KIT.KIT);
     return new KitUsage()
         .setCode(code)
-        .setName(kitName(code))
+        .setName(KitService.kitName(code))
         .setTimesUsed(timesUsed)
         .setPercentage(percentage(timesUsed, totalTimesUsed));
   }
