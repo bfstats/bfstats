@@ -186,6 +186,7 @@ public class PlayerService {
 
   private static Map<String, String> weaponNameByCode = ImmutableMap.<String, String>builder()
       .put("Car15", "CAR-15")
+      .put("XMGrenadelauncher", "XM148 grenade launcher")
       .build();
 
   public static String weaponName(String weaponCode) {

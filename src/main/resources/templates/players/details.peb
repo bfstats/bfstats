@@ -14,9 +14,9 @@
   <li>Kills: {{ playerStats.kills }}</li>
   <li>Deaths: {{ playerStats.deaths }}</li>
   <li>K/D: {{ playerStats.killDeathRatio }}</li>
-  <li>1st: {{ playerStats.goldCount }}</li>
-  <li>2nd: {{ playerStats.silverCount }}</li>
-  <li>3rd: {{ playerStats.bronzeCount }}</li>
+  <li>Gold medals: {{ playerStats.goldCount }}</li>
+  <li>Silver medals: {{ playerStats.silverCount }}</li>
+  <li>Bronze medals: {{ playerStats.bronzeCount }}</li>
   <li>TKs: {{ playerStats.teamKills }}</li>
   <li>Captures: {{ playerStats.captures }}</li>
   <li>Rounds played: {{ playerStats.roundsPlayed }}</li>
