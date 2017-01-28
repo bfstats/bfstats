@@ -10,6 +10,7 @@ import org.jooq.Record2;
 import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
+import ro.pippo.core.util.StringUtils;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -248,12 +249,59 @@ public class PlayerService {
   private static VehicleUsage toVehicleUsage(Record r, int totalVehiclesDriveTimeInSeconds) {
     int driveTime = r.get("total_duration", Integer.class);
     String code = r.get(ROUND_PLAYER_VEHICLE.VEHICLE);
+    String codeWithoutModifiers = withoutModifiers(code);
+    if (codeWithoutModifiers.isEmpty()) {
+      codeWithoutModifiers = code;
+    }
+
+    String vehicleName = VehicleService.vehicleName(codeWithoutModifiers);
+    if (code.length() > codeWithoutModifiers.length()) {
+      String modifierName = code.substring(codeWithoutModifiers.length());
+      modifierName = removePCO(modifierName);
+      modifierName = StringUtils.removeStart(modifierName, "_");
+      vehicleName += " " + modifierName;
+    }
+
     return new VehicleUsage()
         .setCode(code)
-        .setName(VehicleService.vehicleName(code))
+        .setName(vehicleName)
         .setDriveTime(convertSecondToHHMMSSString(driveTime)) // seconds
         .setPercentage(percentage(driveTime, totalVehiclesDriveTimeInSeconds))
         .setTimesUsed(r.get("times_used", Integer.class));
+  }
+
+  private static String removePCO(String code) {
+    code = StringUtils.removeEnd(code, "PCO6");
+    code = StringUtils.removeEnd(code, "PCO5");
+    code = StringUtils.removeEnd(code, "PCO4");
+    code = StringUtils.removeEnd(code, "PCO3");
+    code = StringUtils.removeEnd(code, "PCO2");
+    code = StringUtils.removeEnd(code, "PCO1");
+    code = StringUtils.removeEnd(code, "PCO");
+
+    code = StringUtils.removeEnd(code, "_");
+    return code;
+  }
+
+  private static String withoutModifiers(String code) {
+    code = removePCO(code);
+
+    code = StringUtils.removeEnd(code, "Left");
+    code = StringUtils.removeEnd(code, "Right");
+
+    code = StringUtils.removeEnd(code, "Funner");
+    code = StringUtils.removeEnd(code, "RearGunner");
+    code = StringUtils.removeEnd(code, "Gunner");
+    code = StringUtils.removeEnd(code, "ArmedPassenger");
+    code = StringUtils.removeEnd(code, "Passenger2");
+    code = StringUtils.removeEnd(code, "Passenger");
+    code = StringUtils.removeEnd(code, "CoPilot");
+    code = StringUtils.removeEnd(code, "MG"); // Machine gun
+    code = StringUtils.removeEnd(code, "TOW"); // Tube-launched, Optically tracked, Wire-guided; weapon of MuttTOW = BGM-71 TOW
+
+    code = StringUtils.removeEnd(code, "_");
+
+    return code;
   }
 
   private static String convertSecondToHHMMSSString(int nSecondTime) {
