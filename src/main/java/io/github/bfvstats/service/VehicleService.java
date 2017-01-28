@@ -61,6 +61,8 @@ public class VehicleService {
   }
 
   public VehicleUsage getVehicle(String vehicleCode) {
-    return new VehicleUsage().setName(vehicleCode);
+    return new VehicleUsage()
+        .setCode(vehicleCode)
+        .setName(vehicleName(vehicleCode));
   }
 }

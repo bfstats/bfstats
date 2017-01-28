@@ -111,6 +111,8 @@ public class KitService {
   }
 
   public KitUsage getKit(String kitCode) {
-    return new KitUsage().setName(kitCode);
+    return new KitUsage()
+        .setCode(kitCode)
+        .setName(kitName(kitCode));
   }
 }

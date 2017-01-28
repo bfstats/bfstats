@@ -67,6 +67,8 @@ public class WeaponService {
   }
 
   public WeaponUsage getWeapon(String weaponCode) {
-    return new WeaponUsage().setName(weaponCode);
+    return new WeaponUsage()
+        .setCode(weaponCode)
+        .setName(weaponName(weaponCode));
   }
 }
