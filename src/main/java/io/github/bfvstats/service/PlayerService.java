@@ -184,21 +184,12 @@ public class PlayerService {
         .collect(Collectors.toList());
   }
 
-  private static Map<String, String> weaponNameByCode = ImmutableMap.<String, String>builder()
-      .put("Car15", "CAR-15")
-      .put("XMGrenadelauncher", "XM148 grenade launcher")
-      .build();
-
-  public static String weaponName(String weaponCode) {
-    return weaponNameByCode.getOrDefault(weaponCode, weaponCode);
-  }
-
   private static WeaponUsage toWeaponUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
     String code = r.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
     return new WeaponUsage()
         .setCode(code)
-        .setName(weaponName(code))
+        .setName(WeaponService.weaponName(code))
         .setTimesUsed(timesUsed)
         .setPercentage(percentage(timesUsed, totalTimesUsed));
   }

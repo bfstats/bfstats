@@ -50,9 +50,9 @@ public class MapService {
       .put("fall_of_saigon", "Fall of Saigon")
       .put("ho_chi_minh_trail", "Ho Chi Minh Trail")
       .put("ho_chi_minh_trail_alt", "Cambodian Incursion")
-      .put("hue", "Hue 1968")
+      .put("hue", "Hue - 1968")
       .put("hue_alt", "Reclaiming Hue")
-      .put("ia_drang", "Ia Drang Valley")
+      .put("ia_drang", "The Ia Drang Valley")
       .put("khe_sahn", "Siege of Khe Sahn")
       .put("landing_zone_albany", "Landing Zone Albany")
       .put("lang_vei", "Fall of Lang Vei")
@@ -61,8 +61,8 @@ public class MapService {
       .put("operation_game_warden", "Operation Game Warden")
       .put("operation_hastings", "Operation Hastings")
       .put("operation_irving", "Operation Irving")
-      .put("quang_tri", "Quang Tri 1968")
-      .put("quang_tri_alt", "Quang Tri 1972")
+      .put("quang_tri", "Quang Tri - 1968")
+      .put("quang_tri_alt", "Quang Tri - 1972")
       .put("saigon68", "Saigon 1968")
       .build();
 
