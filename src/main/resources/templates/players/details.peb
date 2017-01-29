@@ -8,8 +8,9 @@
 
 <ul class="player-stats">
   <li>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</li>
-  <li>Rank {{ playerStats.rank }}</li>
-  <li>Total score {{ playerStats.score }}</li>
+  <li>Hash: {{ playerStats.partialKeyHash }}</li>
+  <li>Rank: {{ playerStats.rank }}</li>
+  <li>Total score: {{ playerStats.score }}</li>
   <li>Avg Score per round: {{ playerStats.averageScore }}</li>
   <li>Kills: {{ playerStats.kills }}</li>
   <li>Deaths: {{ playerStats.deaths }}</li>

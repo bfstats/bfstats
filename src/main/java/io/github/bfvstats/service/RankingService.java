@@ -33,6 +33,7 @@ public class RankingService {
     return getDslContext().select(
         DSL.count().as("rounds_played"),
         PLAYER.NAME.as("player_name"),
+        PLAYER.KEYHASH.as("keyhash"),
         PLAYER_RANK.RANK.as("player_rank"),
         ROUND_END_STATS_PLAYER.PLAYER_ID.as("player_id"),
         DSL.sum(ROUND_END_STATS_PLAYER.SCORE).as("score"),
@@ -71,9 +72,13 @@ public class RankingService {
     BigDecimal kdRateBigDec = r.get("kdrate", BigDecimal.class);
     Double kdRate = kdRateBigDec == null ? 0.0 : kdRateBigDec.doubleValue();
 
+    String keyhash = r.get("keyhash", String.class);
+    String partialKeyHash = "..." + keyhash.substring(20);
+
     return new PlayerStats()
         .setPlayerId(r.get("player_id", Integer.class))
         .setName(r.get("player_name", String.class))
+        .setPartialKeyHash(partialKeyHash)
         .setRank(r.get("player_rank", Integer.class))
         .setPoints(1)
         .setScore(r.get("score", Integer.class))
