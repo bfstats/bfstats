@@ -125,8 +125,13 @@ public class DbFiller {
       filePath = extractIfNecessary(filePath);
       if (filePath != null) {
         // TODO: skip live-file!
-        addFromXmlFile(filePath);
-        lastValidDateTimeStr = dateTimeStr;
+
+        try {
+          addFromXmlFile(filePath);
+          lastValidDateTimeStr = dateTimeStr;
+        } catch (RuntimeException e) {
+
+        }
       }
     }
 
