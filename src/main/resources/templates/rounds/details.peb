@@ -20,4 +20,7 @@ Tickets left:
 
 {% include "rounds/score" %}
 
+
+{% include "rounds/serversettings" with {"serverSettings":round.serverSettings} %}
+
 {% endblock %}
