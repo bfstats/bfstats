@@ -1,46 +1,3 @@
-body {
-  background-color: #252826;
-
-  background-color: #000;
-  background-image: url('../img/bg/bg.png');
-  background-position: top right;
-  background-size: contain;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  color: #f0f0f0;
-  font-family: Helvetica;
-  font-size: 12px;
-}
-
-body.bg1 {
-  background-image: url('../img/bg/bg.png'), url('../img/bg/khe_sahn.png');
-}
-
-body.bg2 {
-  background-image: url('../img/bg/bg.png'), url('../img/bg/hue_alt.png');
-}
-
-a {
-  color: #f0f0f0;
-}
-
-.clear {
-  overflow: auto;
-}
-
-table {
-  border-collapse: collapse;
-  font-size: 12px;
-}
-
-table td, th {
-  border: 1px solid #FFFFFF;
-}
-
-th {
-  padding: 3px 5px;
-}
-
 ::-webkit-scrollbar {
   display: block;
   width: 21px;
@@ -107,6 +64,65 @@ th {
 ::-webkit-scrollbar-thumb:horizontal:hover, ::-webkit-scrollbar-thumb:horizontal:active {
   background-color: #917e4e;
 }
+
+
+@font-face {
+  font-family: bfchat;
+  src: url('../fonts/st9_regular.woff') format('woff');
+}
+@font-face {
+  font-family: bfchat;
+  font-weight: bold;
+  src: url('../fonts/st9_bold.woff') format('woff');
+}
+
+body {
+  background-color: #252826;
+
+  background-color: #000;
+  background-image: url('../img/bg/bg.png');
+  background-position: top right;
+  background-size: contain;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color: #f0f0f0;
+  font-family: Helvetica;
+  font-size: 12px;
+
+  xfont-family: bfchat;
+  xfont-size: 8px; /* for this font only use 8px, 16px, ..., in reality the font is 9px */
+}
+
+body.bg1 {
+  background-image: url('../img/bg/bg.png'), url('../img/bg/khe_sahn.png');
+}
+
+body.bg2 {
+  background-image: url('../img/bg/bg.png'), url('../img/bg/hue_alt.png');
+}
+
+a {
+  color: #f0f0f0;
+}
+
+.clear {
+  overflow: auto;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: inherit;
+}
+
+table td, th {
+  border: 1px solid #FFFFFF;
+}
+
+th {
+  padding: 3px 5px;
+}
+
+
 
 #navigation {
   position: fixed;
@@ -257,8 +273,11 @@ th .sorted {
   box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.2), -2px 2px 2px 0 rgba(0, 0, 0, 0.19);
   /* translated3d is for font smoothing (though also blurries it)*/
   /*xtransform: rotate(-0.5deg) translate3d( 0, 0, 0);*/
-  backface-visibility: hidden;
-  transform: rotate(-0.5deg);
+  /*backface-visibility: hidden;
+  transform: rotate(-0.5deg);*/
+  font-family: 'Trebuchet MS';
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .styled_table th span.label a {
