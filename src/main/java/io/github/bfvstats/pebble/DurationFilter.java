@@ -1,7 +1,6 @@
 package io.github.bfvstats.pebble;
 
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.escaper.SafeString;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 import java.time.LocalTime;
@@ -34,8 +33,6 @@ public class DurationFilter implements Filter {
 
     if (input instanceof Long) {
       Long durationInSeconds = (Long) input;
-      long hours = durationInSeconds / 3600;
-      long minutes = (durationInSeconds % 3600) / 60;
 
       String toFormat = (String) args.get("format");
       if (toFormat == null) {
@@ -46,9 +43,7 @@ public class DurationFilter implements Filter {
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern(toFormat, locale);
 
       String formatted = LocalTime.MIN.plusSeconds(durationInSeconds).format(formatter);
-
-      String durationHoursAndMinutes = hours + "h " + minutes + "m";
-      return new SafeString(durationHoursAndMinutes);
+      return formatted;
     }
 
     return null;
