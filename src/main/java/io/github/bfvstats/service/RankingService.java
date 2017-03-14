@@ -40,7 +40,7 @@ public class RankingService {
         DSL.sum(ROUND_END_STATS_PLAYER.SCORE).div(DSL.count()).as("average_score"),
         DSL.sum(ROUND_END_STATS_PLAYER.KILLS).as("kills"),
         DSL.sum(ROUND_END_STATS_PLAYER.DEATHS).as("deaths"),
-        DSL.sum(ROUND_END_STATS_PLAYER.KILLS).div(DSL.sum(ROUND_END_STATS_PLAYER.DEATHS)).as("kdrate"), // kill/death rate
+        DSL.sum(ROUND_END_STATS_PLAYER.KILLS).cast(Float.class).div(DSL.sum(ROUND_END_STATS_PLAYER.DEATHS)).as("kdrate"), // kill/death rate
         DSL.sum(ROUND_END_STATS_PLAYER.TKS).as("tks"),
         DSL.sum(ROUND_END_STATS_PLAYER.CAPTURES).as("captures"),
         DSL.sum(ROUND_END_STATS_PLAYER.ATTACKS).as("attacks"),

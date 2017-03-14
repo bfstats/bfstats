@@ -401,3 +401,39 @@ tr.team-3 .name {
 .map_point_deaths {
   background-color: #ff471a;
 }
+
+.player-overwiew {
+  overflow: hidden;
+}
+
+.player-overwiew .detail {
+  float: left;
+  margin: 4px;
+  padding: 4px;
+  background-color: rgba(0,0,0,0.7);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.player-overwiew .detail .label {
+  display: block;
+  text-transform: uppercase;
+  text-align: center;
+  color: #b9b9b9;
+}
+
+.player-overwiew .detail .value {
+  display: block;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2em;
+  padding: 4px 0;
+}
+
+.player-overwiew .detail .additional {
+  display: block;
+  text-align: center;
+  font-size: 0.9em;
+  color: #b9b9b9;
+}
+

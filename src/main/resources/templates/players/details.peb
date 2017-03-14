@@ -5,23 +5,38 @@
 {% block content %}
 <h3>{{ player.name }}</h3>
 
+<div class="player-overwiew">
+<div class="detail">
+<span class="label">Time played</span>
+<span class="value">{{ playerDetails.totalTimeInSeconds | duration}}</span>
+<span class="additional">{{ playerStats.roundsPlayed }} rounds</span>
+</div>
+
+<div class="detail">
+<span class="label">K/D ratio</span>
+<span class="value">{{ playerStats.killDeathRatio | numberformat("0.00")}}</span>
+<span class="additional">{{ playerStats.kills }} / {{ playerStats.deaths }}</span>
+
+
+</div>
+</div>
 
 <ul class="player-stats">
   <li>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</li>
-  <li>Total time: {{ playerDetails.totalTimeInSeconds | duration}}</li>
+  <li>Time played: {{ playerDetails.totalTimeInSeconds | duration}}</li>
+  <li>Rounds played: {{ playerStats.roundsPlayed }}</li>
   <li>Hash: {{ playerStats.partialKeyHash }}</li>
   <li>Rank: {{ playerStats.rank }}</li>
   <li>Total score: {{ playerStats.score }}</li>
   <li>Avg Score per round: {{ playerStats.averageScore }}</li>
   <li>Kills: {{ playerStats.kills }}</li>
   <li>Deaths: {{ playerStats.deaths }}</li>
-  <li>K/D: {{ playerStats.killDeathRatio }}</li>
+  <li>K/D: {{ playerStats.killDeathRatio | numberformat("0.00")}}</li>
   <li>Gold medals: {{ playerStats.goldCount }}</li>
   <li>Silver medals: {{ playerStats.silverCount }}</li>
   <li>Bronze medals: {{ playerStats.bronzeCount }}</li>
   <li>TKs: {{ playerStats.teamKills }}</li>
   <li>Captures: {{ playerStats.captures }}</li>
-  <li>Rounds played: {{ playerStats.roundsPlayed }}</li>
   <li>Heals: {{ playerStats.heals }}</li>
   <li>Repairs: {{ playerStats.repairs }}</li>
 </ul>
