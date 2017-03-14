@@ -5,6 +5,8 @@ import io.github.bfvstats.service.PlayerService;
 import io.github.bfvstats.service.RankingService;
 import io.github.bfvstats.util.Sort;
 import ro.pippo.controller.Controller;
+import ro.pippo.controller.GET;
+import ro.pippo.controller.Path;
 import ro.pippo.core.Request;
 
 import javax.inject.Inject;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static io.github.bfvstats.util.SortUtils.getSortColumnAndOrderFromRequest;
 
+@Path("/ranking")
 public class RankingController extends Controller {
 
   private RankingService rankingService;
@@ -34,6 +37,7 @@ public class RankingController extends Controller {
     return Integer.valueOf(page);
   }
 
+  @GET("/?")
   public void ranking() {
     Sort sort = getSortColumnAndOrderFromRequest(getRequest());
     if (sort == null) {

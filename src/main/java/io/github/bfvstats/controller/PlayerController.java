@@ -7,13 +7,17 @@ import io.github.bfvstats.service.PlayerService;
 import io.github.bfvstats.service.RankingService;
 import io.github.bfvstats.util.Sort;
 import ro.pippo.controller.Controller;
-import ro.pippo.core.Param;
+import ro.pippo.controller.GET;
+import ro.pippo.controller.POST;
+import ro.pippo.controller.Path;
+import ro.pippo.controller.extractor.Param;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Path("/players")
 public class PlayerController extends Controller {
 
   private PlayerService playerService;
@@ -27,6 +31,8 @@ public class PlayerController extends Controller {
     this.rankingService = rankingService;
   }
 
+  @GET({"/?", "/search"})
+  @POST("/search")
   public void search(@Nullable @Param("query") String partialName) {
     List<Player> players;
     if (partialName != null) {
@@ -40,6 +46,7 @@ public class PlayerController extends Controller {
         .render("players/search");
   }
 
+  @GET("/{id: [0-9]+}")
   public void details(@Param("id") int playerId) {
     Player player = playerService.getPlayer(playerId);
     List<NicknameUsage> nicknameUsages = playerService.getNicknameUsages(playerId).stream()
@@ -71,6 +78,7 @@ public class PlayerController extends Controller {
         .render("players/details");
   }
 
+  @GET("/{id: [0-9]+}/map/{mapCode}")
   public void mapStats(@Param("id") int playerId, @Param("mapCode") String mapCode) {
     Player player = playerService.getPlayer(playerId);
 
@@ -82,7 +90,7 @@ public class PlayerController extends Controller {
         .render("players/map");
   }
 
-
+  @GET("/json")
   public void jsonRandom() {
     Player player = createPlayer();
     getRouteContext().json().send(player);

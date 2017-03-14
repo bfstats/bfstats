@@ -7,7 +7,9 @@ import io.github.bfvstats.service.ChatService;
 import io.github.bfvstats.service.MapService;
 import io.github.bfvstats.service.RoundService;
 import ro.pippo.controller.Controller;
-import ro.pippo.core.Param;
+import ro.pippo.controller.GET;
+import ro.pippo.controller.Path;
+import ro.pippo.controller.extractor.Param;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Path("/rounds")
 public class RoundController extends Controller {
 
   private final RoundService roundService;
@@ -29,6 +32,7 @@ public class RoundController extends Controller {
     this.mapService = mapService;
   }
 
+  @GET("/?")
   public void list() {
     List<Round> rounds = roundService.getRounds(null);
 
@@ -38,6 +42,7 @@ public class RoundController extends Controller {
     getResponse().bind("rounds", roundsByDay).render("rounds/list");
   }
 
+  @GET("{id}")
   public void details(@Param("id") int roundId) {
     Round round = roundService.getRound(roundId);
     List<RoundService.RoundPlayerStats> roundPlayerStats = roundService.getRoundPlayerStats(roundId);

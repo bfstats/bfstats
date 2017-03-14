@@ -7,13 +7,11 @@ import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.DelegatingLoader;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
-import io.github.bfvstats.controller.*;
 import io.github.bfvstats.pebble.Java8Extension;
 import io.github.bfvstats.util.DbUtils;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.core.Application;
 import ro.pippo.core.PippoConstants;
-import ro.pippo.core.route.RouteGroup;
 import ro.pippo.guice.GuiceControllerFactory;
 import ro.pippo.pebble.PebbleTemplateEngine;
 
@@ -71,44 +69,12 @@ public class BasicApplication extends ControllerApplication {
     // send 'Hello World' as response
     GET("/", routeContext -> routeContext.send("Hello World"));
 
-    addRouteGroup(new PlayerRoutes());
-
-    GET("/ranking(/?)", RankingController.class, "ranking");
-
-    GET("/chat(/?)", ChatController.class, "list");
-
-    GET("/rounds(/?)", RoundController.class, "list");
-    GET("/rounds/{id}", RoundController.class, "details");
-
-    GET("/maps(/?)", MapController.class, "list");
-    GET("/maps/{mapCode}", MapController.class, "details");
-
-    GET("/kits/{code}", KitController.class, "details");
-    GET("/vehicles/{code}", VehicleController.class, "details");
-    GET("/weapons/{code}", WeaponController.class, "details");
-
+    addControllers("io.github.bfvstats.controller");
     closeDbConnections();
   }
 
   private void closeDbConnections() {
     ALL("/.*", (routeContext) -> DbUtils.closeDslContext())
         .runAsFinally();
-  }
-
-  public class PlayerRoutes extends RouteGroup {
-
-    public PlayerRoutes() {
-      super("/players");
-
-      GET("/json", createRouteHandler(PlayerController.class, "jsonRandom"));
-
-      GET("/", createRouteHandler(PlayerController.class, "search"));
-      GET("/search", createRouteHandler(PlayerController.class, "search"));
-      POST("/search", createRouteHandler(PlayerController.class, "search"));
-
-      GET("/{id: [0-9]+}", createRouteHandler(PlayerController.class, "details"));
-      GET("/{id: [0-9]+}/map/{mapCode}", createRouteHandler(PlayerController.class, "mapStats"));
-    }
-
   }
 }

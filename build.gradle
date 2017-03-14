@@ -4,7 +4,7 @@ version '1.0-SNAPSHOT'
 apply plugin: 'java'
 
 
-def pippoVersion = '1.0.0'
+def pippoVersion = '1.2.0'
 def jooqVersion = '3.9.0'
 
 //sourceCompatibility = 1.8
@@ -25,6 +25,7 @@ dependencies {
   compile 'ch.qos.logback:logback-classic:1.0.13'
 
   compile "ro.pippo:pippo-core:${pippoVersion}"
+  compile "ro.pippo:pippo-controller:${pippoVersion}"
 
   compile "com.google.inject:guice:4.1.0"
   compile "ro.pippo:pippo-guice:${pippoVersion}"

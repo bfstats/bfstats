@@ -3,6 +3,8 @@ package io.github.bfvstats.controller;
 import io.github.bfvstats.model.ChatMessage;
 import io.github.bfvstats.service.ChatService;
 import ro.pippo.controller.Controller;
+import ro.pippo.controller.GET;
+import ro.pippo.controller.Path;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Path("/chat")
 public class ChatController extends Controller {
 
   private ChatService chatService;
@@ -20,6 +23,7 @@ public class ChatController extends Controller {
     this.chatService = chatService;
   }
 
+  @GET("/?")
   public void list() {
     List<ChatMessage> chatMessages = chatService.getChatMessages(null);
 
