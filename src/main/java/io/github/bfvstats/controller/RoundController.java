@@ -34,7 +34,7 @@ public class RoundController extends Controller {
 
   @GET("/?")
   public void list() {
-    List<Round> rounds = roundService.getRounds(null);
+    List<Round> rounds = roundService.getRounds();
 
     Map<LocalDate, List<Round>> roundsByDay = rounds.stream()
         .collect(Collectors.groupingBy(r -> r.getStartTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));

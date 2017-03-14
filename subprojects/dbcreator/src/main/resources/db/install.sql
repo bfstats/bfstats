@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS round (
   spawn_time INTEGER NOT NULL,
   spawn_delay INTEGER NOT NULL,
   game_start_delay INTEGER NOT NULL,
+  round_start_delay INTEGER NOT NULL,
   soldier_ff INTEGER NOT NULL,
   vehicle_ff INTEGER NOT NULL,
   ticket_ratio INTEGER NOT NULL,

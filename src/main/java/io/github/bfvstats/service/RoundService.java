@@ -4,11 +4,13 @@ import io.github.bfvstats.game.jooq.tables.records.RoundEndStatsPlayerRecord;
 import io.github.bfvstats.game.jooq.tables.records.RoundEndStatsRecord;
 import io.github.bfvstats.game.jooq.tables.records.RoundRecord;
 import io.github.bfvstats.model.Round;
+import io.github.bfvstats.model.ServerSettings;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -19,8 +21,25 @@ import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class RoundService {
-  public List<Round> getRounds(Integer roundId) {
-    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getDslContext()
+  public List<Round> getRounds() {
+    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStats(null);
+
+    return roundWithStats.entrySet().stream()
+        .map(e -> toRound(e.getKey(), e.getValue()))
+        .collect(Collectors.toList());
+  }
+
+  public Round getRound(int roundId) {
+    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStats(roundId);
+    Map.Entry<RoundRecord, RoundEndStatsRecord> onlyEntry = roundWithStats.entrySet().iterator().next();
+    RoundRecord roundRecord = onlyEntry.getKey();
+    Round round = toRound(roundRecord, onlyEntry.getValue());
+    round.setServerSettings(toServerSettings(roundRecord));
+    return round;
+  }
+
+  private static Map<RoundRecord, RoundEndStatsRecord> getRoundRecordsWithStats(@Nullable Integer roundId) {
+    return getDslContext()
         .select(ROUND.fields())
         .select(ROUND_END_STATS.fields())
         .from(ROUND)
@@ -31,10 +50,27 @@ public class RoundService {
             r -> r.into(ROUND),
             r -> r.into(ROUND_END_STATS)
         );
+  }
 
-    return roundWithStats.entrySet().stream()
-        .map(e -> toRound(e.getKey(), e.getValue()))
-        .collect(Collectors.toList());
+  private static ServerSettings toServerSettings(RoundRecord roundRecord) {
+    return new ServerSettings()
+        .setServerName(roundRecord.getServerName())
+        .setServerPort(roundRecord.getServerPort())
+        .setModId(roundRecord.getModId())
+        .setGameMode(roundRecord.getGameMode())
+        .setMaxGameTime(roundRecord.getMaxGameTime())
+        .setMaxPlayers(roundRecord.getMaxPlayers())
+        .setScoreLimit(roundRecord.getScoreLimit())
+        .setNumberOfRoundsPerMap(roundRecord.getNoOfRounds())
+        .setSpawnTime(roundRecord.getSpawnTime())
+        .setSpawnDelay(roundRecord.getSpawnDelay())
+        .setGameStartDelay(roundRecord.getGameStartDelay())
+        .setRoundStartDelay(roundRecord.getRoundStartDelay())
+        .setSoldierFriendlyFire(roundRecord.getSoldierFf())
+        .setVehicleFriendlyFire(roundRecord.getVehicleFf())
+        .setTicketRatio(roundRecord.getTicketRatio())
+        .setTeamKillPunish(roundRecord.getTeamKillPunish() == 1)
+        .setPunkbusterEnabled(roundRecord.getPunkbusterEnabled() == 1);
   }
 
   private static Round toRound(RoundRecord roundRecord, RoundEndStatsRecord roundEndStatsRecord) {
@@ -57,10 +93,6 @@ public class RoundService {
         .setVictoryType(roundEndStatsRecord.getVictoryType())
         .setEndTicketsTeam1(roundEndStatsRecord.getEndTicketsTeam_1())
         .setEndTicketsTeam2(roundEndStatsRecord.getEndTicketsTeam_2());
-  }
-
-  public Round getRound(int roundId) {
-    return getRounds(roundId).get(0);
   }
 
   public List<RoundPlayerStats> getRoundPlayerStats(int roundId) {

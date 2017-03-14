@@ -3,6 +3,7 @@ package io.github.bfvstats.model;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,4 +21,7 @@ public class Round {
   private int victoryType;
   private int endTicketsTeam1;
   private int endTicketsTeam2;
+
+  @Nullable
+  private ServerSettings serverSettings;
 }

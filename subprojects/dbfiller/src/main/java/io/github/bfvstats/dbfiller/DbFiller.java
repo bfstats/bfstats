@@ -1077,6 +1077,7 @@ else: repair; number of repairs
     round.setSpawnTime(bfRound.getSpawnTime());
     round.setSpawnDelay(bfRound.getSpawnDelay());
     round.setGameStartDelay(bfRound.getGameStartDelay());
+    round.setRoundStartDelay(bfRound.getRoundStartDelay());
     round.setSoldierFf(bfRound.getSoldierFriendlyFire());
     round.setVehicleFf(bfRound.getVehicleFriendlyFire());
     round.setTicketRatio(bfRound.getTicketRatio());

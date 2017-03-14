@@ -35,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Round extends TableImpl<RoundRecord> {
 
-    private static final long serialVersionUID = 1925828398;
+    private static final long serialVersionUID = -722901274;
 
     /**
      * The reference instance of <code>round</code>
@@ -129,6 +129,11 @@ public class Round extends TableImpl<RoundRecord> {
      * The column <code>round.game_start_delay</code>.
      */
     public final TableField<RoundRecord, Integer> GAME_START_DELAY = createField("game_start_delay", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>round.round_start_delay</code>.
+     */
+    public final TableField<RoundRecord, Integer> ROUND_START_DELAY = createField("round_start_delay", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>round.soldier_ff</code>.
