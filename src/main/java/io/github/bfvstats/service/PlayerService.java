@@ -14,6 +14,7 @@ import ro.pippo.core.util.StringUtils;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -60,6 +61,17 @@ public class PlayerService {
         .setKeyHash(r.getKeyhash());
   }
 
+  public Long fetchPlayerTotalTime(int playerId) {
+    BigDecimal totalTimeInMs = getDslContext()
+        .select(DSL.sum(DSL.timestampDiff(ROUND_PLAYER.END_TIME, ROUND_PLAYER.START_TIME)).as("totalTime"))
+        .from(ROUND_PLAYER)
+        .where(ROUND_PLAYER.PLAYER_ID.eq(playerId))
+        .fetchOne("totalTime", BigDecimal.class);
+    BigDecimal totalTimeInSeconds = totalTimeInMs.divide(BigDecimal.valueOf(1000), RoundingMode.DOWN);
+
+    return totalTimeInSeconds.longValue();
+  }
+
   public Map<LocalDateTime, Integer> fetchPlayersOnlineTimes() {
     Result<Record> records = getDslContext()
         .select()
@@ -86,7 +98,7 @@ public class PlayerService {
     return usersAt;
   }
 
-  public PlayerDetails getPlayerDetails(int playerId) {
+  public LocalDateTime getPlayerLastSeen(int playerId) {
     RoundPlayerRecord roundPlayerRecord = getDslContext().selectFrom(ROUND_PLAYER)
         .where(ROUND_PLAYER.PLAYER_ID.eq(playerId))
         .orderBy(ROUND_PLAYER.END_ROUND_ID.desc())
@@ -97,8 +109,16 @@ public class PlayerService {
       return null;
     }
 
+    return roundPlayerRecord.getEndTime().toLocalDateTime();
+  }
+
+  public PlayerDetails getPlayerDetails(int playerId) {
+    Long totalTimeInSeconds = fetchPlayerTotalTime(playerId);
+    LocalDateTime lastSeen = getPlayerLastSeen(playerId);
+
     return new PlayerDetails()
-        .setLastSeen(roundPlayerRecord.getEndTime().toLocalDateTime());
+        .setTotalTimeInSeconds(totalTimeInSeconds)
+        .setLastSeen(lastSeen);
   }
 
   public List<NicknameUsage> getNicknameUsages(int playerId) {

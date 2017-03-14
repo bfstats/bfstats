@@ -8,6 +8,7 @@
 
 <ul class="player-stats">
   <li>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</li>
+  <li>Total time: {{ playerDetails.totalTimeInSeconds | duration}}</li>
   <li>Hash: {{ playerStats.partialKeyHash }}</li>
   <li>Rank: {{ playerStats.rank }}</li>
   <li>Total score: {{ playerStats.score }}</li>

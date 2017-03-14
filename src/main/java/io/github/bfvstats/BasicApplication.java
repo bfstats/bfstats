@@ -7,6 +7,7 @@ import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.DelegatingLoader;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
+import io.github.bfvstats.pebble.DurationExtension;
 import io.github.bfvstats.pebble.Java8Extension;
 import io.github.bfvstats.util.DbUtils;
 import ro.pippo.controller.ControllerApplication;
@@ -25,6 +26,7 @@ public class BasicApplication extends ControllerApplication {
     @Override
     protected void init(Application application, PebbleEngine.Builder builder) {
       builder.extension(new Java8Extension());
+      builder.extension(new DurationExtension());
 
       FileLoader fileLoader = new FileLoader();
       fileLoader.setCharset(PippoConstants.UTF8);
