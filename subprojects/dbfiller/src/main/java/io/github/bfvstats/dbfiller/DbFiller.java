@@ -16,7 +16,10 @@ import org.jooq.Record1;
 import org.jooq.impl.DSL;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,10 +32,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.InflaterInputStream;
 
@@ -72,10 +72,13 @@ public class DbFiller {
     return transactionDslContext;
   }
 
-  public static void main(String[] args) throws JAXBException, FileNotFoundException, SQLException {
+  public static void main(String[] args) throws JAXBException, IOException, SQLException {
     System.setProperty("org.jooq.no-logo", "true");
 
-    String logDirPath = "D:\\bflogs\\";
+    Properties props = new Properties();
+    props.load(new FileInputStream("ftpconfig.properties"));
+    String localDirectory = props.getProperty("localDirectory").trim();
+    String logDirPath = localDirectory;
     //String xmlFilePath = "D:\\bflogs\\ev_15567-20170105_2340.xml";
 
     prepareConnection();
