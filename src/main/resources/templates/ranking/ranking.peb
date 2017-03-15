@@ -60,7 +60,7 @@ There are no players.
     <td>{{ player.score }}</td>
     <td style="width: 4em">{{ player.kills }}</td>
     <td style="width: 4em">{{ player.deaths }}</td>
-    <td>{{ player.killDeathRatio }}</td>
+    <td>{{ player.killDeathRatio | numberformat("0.0") }}</td>
     <td>{{ player.goldCount }}</td>
     <td>{{ player.silverCount }}</td>
     <td>{{ player.bronzeCount }}</td>
