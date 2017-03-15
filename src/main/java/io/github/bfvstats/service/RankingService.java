@@ -73,7 +73,7 @@ public class RankingService {
     Double kdRate = kdRateBigDec == null ? 0.0 : kdRateBigDec.doubleValue();
 
     String keyhash = r.get("keyhash", String.class);
-    String partialKeyHash = "..." + keyhash.substring(20);
+    String partialKeyHash = keyhash.substring(25);
 
     return new PlayerStats()
         .setPlayerId(r.get("player_id", Integer.class))
@@ -91,6 +91,7 @@ public class RankingService {
         .setBronzeCount(r.get("bronze_count", Integer.class))
         .setTeamKills(r.get("tks", Integer.class))
         .setCaptures(r.get("captures", Integer.class))
+        .setDefences(r.get("defences", Integer.class))
         .setRoundsPlayed(r.get("rounds_played", Integer.class))
         .setHeals(r.get("heals_count", Integer.class))
         .setSelfHeals(0)

@@ -21,6 +21,7 @@ public class PlayerStats {
   int bronzeCount;
   int teamKills;
   int captures;
+  int defences;
   int roundsPlayed;
   int heals;
   int otherRepairs;
