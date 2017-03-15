@@ -2,15 +2,28 @@
 
 {% block title %} Player {{ player.name }} {% endblock %}
 
+{% macro nicknamesTitle(nicknames) %}
+{% if nicknames is not empty %}
+Nicknames:
+{% for nickname in nicknames %}
+{{ nickname.name }} x {{ nickname.timesUsed }}
+{% if loop.index < loop.length-1 %}, {% endif %}
+{% endfor %}
+{% endif %}
+{% endmacro %}
+
 {% block content %}
-<h3>{{ player.name }}</h3>
+
+<h3 title="{{ nicknamesTitle(nicknames) }}">{{ player.name }}</h3>
+
+<div>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</div>
 
 <div class="player-overwiew">
 
 <div class="detail">
 <span class="label">Rank {{ playerStats.rank }}</span>
 <span class="value">Score {{ playerStats.score }}</span>
-<span class="additional">avg per round {{ playerStats.averageScore }}</span>
+<span class="additional">~{{ playerStats.averageScore }} per round</span>
 </div>
 
 <div class="detail">
@@ -22,42 +35,26 @@
 <div class="detail">
 <span class="label">K/D ratio</span>
 <span class="value">{{ playerStats.killDeathRatio | numberformat("0.00")}}</span>
-<span class="additional">{{ playerStats.kills }} / {{ playerStats.deaths }}</span>
-
-
-</div>
+<span class="additional">{{ playerStats.kills }} ({{ playerStats.teamKills }} TK) / {{ playerStats.deaths }}</span>
 </div>
 
-<ul class="player-stats">
-  <li>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</li>
-  x<li>Time played: {{ playerDetails.totalTimeInSeconds | duration}}</li>
-  x<li>Rounds played: {{ playerStats.roundsPlayed }}</li>
-  <li>Hash: {{ playerStats.partialKeyHash }}</li>
-  x<li>Rank: {{ playerStats.rank }}</li>
-  x<li>Total score: {{ playerStats.score }}</li>
-  x<li>Avg Score per round: {{ playerStats.averageScore }}</li>
-  x<li>Kills: {{ playerStats.kills }}</li>
-  x<li>Deaths: {{ playerStats.deaths }}</li>
-  x<li>K/D: {{ playerStats.killDeathRatio | numberformat("0.00")}}</li>
-  <li>Gold medals: {{ playerStats.goldCount }}</li>
-  <li>Silver medals: {{ playerStats.silverCount }}</li>
-  <li>Bronze medals: {{ playerStats.bronzeCount }}</li>
-  <li>TKs: {{ playerStats.teamKills }}</li>
-  <li>Captures: {{ playerStats.captures }}</li>
-  <li>Neutralized: {{ playerStats.defences }}</li>
-  <li>Heals: {{ playerStats.heals }}</li>
-  <li>Repairs: {{ playerStats.repairs }}</li>
-</ul>
-
-{% if nicknames is not empty %}
-<div>
-  Played with nicknames:
-  {% for nickname in nicknames %}
-  {{ nickname.name }} x {{ nickname.timesUsed }}
-  {% if loop.index < loop.length-1 %}, {% endif %}
-  {% endfor %}
+<div class="detail">
+<span class="label">Medals</span>
+<span class="value">
+<span class="gold">🥇</span>{{ playerStats.goldCount }}
+ <span class="silver">🥈</span>{{ playerStats.silverCount }}
+ <span class="bronze">🥉</span>{{ playerStats.bronzeCount }}
+</span>
+<span class="additional"><span class="icon-heals"></span> {{ playerStats.otherHeals }} 🔧{{ playerStats.otherRepairs }}</span>
 </div>
-{% endif %}
+
+<div class="detail">
+<span class="label">Flags captured</span>
+<span class="value">{{ playerStats.captures }}</span>
+<span class="additional">{{ playerStats.defences }} neutralized</span>
+</div>
+
+</div>
 
 {% include "players/deaths" %}
 {% include "players/kills" %}
@@ -66,5 +63,28 @@
 {% include "players/kits" %}
 {% include "players/vehicles" %}
 {% include "players/maps" %}
+
+<ul class="player-stats">
+  <li>Hash: {{ playerStats.partialKeyHash }}</li>
+  <li>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</li>
+  <li>Captures: {{ playerStats.captures }}</li>
+  <li>Neutralized: {{ playerStats.defences }}</li>
+  <li>Other heals: {{ playerStats.otherHeals }}</li>
+  <li>Other repairs: {{ playerStats.otherRepairs }}</li>
+  <li>
+  <span class="gold">🥇</span> {{ playerStats.goldCount }}
+  <span class="silver">🥈</span> {{ playerStats.silverCount }}
+  <span class="bronze">🥉</span> {{ playerStats.bronzeCount }}
+  </li>
+  <li>Time played: {{ playerDetails.totalTimeInSeconds | duration}}</li>
+  <li>Rounds played: {{ playerStats.roundsPlayed }}</li>
+  <li>Rank: {{ playerStats.rank }}</li>
+  <li>Total score: {{ playerStats.score }}</li>
+  <li>Avg Score per round: {{ playerStats.averageScore }}</li>
+  <li>Kills: {{ playerStats.kills }}</li>
+  <li>TKs: {{ playerStats.teamKills }}</li>
+  <li>Deaths: {{ playerStats.deaths }}</li>
+  <li>K/D: {{ playerStats.killDeathRatio | numberformat("0.00")}}</li>
+</ul>
 
 {% endblock %}

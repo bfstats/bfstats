@@ -402,6 +402,19 @@ tr.team-3 .name {
   background-color: #ff471a;
 }
 
+
+.gold {
+  color: rgb(255,215,0);
+}
+
+.silver {
+  color: rgb(192,192,192);
+}
+
+.bronze {
+  color: rgb(205,127,50);
+}
+
 .player-overwiew {
   overflow: hidden;
 }
@@ -427,13 +440,27 @@ tr.team-3 .name {
   text-align: center;
   font-weight: bold;
   font-size: 1.2em;
-  padding: 4px 0;
+  line-height: 1.4em;
+  padding: 2px 0;
 }
 
 .player-overwiew .detail .additional {
   display: block;
   text-align: center;
   font-size: 0.9em;
+  line-height: 1.1em;
   color: #b9b9b9;
 }
 
+.player-overwiew .icon-heals {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  background-image: url('../img/icons/map_medic.png');
+  line-height: 1em;
+  vertical-align: middle;
+}
