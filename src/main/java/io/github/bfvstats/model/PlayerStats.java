@@ -24,9 +24,13 @@ public class PlayerStats {
   int defences;
   int roundsPlayed;
   int heals;
-  int otherRepairs;
-
   int selfHeals;
+  int otherHeals;
+
   int repairs;
+  int selfRepairs;
+  int otherRepairs;
+  int unmannedRepairs;
+
   double scorePerMinute;
 }

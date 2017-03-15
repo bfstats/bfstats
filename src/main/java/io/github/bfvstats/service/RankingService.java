@@ -48,9 +48,18 @@ public class RankingService {
         DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(1), 1).otherwise(0)).as("gold_count"),
         DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(2), 1).otherwise(0)).as("silver_count"),
         DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(3), 1).otherwise(0)).as("bronze_count"),
-        DSL.count(ROUND_PLAYER_MEDPACK.ID).as("heals_count"),
-        DSL.count(ROUND_PLAYER_REPAIR.ID).as("repairs_count")
-    )
+        DSL.count(ROUND_PLAYER_MEDPACK.ID).as("heals_all_count"),
+        DSL.sum(DSL.when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.eq(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
+            .as("heals_self_count"),
+        DSL.sum(DSL.when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.notEqual(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
+            .as("heals_others_count"),
+        DSL.count(ROUND_PLAYER_REPAIR.ID).as("repairs_all_count"),
+        DSL.sum(DSL.when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.eq(ROUND_PLAYER_REPAIR.PLAYER_ID), 1).otherwise(0))
+            .as("repairs_self_count"),
+        DSL.sum(DSL.when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNotNull().and(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.notEqual(ROUND_PLAYER_REPAIR.PLAYER_ID)), 1).otherwise(0))
+            .as("repairs_others_count"),
+        DSL.sum(DSL.when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNull(), 1).otherwise(0))
+            .as("repairs_unmanned_count"))
         .from(ROUND_END_STATS_PLAYER)
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
         .join(PLAYER_RANK).on(PLAYER_RANK.PLAYER_ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
@@ -93,10 +102,16 @@ public class RankingService {
         .setCaptures(r.get("captures", Integer.class))
         .setDefences(r.get("defences", Integer.class))
         .setRoundsPlayed(r.get("rounds_played", Integer.class))
-        .setHeals(r.get("heals_count", Integer.class))
-        .setSelfHeals(0)
-        .setOtherRepairs(0) // with vehicle_player
-        .setRepairs(r.get("repairs_count", Integer.class)) // without vehicle_player
+
+        .setHeals(r.get("heals_all_count", Integer.class))
+        .setSelfHeals(r.get("heals_self_count", Integer.class))
+        .setOtherHeals(r.get("heals_others_count", Integer.class))
+
+        .setRepairs(r.get("repairs_all_count", Integer.class))
+        .setSelfRepairs(r.get("repairs_self_count", Integer.class))
+        .setOtherRepairs(r.get("repairs_others_count", Integer.class))
+        .setUnmannedRepairs(r.get("repairs_unmanned_count", Integer.class))
+
         .setScorePerMinute(0);
   }
 }
