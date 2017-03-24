@@ -1,4 +1,4 @@
-package io.github.bfvstats;
+package io.github.bfvstats.model;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

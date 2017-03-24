@@ -1,6 +1,6 @@
 package io.github.bfvstats.controller;
 
-import io.github.bfvstats.Player;
+import io.github.bfvstats.model.Player;
 import io.github.bfvstats.model.*;
 import io.github.bfvstats.service.MapService;
 import io.github.bfvstats.service.PlayerService;

@@ -1,6 +1,6 @@
 package io.github.bfvstats.service;
 
-import io.github.bfvstats.Player;
+import io.github.bfvstats.model.Player;
 import io.github.bfvstats.game.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfvstats.game.jooq.tables.records.PlayerRecord;
 import io.github.bfvstats.game.jooq.tables.records.RoundPlayerRecord;
