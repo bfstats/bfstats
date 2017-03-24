@@ -28,8 +28,12 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 @Log
 public class FtpDownloader {
   public static void main(String[] args) throws IOException {
+    downloadFiles("ftpconfig.properties");
+  }
+
+  public static void downloadFiles(String configFilename) throws IOException {
     Properties props = new Properties();
-    props.load(new FileInputStream("ftpconfig.properties"));
+    props.load(new FileInputStream(configFilename));
 
     ConnectDetails connectDetails = new ConnectDetails()
         .setServerAddress(props.getProperty("serverAddress").trim())
@@ -39,7 +43,7 @@ public class FtpDownloader {
         .setLocalDirectory(props.getProperty("localDirectory").trim());
 
     try {
-      ok(connectDetails);
+      downloadFiles(connectDetails);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -55,7 +59,7 @@ public class FtpDownloader {
     String localDirectory;
   }
 
-  public static boolean ok(ConnectDetails connectDetails) throws IOException {
+  public static boolean downloadFiles(ConnectDetails connectDetails) throws IOException {
     //new ftp client
     FTPClient ftpClient = new FTPClient();
     ftpClient.setBufferSize(1024000);

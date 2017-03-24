@@ -75,8 +75,12 @@ public class DbFiller {
   public static void main(String[] args) throws JAXBException, IOException, SQLException {
     System.setProperty("org.jooq.no-logo", "true");
 
+    String configurationFile = "ftpconfig.properties";
+
+    FtpDownloader.downloadFiles(configurationFile);
+
     Properties props = new Properties();
-    props.load(new FileInputStream("ftpconfig.properties"));
+    props.load(new FileInputStream(configurationFile));
     String localDirectory = props.getProperty("localDirectory").trim();
     String logDirPath = localDirectory;
     //String xmlFilePath = "D:\\bflogs\\ev_15567-20170105_2340.xml";
