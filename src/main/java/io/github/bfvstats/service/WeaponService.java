@@ -42,7 +42,7 @@ public class WeaponService {
       .put("PungiStick", "Pungi Stick")
       .put("RPD", "RPD")
       .put("RPG2", "RPG-2")
-      .put("RPG7V", "RPG-7V")
+      .put("Rpg7v", "RPG-7V")
       .put("Sa7", "SA-7")
       .put("SKS56", "Type-56")
       .put("TimeBomb", "Time Bomb")
