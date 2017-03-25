@@ -160,6 +160,7 @@ public class MapService {
         .where(ROUND_END_STATS_PLAYER.PLAYER_ID.eq(playerId))
         .groupBy(ROUND.MAP_CODE)
         .orderBy(ROUND_END_STATS_PLAYER.SCORE.desc())
+        .limit(10)
         .fetch();
 
     int totalMapsScore = records.stream()

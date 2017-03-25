@@ -1,6 +1,5 @@
 package io.github.bfvstats.service;
 
-import io.github.bfvstats.model.Player;
 import io.github.bfvstats.game.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfvstats.game.jooq.tables.records.PlayerRecord;
 import io.github.bfvstats.game.jooq.tables.records.RoundPlayerRecord;
@@ -30,6 +29,7 @@ import static io.github.bfvstats.util.Utils.percentage;
 public class PlayerService {
 
   public static final int BOT_PLAYER_ID = 1;
+  public static final int LIMIT_PLAYER_STATS = 10;
 
   public List<Player> getPlayers() {
     Result<PlayerRecord> records = getDslContext().selectFrom(PLAYER).fetch();
@@ -143,6 +143,7 @@ public class PlayerService {
         .and(ROUND_PLAYER_DEATH.PLAYER_ID.notEqual(BOT_PLAYER_ID))
         .groupBy(ROUND_PLAYER_DEATH.PLAYER_ID)
         .orderBy(DSL.count().desc())
+        .limit(LIMIT_PLAYER_STATS)
         .fetch();
 
     Integer totalKillCount = killRecords.stream()
@@ -169,6 +170,7 @@ public class PlayerService {
         .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.notEqual(BOT_PLAYER_ID))
         .groupBy(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID)
         .orderBy(DSL.count().desc())
+        .limit(LIMIT_PLAYER_STATS)
         .fetch();
 
     Integer totalDeathCount = deathRecords.stream()
@@ -193,6 +195,7 @@ public class PlayerService {
         .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
         .groupBy(ROUND_PLAYER_DEATH.KILL_WEAPON)
         .orderBy(DSL.count().desc())
+        .limit(LIMIT_PLAYER_STATS)
         .fetch();
 
     Integer totalTimesUsed = records.stream()
@@ -224,6 +227,7 @@ public class PlayerService {
         .where(ROUND_PLAYER_PICKUP_KIT.PLAYER_ID.eq(playerId))
         .groupBy(ROUND_PLAYER_PICKUP_KIT.KIT)
         .orderBy(DSL.count().desc())
+        .limit(LIMIT_PLAYER_STATS)
         .fetch();
 
     Integer totalTimesUsed = records.stream()
@@ -256,6 +260,7 @@ public class PlayerService {
         .where(ROUND_PLAYER_VEHICLE.PLAYER_ID.eq(playerId))
         .groupBy(ROUND_PLAYER_VEHICLE.VEHICLE)
         .orderBy(DSL.field("total_duration").desc())
+        .limit(LIMIT_PLAYER_STATS)
         .fetch();
 
     int totalVehiclesDriveTimeInSeconds = records.stream()
