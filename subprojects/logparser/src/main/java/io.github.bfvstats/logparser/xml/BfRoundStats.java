@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static io.github.bfvstats.logparser.xml.Helpers.toDuration;
 
-@XmlRootElement(name = "roundstats", namespace = BfLog.NAMESPACE)
+@XmlRootElement(name = "roundstats")
 @ToString(of = {"timestamp", "winningTeam", "victoryType", "teamTicketses"})
 @Getter
 public class BfRoundStats {

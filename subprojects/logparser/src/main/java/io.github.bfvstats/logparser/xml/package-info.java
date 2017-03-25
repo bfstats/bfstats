@@ -1,4 +1,4 @@
-
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(
     namespace = BfLog.NAMESPACE,
     elementFormDefault = XmlNsForm.QUALIFIED,
@@ -8,8 +8,6 @@
 )
 package io.github.bfvstats.logparser.xml;
 
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.*;
 
 

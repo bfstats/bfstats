@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static io.github.bfvstats.logparser.xml.Helpers.toDuration;
 
-@XmlRootElement(name = "event", namespace = BfLog.NAMESPACE)
+@XmlRootElement(name = "event")
 @Getter
 public class BfEvent {
   @XmlAttribute(name = "name", required = true)
@@ -28,7 +28,7 @@ public class BfEvent {
     return toDuration(timestamp);
   }
 
-  @XmlElement(name = "param", type = BfEventParam.class, namespace = BfLog.NAMESPACE)
+  @XmlElement(name = "param", type = BfEventParam.class)
   private List<BfEventParam> params;
 
   @XmlTransient

@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlValue;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@XmlRootElement(name = "nonprint", namespace = BfLog.NAMESPACE)
+@XmlRootElement(name = "nonprint")
 @Getter
 public class BfNonPrint {
   @XmlValue

@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.*;
 import java.util.List;
 
 // similar to BfStatParam, but with type
-@XmlRootElement(name = "param", namespace = BfLog.NAMESPACE)
+@XmlRootElement(name = "param")
 @EqualsAndHashCode(of = {"name", "value"})
 @Getter
 public class BfEventParam {

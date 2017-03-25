@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "log", namespace = BfLog.NAMESPACE)
+@XmlRootElement(name = "log")
 @Getter
 @ToString(of = {"engine", "timestamp"})
 public class BfLog {

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import static io.github.bfvstats.logparser.xml.Helpers.toDuration;
 
 @ToString(of = {"timestamp"})
-@XmlRootElement(name = "round", namespace = BfLog.NAMESPACE)
+@XmlRootElement(name = "round")
 @Getter
 public class BfRound {
   @XmlAttribute(name = "timestamp", required = true)
@@ -24,18 +24,18 @@ public class BfRound {
     return toDuration(timestamp);
   }
 
-  @XmlElementWrapper(name = "server", namespace = BfLog.NAMESPACE)
-  @XmlElement(name = "setting", namespace = BfLog.NAMESPACE)
+  @XmlElementWrapper(name = "server")
+  @XmlElement(name = "setting")
   private List<BfSetting> settings;
 
   @XmlTransient
   private Map<String, String> settingsMap;
 
-  @XmlElement(name = "event", namespace = BfLog.NAMESPACE)
+  @XmlElement(name = "event")
   // initializing with non-null, because jaxb would otherwise keep it null if there are no events
   private List<BfEvent> events = new ArrayList<>();
 
-  @XmlElement(name = "roundstats", namespace = BfLog.NAMESPACE)
+  @XmlElement(name = "roundstats")
   private BfRoundStats roundStats;
 
   // specially named method afterUnmarshal is called by JAXB
