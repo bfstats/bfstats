@@ -5,6 +5,7 @@ import io.github.bfvstats.game.jooq.tables.records.RoundEndStatsRecord;
 import io.github.bfvstats.game.jooq.tables.records.RoundRecord;
 import io.github.bfvstats.model.Round;
 import io.github.bfvstats.model.ServerSettings;
+import io.github.bfvstats.util.TranslationUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.jooq.Result;
@@ -75,7 +76,7 @@ public class RoundService {
 
   private static Round toRound(RoundRecord roundRecord, RoundEndStatsRecord roundEndStatsRecord) {
     String mapCode = roundRecord.getMapCode();
-    String mapName = MapService.mapName(mapCode);
+    String mapName = TranslationUtil.getMapName(mapCode);
 
     LocalDateTime startTime = roundRecord.getStartTime().toLocalDateTime();
     LocalDateTime endTime = roundEndStatsRecord.getEndTime().toLocalDateTime();

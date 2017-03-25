@@ -4,6 +4,7 @@ import io.github.bfvstats.game.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfvstats.game.jooq.tables.records.PlayerRecord;
 import io.github.bfvstats.game.jooq.tables.records.RoundPlayerRecord;
 import io.github.bfvstats.model.*;
+import io.github.bfvstats.util.TranslationUtil;
 import org.jooq.Record;
 import org.jooq.Record2;
 import org.jooq.Record3;
@@ -28,8 +29,8 @@ import static io.github.bfvstats.util.Utils.percentage;
 
 public class PlayerService {
 
-  public static final int BOT_PLAYER_ID = 1;
-  public static final int LIMIT_PLAYER_STATS = 10;
+  private static final int BOT_PLAYER_ID = 1;
+  private static final int LIMIT_PLAYER_STATS = 10;
 
   public List<Player> getPlayers() {
     Result<PlayerRecord> records = getDslContext().selectFrom(PLAYER).fetch();
@@ -210,9 +211,9 @@ public class PlayerService {
   private static WeaponUsage toWeaponUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
     String code = r.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
-    String weaponName = WeaponService.weaponNameStrict(code);
+    String weaponName = TranslationUtil.getWeaponNameStrict(code);
     if (weaponName == null) {
-      weaponName = VehicleService.vehicleName(code);
+      weaponName = TranslationUtil.getVehicleName(code);
     }
     return new WeaponUsage()
         .setCode(code)
@@ -279,7 +280,7 @@ public class PlayerService {
       codeWithoutModifiers = code;
     }
 
-    String vehicleName = VehicleService.vehicleName(codeWithoutModifiers);
+    String vehicleName = TranslationUtil.getVehicleName(codeWithoutModifiers);
     if (code.length() > codeWithoutModifiers.length()) {
       String modifierName = code.substring(codeWithoutModifiers.length());
       modifierName = removePCO(modifierName);
