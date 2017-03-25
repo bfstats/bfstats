@@ -1,6 +1,5 @@
 package io.github.bfvstats.controller;
 
-import io.github.bfvstats.model.Player;
 import io.github.bfvstats.model.*;
 import io.github.bfvstats.service.MapService;
 import io.github.bfvstats.service.PlayerService;
@@ -15,7 +14,6 @@ import ro.pippo.controller.extractor.Param;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("/players")
 public class PlayerController extends Controller {
@@ -49,9 +47,7 @@ public class PlayerController extends Controller {
   @GET("/{id: [0-9]+}")
   public void details(@Param("id") int playerId) {
     Player player = playerService.getPlayer(playerId);
-    List<NicknameUsage> nicknameUsages = playerService.getNicknameUsages(playerId).stream()
-        .collect(Collectors.toList());
-
+    List<NicknameUsage> nicknameUsages = playerService.getNicknameUsages(playerId);
     Sort dummySort = new Sort("player_rank", Sort.SortOrder.ASC);
     PlayerStats playerStats = rankingService.getRankings(dummySort, 1, playerId).stream().findFirst().orElse(null);
     PlayerDetails playerDetails = playerService.getPlayerDetails(playerId);
