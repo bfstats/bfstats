@@ -190,6 +190,12 @@ th .sorted {
 
 
 
+.styled_table.half {
+  float: left;
+  width: 30%;
+  margin-right: 2%;
+}
+
 .styled_table {
   margin-top: 30px;
 }

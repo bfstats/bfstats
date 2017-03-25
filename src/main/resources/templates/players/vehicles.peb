@@ -1,12 +1,12 @@
 {% if vehicles is not empty %}
-<table class="styled_table">
+<table class="styled_table half">
   <caption>Vehicles with most driving time</caption>
   <thead>
   <tr>
     <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Vehicle</span></div></th>
     <th><div><span class="label">Drive time</span></div></th>
-    <th><div><span class="label">Times used</span></div></th>
+    <th><div><span class="label">Used</span></div></th>
     <th><div><span class="label">%</span></div></th>
   </tr>
   </thead>

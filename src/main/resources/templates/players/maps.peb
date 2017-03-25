@@ -1,5 +1,5 @@
 {% if maps is not empty %}
-<table class="styled_table">
+<table class="styled_table half">
   <caption>Maps with highest score</caption>
   <thead>
   <tr>

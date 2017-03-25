@@ -1,5 +1,5 @@
 {% if deathsByKillers is not empty %}
-<table class="styled_table">
+<table class="styled_table half">
   <caption>Deaths</caption>
   <thead>
   <tr>

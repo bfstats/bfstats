@@ -56,6 +56,7 @@ Nicknames:
 
 </div>
 
+<div class="clear">
 {% include "players/deaths" %}
 {% include "players/kills" %}
 
@@ -63,28 +64,10 @@ Nicknames:
 {% include "players/kits" %}
 {% include "players/vehicles" %}
 {% include "players/maps" %}
+</div>
 
 <ul class="player-stats">
   <li>Hash: {{ playerStats.partialKeyHash }}</li>
-  <li>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</li>
-  <li>Captures: {{ playerStats.captures }}</li>
-  <li>Neutralized: {{ playerStats.defences }}</li>
-  <li>Other heals: {{ playerStats.otherHeals }}</li>
-  <li>Other repairs: {{ playerStats.otherRepairs }}</li>
-  <li>
-  <span class="gold">🥇</span> {{ playerStats.goldCount }}
-  <span class="silver">🥈</span> {{ playerStats.silverCount }}
-  <span class="bronze">🥉</span> {{ playerStats.bronzeCount }}
-  </li>
-  <li>Time played: {{ playerDetails.totalTimeInSeconds | duration}}</li>
-  <li>Rounds played: {{ playerStats.roundsPlayed }}</li>
-  <li>Rank: {{ playerStats.rank }}</li>
-  <li>Total score: {{ playerStats.score }}</li>
-  <li>Avg Score per round: {{ playerStats.averageScore }}</li>
-  <li>Kills: {{ playerStats.kills }}</li>
-  <li>TKs: {{ playerStats.teamKills }}</li>
-  <li>Deaths: {{ playerStats.deaths }}</li>
-  <li>K/D: {{ playerStats.killDeathRatio | numberformat("0.00")}}</li>
 </ul>
 
 {% endblock %}

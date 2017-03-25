@@ -1,11 +1,11 @@
 {% if weapons is not empty %}
-<table class="styled_table">
+<table class="styled_table half">
   <caption>Most used weapons</caption>
   <thead>
   <tr>
     <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Weapon</span></div></th>
-    <th><div><span class="label">Times used</span></div></th>
+    <th><div><span class="label">Used</span></div></th>
     <th><div><span class="label">%</span></div></th>
   </tr>
   </thead>
