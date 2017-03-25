@@ -137,7 +137,7 @@ public class DbFiller {
           addFromXmlFile(filePath);
           lastValidDateTimeStr = dateTimeStr;
         } catch (RuntimeException e) {
-
+          log.warn("Could not parse " + filePath, e);
         }
       }
     }
