@@ -88,14 +88,11 @@ public class PlayerController extends Controller {
 
   @GET("/json")
   public void jsonRandom() {
-    Player player = createPlayer();
-    getRouteContext().json().send(player);
-  }
-
-  private Player createPlayer() {
-    return new Player()
+    Player player = new Player()
         .setId(12345)
         .setName("John")
         .setKeyHash("Sunflower Street, No. 6");
+
+    getRouteContext().json().send(player);
   }
 }
