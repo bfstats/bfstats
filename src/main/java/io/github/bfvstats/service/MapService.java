@@ -2,9 +2,7 @@ package io.github.bfvstats.service;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.bfvstats.game.jooq.tables.records.RoundPlayerDeathRecord;
-import io.github.bfvstats.model.Location;
-import io.github.bfvstats.model.MapStatsInfo;
-import io.github.bfvstats.model.MapUsage;
+import io.github.bfvstats.model.*;
 import io.github.bfvstats.util.TranslationUtil;
 import org.jooq.Record;
 import org.jooq.Record2;
@@ -72,15 +70,27 @@ public class MapService {
 
 
   private MapStatsInfo toMapStatsInfo(String mapCode, Result<RoundPlayerDeathRecord> killRecords, Result<RoundPlayerDeathRecord> deathRecords) {
-    Collection<Location> killLocations = new ArrayList<>();
-    Collection<Location> deathLocations = new ArrayList<>();
+    Collection<MapEvent> killEvents = new ArrayList<>();
+    Collection<MapEvent> deathEvents = new ArrayList<>();
 
     for (RoundPlayerDeathRecord roundPlayerScoreEventRecord : killRecords) {
       BigDecimal x = roundPlayerScoreEventRecord.getKillerLocationX();
       BigDecimal y = roundPlayerScoreEventRecord.getKillerLocationY();
       BigDecimal z = roundPlayerScoreEventRecord.getKillerLocationZ();
       Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
-      killLocations.add(location);
+
+      Weapon killWeapon = new Weapon(
+          roundPlayerScoreEventRecord.getKillWeapon(),
+          TranslationUtil.getWeaponOrVehicleName(roundPlayerScoreEventRecord.getKillWeapon())
+      );
+
+      MapEvent killEvent = new MapEvent()
+          .setLocation(location)
+          .setKillerPlayerId(roundPlayerScoreEventRecord.getKillerPlayerId())
+          .setPlayerId(roundPlayerScoreEventRecord.getPlayerId())
+          .setKillWeapon(killWeapon);
+
+      killEvents.add(killEvent);
     }
 
     for (RoundPlayerDeathRecord roundPlayerScoreEventRecord : deathRecords) {
@@ -88,7 +98,22 @@ public class MapService {
       BigDecimal y = roundPlayerScoreEventRecord.getPlayerLocationY();
       BigDecimal z = roundPlayerScoreEventRecord.getPlayerLocationZ();
       Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
-      deathLocations.add(location);
+
+      MapEvent deathEvent = new MapEvent()
+          .setLocation(location)
+          .setKillerPlayerId(roundPlayerScoreEventRecord.getKillerPlayerId())
+          .setPlayerId(roundPlayerScoreEventRecord.getPlayerId());
+
+      if (roundPlayerScoreEventRecord.getKillWeapon() != null) {
+        Weapon killWeapon = new Weapon(
+            roundPlayerScoreEventRecord.getKillWeapon(),
+            TranslationUtil.getWeaponOrVehicleName(roundPlayerScoreEventRecord.getKillWeapon())
+        );
+        deathEvent.setKillWeapon(killWeapon);
+      }
+
+
+      deathEvents.add(deathEvent);
     }
 
     Integer mapSize = mapSizesByMapCode.get(mapCode);
@@ -98,8 +123,8 @@ public class MapService {
         .setMapName(mapName)
         .setMapFileName(mapCode)
         .setMapSize(mapSize)
-        .setKillLocations(killLocations)
-        .setDeathLocations(deathLocations);
+        .setKillEvents(killEvents)
+        .setDeathEvents(deathEvents);
   }
 
   public List<MapUsage> getMapUsages() {

@@ -396,16 +396,23 @@ tr.team-3 .name {
 }
 
 .map_point_kills, .map_point_deaths {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
   background-color: white;
   border: 1px solid black;
   border-radius: 50%;
-  background-color: #0066cc;
+}
+
+.map_point_kills:hover, .map_point_deaths:hover {
+  border-color: white;
+}
+
+.map_point_kills {
+  background-color: yellow;
 }
 
 .map_point_deaths {
-  background-color: #ff471a;
+  background-color: gray;
 }
 
 

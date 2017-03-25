@@ -208,16 +208,14 @@ public class PlayerService {
         .collect(Collectors.toList());
   }
 
+
   private static WeaponUsage toWeaponUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
     String code = r.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
-    String weaponName = TranslationUtil.getWeaponNameStrict(code);
-    if (weaponName == null) {
-      weaponName = TranslationUtil.getVehicleName(code);
-    }
+    String weaponOrVehicleName = TranslationUtil.getWeaponOrVehicleName(code);
     return new WeaponUsage()
         .setCode(code)
-        .setName(weaponName)
+        .setName(weaponOrVehicleName)
         .setTimesUsed(timesUsed)
         .setPercentage(percentage(timesUsed, totalTimesUsed));
   }

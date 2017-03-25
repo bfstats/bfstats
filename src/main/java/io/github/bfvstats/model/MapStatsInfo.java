@@ -14,6 +14,6 @@ public class MapStatsInfo {
   private String mapFileName;
   private Integer mapSize;
 
-  private Collection<Location> killLocations;
-  private Collection<Location> deathLocations;
+  private Collection<MapEvent> killEvents;
+  private Collection<MapEvent> deathEvents;
 }

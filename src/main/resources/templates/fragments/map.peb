@@ -1,19 +1,21 @@
 <div class="clear">
   <div class="map_point_legend map_point_kills" style="float:left;"></div>
-  <span style="float:left;">Kills ({{map.killLocations.size}})</span>
+  <span style="float:left;">Kills ({{map.killEvents.size}})</span>
   <div class="map_point_legend map_point_deaths" style="float:left;"></div>
-  <span style="float:left;">Deaths ({{map.deathLocations.size}})</span>
+  <span style="float:left;">Deaths ({{map.deathEvents.size}})</span>
 </div>
 
 
 <div class="map_bg" style="background-image: url({{ publicAt('img/maps/radar/' + map.mapFileName + '.png') }});">
-  {% for location in map.killLocations %}
+  {% for event in map.killEvents %}
   <div class="map_point map_point_kills"
-       style="left: {{ location.x*100/map.mapSize }}%; bottom: {{ location.z*100/map.mapSize}}%;"></div>
+    title="{{event.location}}"
+    style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
   {% endfor %}
 
-  {% for location in map.deathLocations %}
+  {% for event in map.deathEvents %}
   <div class="map_point map_point_deaths"
-       style="left: {{ location.x*100/map.mapSize }}%; bottom: {{ location.z*100/map.mapSize}}%;"></div>
+    title="{{event.location}}"
+    style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
   {% endfor %}
 </div>

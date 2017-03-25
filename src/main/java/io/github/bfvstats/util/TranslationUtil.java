@@ -42,6 +42,15 @@ public class TranslationUtil {
     return weaponNameByCode.get(weaponCode);
   }
 
+  @Nonnull
+  public static String getWeaponOrVehicleName(@Nonnull String weaponOrVehicleCode) {
+    String weaponName = TranslationUtil.getWeaponNameStrict(weaponOrVehicleCode);
+    if (weaponName == null) {
+      weaponName = TranslationUtil.getVehicleName(weaponOrVehicleCode);
+    }
+    return weaponName;
+  }
+
   private static Map<String, String> loadPropertiesFileFromResources(String filePath) {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
     Properties props = new Properties();
