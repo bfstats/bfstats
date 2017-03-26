@@ -386,8 +386,8 @@ tr.team-3 .name {
 
 .map_point {
   position: absolute;
-  margin-top: -3px;
-  margin-left: -3px;
+  margin-top: -2px; /* must be half of map point height */
+  margin-left: -2px; /* must be half of map point width */
 }
 
 .map_point_legend {
