@@ -1,7 +1,6 @@
 package io.github.bfvstats.service;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.bfvstats.game.jooq.tables.records.RoundPlayerDeathRecord;
 import io.github.bfvstats.model.*;
 import io.github.bfvstats.util.TranslationUtil;
 import org.jooq.Record;
@@ -11,10 +10,7 @@ import org.jooq.Result;
 import org.jooq.impl.DSL;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
@@ -45,73 +41,92 @@ public class MapService {
       .build();
 
   public MapStatsInfo getMapStatsInfoForPlayer(String mapCode, Integer playerId, Integer roundId) {
-    Result<RoundPlayerDeathRecord> killRecords = getDslContext()
-        .select()
+    io.github.bfvstats.game.jooq.tables.Player killerPlayer = PLAYER.as("killerPlayer");
+
+    Result<Record> killRecords = getDslContext()
+        .select(ROUND_PLAYER_DEATH.fields())
+        .select(PLAYER.NAME)
+        .select(killerPlayer.NAME)
         .from(ROUND_PLAYER_DEATH)
         .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
+        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_DEATH.PLAYER_ID))
+        .leftJoin(killerPlayer).on(killerPlayer.ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
         .where(ROUND.MAP_CODE.eq(mapCode))
         .and(playerId == null ? ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.isNotNull() : ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
         .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
-        .fetch()
-        .into(ROUND_PLAYER_DEATH);
+        .fetch();
 
-    Result<RoundPlayerDeathRecord> deathRecords = getDslContext()
-        .select()
+    Result<Record> deathRecords = getDslContext()
+        .select(ROUND_PLAYER_DEATH.fields())
+        .select(PLAYER.NAME)
+        .select(killerPlayer.NAME)
         .from(ROUND_PLAYER_DEATH)
         .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
+        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_DEATH.PLAYER_ID))
+        .leftJoin(killerPlayer).on(killerPlayer.ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
         .where(ROUND.MAP_CODE.eq(mapCode))
         .and(playerId == null ? trueCondition() : ROUND_PLAYER_DEATH.PLAYER_ID.eq(playerId))
         .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
-        .fetch()
-        .into(ROUND_PLAYER_DEATH);
+        .fetch();
 
     return toMapStatsInfo(mapCode, killRecords, deathRecords);
   }
 
 
-  private MapStatsInfo toMapStatsInfo(String mapCode, Result<RoundPlayerDeathRecord> killRecords, Result<RoundPlayerDeathRecord> deathRecords) {
+  private MapStatsInfo toMapStatsInfo(String mapCode, Result<Record> killRecords, Result<Record> deathRecords) {
     Collection<MapEvent> killEvents = new ArrayList<>();
     Collection<MapEvent> deathEvents = new ArrayList<>();
 
-    for (RoundPlayerDeathRecord roundPlayerScoreEventRecord : killRecords) {
-      BigDecimal x = roundPlayerScoreEventRecord.getKillerLocationX();
-      BigDecimal y = roundPlayerScoreEventRecord.getKillerLocationY();
-      BigDecimal z = roundPlayerScoreEventRecord.getKillerLocationZ();
+    io.github.bfvstats.game.jooq.tables.Player killerPlayer = PLAYER.as("killerPlayer");
+
+    for (Record deathRecord : killRecords) {
+      BigDecimal x = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
+      BigDecimal y = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
+      BigDecimal z = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
       Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
 
-      Weapon killWeapon = new Weapon(
-          roundPlayerScoreEventRecord.getKillWeapon(),
-          TranslationUtil.getWeaponOrVehicleName(roundPlayerScoreEventRecord.getKillWeapon())
-      );
+      Integer killerPlayerId = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
+      Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
+      String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
+      String playerName = deathRecord.get(PLAYER.NAME);
+      String killerPlayerName = deathRecord.get(killerPlayer.NAME);
+
+      Weapon killWeapon = new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode));
 
       MapEvent killEvent = new MapEvent()
           .setLocation(location)
-          .setKillerPlayerId(roundPlayerScoreEventRecord.getKillerPlayerId())
-          .setPlayerId(roundPlayerScoreEventRecord.getPlayerId())
+          .setKillerPlayerId(killerPlayerId)
+          .setKillerPlayerName(killerPlayerName)
+          .setPlayerId(playerId)
+          .setPlayerName(playerName)
           .setKillWeapon(killWeapon);
 
       killEvents.add(killEvent);
     }
 
-    for (RoundPlayerDeathRecord roundPlayerScoreEventRecord : deathRecords) {
-      BigDecimal x = roundPlayerScoreEventRecord.getPlayerLocationX();
-      BigDecimal y = roundPlayerScoreEventRecord.getPlayerLocationY();
-      BigDecimal z = roundPlayerScoreEventRecord.getPlayerLocationZ();
+    for (Record deathRecord : deathRecords) {
+      BigDecimal x = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_X);
+      BigDecimal y = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Y);
+      BigDecimal z = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Z);
       Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
+
+      Integer killerPlayerId = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
+      Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
+      String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
+      String playerName = deathRecord.get(PLAYER.NAME);
+      String killerPlayerName = deathRecord.get(killerPlayer.NAME);
+
+      Weapon killWeapon = Optional.ofNullable(killWeaponCode)
+          .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
+          .orElse(null);
 
       MapEvent deathEvent = new MapEvent()
           .setLocation(location)
-          .setKillerPlayerId(roundPlayerScoreEventRecord.getKillerPlayerId())
-          .setPlayerId(roundPlayerScoreEventRecord.getPlayerId());
-
-      if (roundPlayerScoreEventRecord.getKillWeapon() != null) {
-        Weapon killWeapon = new Weapon(
-            roundPlayerScoreEventRecord.getKillWeapon(),
-            TranslationUtil.getWeaponOrVehicleName(roundPlayerScoreEventRecord.getKillWeapon())
-        );
-        deathEvent.setKillWeapon(killWeapon);
-      }
-
+          .setKillerPlayerId(killerPlayerId)
+          .setKillerPlayerName(killerPlayerName)
+          .setPlayerId(playerId)
+          .setPlayerName(playerName)
+          .setKillWeapon(killWeapon);
 
       deathEvents.add(deathEvent);
     }

@@ -9,13 +9,13 @@
 <div class="map_bg" style="background-image: url({{ publicAt('img/maps/radar/' + map.mapFileName + '.png') }});">
   {% for event in map.killEvents %}
   <div class="map_point map_point_kills"
-    title="{{event.location}}"
+    title="{{event.killerPlayerName}} [{{event.killWeapon.name}}] {{event.playerName}}"
     style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
   {% endfor %}
 
   {% for event in map.deathEvents %}
   <div class="map_point map_point_deaths"
-    title="{{event.location}}"
+    title="{{event.playerName}} killed by {{event.killerPlayerName}} [{{event.killWeapon.name}}] "
     style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
   {% endfor %}
 </div>

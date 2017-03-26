@@ -10,5 +10,6 @@ public class MapEvent {
   private Integer killerPlayerId;
   private Integer playerId;
   private Weapon killWeapon;
-
+  private String playerName;
+  private String killerPlayerName;
 }
