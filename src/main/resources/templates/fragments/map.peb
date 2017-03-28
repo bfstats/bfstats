@@ -5,8 +5,63 @@
   <span style="float:left;">Deaths ({{map.deathEvents.size}})</span>
 </div>
 
+<script>
+$(document).ready(function(){
 
-<div class="map_bg" style="background-image: url({{ publicAt('img/maps/radar/' + map.mapFileName + '.png') }});">
+	var native_width = 1024;
+	var native_height = 1024;
+
+	//Now the mousemove function
+	$(".magnify").mousemove(function(e){
+			//x/y coordinates of the mouse
+			//This is the position of .magnify with respect to the document.
+			var magnify_offset = $(this).offset();
+			//We will deduct the positions of .magnify from the mouse positions with
+			//respect to the document to get the mouse positions with respect to the
+			//container(.magnify)
+			var mx = e.pageX - magnify_offset.left;
+			var my = e.pageY - magnify_offset.top;
+
+			//Finally the code to fade out the glass if the mouse is outside the container
+			if(mx < $(this).width() && my < $(this).height() && mx > 0 && my > 0)
+			{
+				$(".large").fadeIn(100);
+			}
+			else
+			{
+				$(".large").fadeOut(100);
+			}
+			if($(".large").is(":visible"))
+			{
+				//The background position of .large will be changed according to the position
+				//of the mouse over the .small image. So we will get the ratio of the pixel
+				//under the mouse pointer with respect to the image and use that to position the
+				//large image inside the magnifying glass
+				var rx = Math.round(mx/$(".small").width()*native_width - $(".large").width()/2)*-1;
+				var ry = Math.round(my/$(".small").height()*native_height - $(".large").height()/2)*-1;
+
+				//Time to move the magnifying glass with the mouse
+				var px = mx - $(".large").width()/2;
+				var py = my - $(".large").height()/2;
+				//Now the glass moves with the mouse
+				//The logic is to deduct half of the glass's width and height from the
+				//mouse coordinates to place it with its center at the mouse coordinates
+
+				//If you hover on the image now, you should see the magnifying glass in action
+        // luup
+        $(".large").css('transform', 'translate(' + px + 'px, ' + py + 'px)');
+
+        // luubi sisu
+        $(".large .map_content").css('transform', 'translate(' + rx + 'px, ' + ry + 'px)');
+			}
+	})
+})
+</script>
+
+<!-- Lets make a simple image magnifier -->
+<div class="magnify">
+
+<div class="map_bg small" style="background-image: url({{ publicAt('img/maps/radar/' + map.mapFileName + '.png') }});">
   {% for event in map.killEvents %}
   <div class="map_point map_point_kills"
     title="{{event.killerPlayerName}} [{{event.killWeapon.name}}] {{event.playerName}}"
@@ -18,4 +73,22 @@
     title="{{event.playerName}} killed by {{event.killerPlayerName}} [{{event.killWeapon.name}}] "
     style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
   {% endfor %}
+</div>
+
+<div class="large">
+  <div class="map_bg map_content" style="background-image: url({{ publicAt('img/maps/lightmap/' + map.mapFileName + '.png') }});">
+    {% for event in map.killEvents %}
+    <div class="map_point map_point_kills"
+      title="{{event.killerPlayerName}} [{{event.killWeapon.name}}] {{event.playerName}}"
+      style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
+    {% endfor %}
+
+    {% for event in map.deathEvents %}
+    <div class="map_point map_point_deaths"
+      title="{{event.playerName}} killed by {{event.killerPlayerName}} [{{event.killWeapon.name}}] "
+      style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
+    {% endfor %}
+  </div>
+</div>
+
 </div>
