@@ -91,7 +91,9 @@ public class MapService {
       String playerName = deathRecord.get(PLAYER.NAME);
       String killerPlayerName = deathRecord.get(killerPlayer.NAME);
 
-      Weapon killWeapon = new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode));
+      Weapon killWeapon = Optional.ofNullable(killWeaponCode)
+          .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
+          .orElse(null);
 
       MapEvent killEvent = new MapEvent()
           .setLocation(location)
