@@ -57,8 +57,8 @@ Nicknames:
 </div>
 
 <div class="clear">
-{% include "players/deaths" %}
 {% include "players/kills" %}
+{% include "players/deaths" %}
 
 {% include "players/weapons" %}
 {% include "players/kits" %}

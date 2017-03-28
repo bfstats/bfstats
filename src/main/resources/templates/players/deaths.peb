@@ -1,6 +1,6 @@
 {% if deathsByKillers is not empty %}
 <table class="styled_table half">
-  <caption>Deaths</caption>
+  <caption>{{ player.name }}'s Enemies</caption>
   <thead>
   <tr>
     <th><div><span class="label">#</span></div></th>
