@@ -457,7 +457,7 @@ tr.team-3 .name {
 }
 
 
-.large .map_bg.map_content {
+#map_large_container .map_bg.map_content {
   position: absolute;
   top:0;
   left: 0;
@@ -470,7 +470,7 @@ tr.team-3 .name {
 }
 
 /*Lets create the magnifying glass*/
-.large {
+#map_large_container {
 	position: absolute;
   top:0;
   left: 0;
@@ -485,7 +485,6 @@ tr.team-3 .name {
 	inset 0 0 40px 2px rgba(0, 0, 0, 0.25);
 
 	/*hide the glass by default*/
-	display: none;
 	z-index: 1;
 	overflow: hidden;
 }
@@ -534,11 +533,22 @@ tr.team-3 .name {
 }
 
 
-.large .map_bg.map_content .map_point {
+#map_large_container .map_bg.map_content .map_point {
   margin-top: -3px; /* must be half of map point height */
   margin-left: -3px; /* must be half of map point width */
 }
-.large .map_bg.map_content .map_point_kills, .large .map_bg.map_content .map_point_deaths {
+#map_large_container .map_bg.map_content .map_point_kills, .large .map_bg.map_content .map_point_deaths {
   width: 6px;
   height: 6px;
+}
+
+
+#map_large_container {
+	display: block;
+  opacity: 1;
+  transition: opacity 100ms linear;
+}
+#map_large_container.hidden {
+	display: none;
+  opacity: 0;
 }

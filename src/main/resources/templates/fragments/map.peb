@@ -22,15 +22,15 @@ $(document).ready(function(){
 			var mx = e.pageX - magnify_offset.left;
 			var my = e.pageY - magnify_offset.top;
 
+			var mapLargeContainer = document.getElementById("map_large_container");
+
 			//Finally the code to fade out the glass if the mouse is outside the container
-			if(mx < $(this).width() && my < $(this).height() && mx > 0 && my > 0)
-			{
-				$(".large").fadeIn(100);
+			if (mx < $(this).width() && my < $(this).height() && mx > 0 && my > 0) {
+        mapLargeContainer.classList.remove("hidden");
+			} else {
+        mapLargeContainer.classList.add("hidden");
 			}
-			else
-			{
-				$(".large").fadeOut(100);
-			}
+
 			if($(".large").is(":visible"))
 			{
 				//The background position of .large will be changed according to the position
@@ -75,7 +75,7 @@ $(document).ready(function(){
   {% endfor %}
 </div>
 
-<div class="large">
+<div id="map_large_container" class="hidden large">
   <div class="map_bg map_content" style="background-image: url({{ publicAt('img/maps/lightmap/' + map.mapFileName + '.png') }});">
     {% for event in map.killEvents %}
     <div class="map_point map_point_kills"
