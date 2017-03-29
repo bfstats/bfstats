@@ -6,60 +6,79 @@
 </div>
 
 <script>
-$(document).ready(function(){
-
+document.addEventListener("DOMContentLoaded", function(){
 	var native_width = 1024;
 	var native_height = 1024;
 
-	//Now the mousemove function
-	$(".magnify").mousemove(function(e){
-			//x/y coordinates of the mouse
-			//This is the position of .magnify with respect to the document.
-			var magnify_offset = $(this).offset();
-			//We will deduct the positions of .magnify from the mouse positions with
-			//respect to the document to get the mouse positions with respect to the
-			//container(.magnify)
-			var mx = e.pageX - magnify_offset.left;
-			var my = e.pageY - magnify_offset.top;
+  var mapLargeContainer = document.getElementById("map_large_container");
+  var mapLargeContainerWidth = 175;
+  var mapLargeContainerHeight = 175;
 
-			var mapLargeContainer = document.getElementById("map_large_container");
+  var a = mapLargeContainerWidth / 2;
+  var b = mapLargeContainerHeight / 2;
 
-			//Finally the code to fade out the glass if the mouse is outside the container
-			if (mx < $(this).width() && my < $(this).height() && mx > 0 && my > 0) {
-        mapLargeContainer.classList.remove("hidden");
-			} else {
-        mapLargeContainer.classList.add("hidden");
-			}
+  var mapLargeContent = mapLargeContainer.querySelector(".map_content");
 
-      if (mapLargeContainer.style.display != "none") {
-				//The background position of .large will be changed according to the position
-				//of the mouse over the .small image. So we will get the ratio of the pixel
-				//under the mouse pointer with respect to the image and use that to position the
-				//large image inside the magnifying glass
 
-				var $mapLargeContainer = $(".large");
+  var smallEl = document.querySelector(".small");
+  var small_width = smallEl.offsetWidth;
+  var small_height = smallEl.offsetHeight;
 
-				var a = $mapLargeContainer.width()/2;
-				var b = $mapLargeContainer.height()/2;
+  var magnifyEl = document.querySelector(".magnify");
 
-				var rx = Math.round(mx/$(".small").width()*native_width - a)*-1;
-				var ry = Math.round(my/$(".small").height()*native_height - b)*-1;
+  magnifyEl.addEventListener("mousemove", function(e) {
+    //x/y coordinates of the mouse
+    //This is the position of .magnify with respect to the document.
 
-				//Time to move the magnifying glass with the mouse
-				var px = mx - a;
-				var py = my - b;
-				//Now the glass moves with the mouse
-				//The logic is to deduct half of the glass's width and height from the
-				//mouse coordinates to place it with its center at the mouse coordinates
+    var magnifyWidth = magnifyEl.clientWidth;
+    var magnifyHeight = magnifyEl.clientWidth;
 
-				//If you hover on the image now, you should see the magnifying glass in action
-        // luup
-        $mapLargeContainer.css('transform', 'translate(' + px + 'px, ' + py + 'px)');
+    //We will deduct the positions of .magnify from the mouse positions with
+    //respect to the document to get the mouse positions with respect to the
+    //container(.magnify)
+    var mx = e.pageX - magnifyEl.offsetLeft;
+    var my = e.pageY - magnifyEl.offsetTop;
 
-        // luubi sisu
-        $mapLargeContainer.find(".map_content").css('transform', 'translate(' + rx + 'px, ' + ry + 'px)');
-			}
-	})
+
+
+    //Finally the code to fade out the glass if the mouse is outside the container
+    if (
+      mx < magnifyWidth &&
+      my < magnifyHeight &&
+      mx > 0 &&
+      my > 0
+    ) {
+      mapLargeContainer.classList.remove("hidden");
+    } else {
+      mapLargeContainer.classList.add("hidden");
+    }
+
+    if (mapLargeContainer.style.display != "none") {
+      //The position of mapLargeContainer's actual content will be changed according to the position
+      //of the mouse over the .small image. So we will get the ratio of the pixel
+      //under the mouse pointer with respect to the image and use that to position the
+      //large image inside the magnifying glass
+
+      var rx = Math.round(mx/small_width * native_width - a) * -1;
+      var ry = Math.round(my/small_height * native_height - b) * -1;
+
+      //Time to move the magnifying glass with the mouse
+      var px = mx - a;
+      var py = my - b;
+      //Now the glass moves with the mouse
+      //The logic is to deduct half of the glass's width and height from the
+      //mouse coordinates to place it with its center at the mouse coordinates
+
+      //If you hover on the image now, you should see the magnifying glass in action
+      // luup
+      mapLargeContainer.style.transform = 'translate(' + px + 'px, ' + py + 'px)';
+      // luubi sisu
+      mapLargeContent.style.transform = 'translate(' + rx + 'px, ' + ry + 'px)';
+    }
+  });
+
+
+
 })
 </script>
 
