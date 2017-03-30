@@ -1,7 +1,7 @@
 <div class="clear">
-  <div class="map_point_legend map_point_kills" style="float:left;"></div>
+  <div class="legend map_point map_point_kills" style="float:left;"></div>
   <span style="float:left;">Kills ({{map.killEvents.size}})</span>
-  <div class="map_point_legend map_point_deaths" style="float:left;"></div>
+  <div class="legend map_point map_point_deaths" style="float:left;"></div>
   <span style="float:left;">Deaths ({{map.deathEvents.size}})</span>
 </div>
 

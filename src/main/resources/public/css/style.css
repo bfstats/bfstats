@@ -493,22 +493,22 @@ tr.team-3 .name {
   position: absolute;
   margin-top: -2px; /* must be half of map point height */
   margin-left: -2px; /* must be half of map point width */
-}
-
-.map_point_legend {
-  margin-left: 10px;
-  margin-right: 4px;
-}
-
-.map_point_kills, .map_point_deaths {
   width: 4px;
   height: 4px;
+
   background-color: white;
   border: 1px solid black;
   border-radius: 50%;
 }
 
-.map_point_kills:hover, .map_point_deaths:hover {
+.map_point.legend {
+  position: static;
+  margin: 0;
+  margin-left: 10px;
+  margin-right: 4px;
+}
+
+.map_point:hover {
   border-color: white;
 }
 
@@ -520,16 +520,12 @@ tr.team-3 .name {
   background-color: gray;
 }
 
-
 #map_large_container .map_bg .map_point {
   margin-top: -3px; /* must be half of map point height */
   margin-left: -3px; /* must be half of map point width */
-}
-#map_large_container .map_bg .map_point_kills, .large .map_bg .map_point_deaths {
   width: 6px;
   height: 6px;
 }
-
 
 #map_large_container {
 	display: block;
