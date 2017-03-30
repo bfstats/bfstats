@@ -7,8 +7,8 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
-	var native_width = 1024;
-	var native_height = 1024;
+	var nativeWidth = 1024;
+	var nativeHeight = 1024;
 
   var mapLargeContainer = document.getElementById("map_large_container");
   var mapLargeContainerWidth = 175;
@@ -17,12 +17,12 @@ document.addEventListener("DOMContentLoaded", function(){
   var a = mapLargeContainerWidth / 2;
   var b = mapLargeContainerHeight / 2;
 
-  var mapLargeContent = mapLargeContainer.querySelector(".map_content");
+  var mapLargeContent = mapLargeContainer.querySelector(".map_bg");
 
 
   var smallEl = document.querySelector(".small");
-  var small_width = smallEl.offsetWidth;
-  var small_height = smallEl.offsetHeight;
+  var smallWidth = smallEl.offsetWidth;
+  var smallHeight = smallEl.offsetHeight;
 
   var magnifyEl = document.querySelector(".magnify");
 
@@ -59,48 +59,31 @@ document.addEventListener("DOMContentLoaded", function(){
       //under the mouse pointer with respect to the image and use that to position the
       //large image inside the magnifying glass
 
-      var rx = Math.round(mx/small_width * native_width - a) * -1;
-      var ry = Math.round(my/small_height * native_height - b) * -1;
 
       //Time to move the magnifying glass with the mouse
-      var px = mx - a;
-      var py = my - b;
+      var magnifierX = mx - a;
+      var magnifierY = my - b;
+
+      var contentX = -Math.round(mx/smallWidth * nativeWidth - a);
+      var contentY = -Math.round(my/smallHeight * nativeHeight - b);
+
       //Now the glass moves with the mouse
       //The logic is to deduct half of the glass's width and height from the
       //mouse coordinates to place it with its center at the mouse coordinates
 
       //If you hover on the image now, you should see the magnifying glass in action
       // luup
-      mapLargeContainer.style.transform = 'translate(' + px + 'px, ' + py + 'px)';
+      mapLargeContainer.style.transform = 'translate(' + magnifierX + 'px, ' + magnifierY + 'px)';
       // luubi sisu
-      mapLargeContent.style.transform = 'translate(' + rx + 'px, ' + ry + 'px)';
+      mapLargeContent.style.transform = 'translate(' + contentX + 'px, ' + contentY + 'px)';
     }
   });
-
-
 
 })
 </script>
 
-<!-- Lets make a simple image magnifier -->
-<div class="magnify">
-
-<div class="map_bg small" style="background-image: url({{ publicAt('img/maps/radar/' + map.mapFileName + '.png') }});">
-  {% for event in map.killEvents %}
-  <div class="map_point map_point_kills"
-    title="{{event.killerPlayerName}} [{{event.killWeapon.name}}] {{event.playerName}}"
-    style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
-  {% endfor %}
-
-  {% for event in map.deathEvents %}
-  <div class="map_point map_point_deaths"
-    title="{{event.playerName}} killed by {{event.killerPlayerName}} [{{event.killWeapon.name}}] "
-    style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
-  {% endfor %}
-</div>
-
-<div id="map_large_container" class="hidden large">
-  <div class="map_bg map_content" style="background-image: url({{ publicAt('img/maps/lightmap/' + map.mapFileName + '.png') }});">
+{% macro renderMap(map, cssClass, imagePath) %}
+  <div class="map_bg {{cssClass}}" style="background-image: url({{ publicAt(imagePath) }});">
     {% for event in map.killEvents %}
     <div class="map_point map_point_kills"
       title="{{event.killerPlayerName}} [{{event.killWeapon.name}}] {{event.playerName}}"
@@ -113,6 +96,13 @@ document.addEventListener("DOMContentLoaded", function(){
       style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
     {% endfor %}
   </div>
-</div>
+{% endmacro %}
 
+<!-- Lets make a simple image magnifier -->
+<div class="magnify">
+{{renderMap(map, 'small', 'img/maps/radar/' + map.mapFileName + '.png')}}
+
+<div id="map_large_container" class="hidden large">
+{{renderMap(map, 'large', 'img/maps/lightmap/' + map.mapFileName + '.png')}}
+</div>
 </div>

@@ -445,7 +445,6 @@ tr.team-3 .name {
 /*Some CSS*/
 .magnify {
   width: 512px;
-  xmargin: 50px auto;
   position: relative;
 }
 
@@ -454,10 +453,11 @@ tr.team-3 .name {
   width: 512px;
   height: 512px;
   background-size: 100% 100%;
+
+  display: block; /* To solve overlap bug at the edges during magnification */
 }
 
-
-#map_large_container .map_bg.map_content {
+#map_large_container .map_bg {
   position: absolute;
   top:0;
   left: 0;
@@ -488,15 +488,6 @@ tr.team-3 .name {
 	z-index: 1;
 	overflow: hidden;
 }
-
-
-
-
-/*To solve overlap bug at the edges during magnification*/
-.small { display: block; }
-
-
-
 
 /* map */
 
@@ -533,11 +524,11 @@ tr.team-3 .name {
 }
 
 
-#map_large_container .map_bg.map_content .map_point {
+#map_large_container .map_bg .map_point {
   margin-top: -3px; /* must be half of map point height */
   margin-left: -3px; /* must be half of map point width */
 }
-#map_large_container .map_bg.map_content .map_point_kills, .large .map_bg.map_content .map_point_deaths {
+#map_large_container .map_bg .map_point_kills, .large .map_bg .map_point_deaths {
   width: 6px;
   height: 6px;
 }
