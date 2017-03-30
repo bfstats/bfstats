@@ -10,6 +10,7 @@ import org.jooq.Result;
 import org.jooq.impl.DSL;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -91,12 +92,15 @@ public class MapService {
       String playerName = deathRecord.get(PLAYER.NAME);
       String killerPlayerName = deathRecord.get(killerPlayer.NAME);
 
+      LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
+
       Weapon killWeapon = Optional.ofNullable(killWeaponCode)
           .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
           .orElse(null);
 
       MapEvent killEvent = new MapEvent()
           .setLocation(location)
+          .setTime(deathTime)
           .setKillerPlayerId(killerPlayerId)
           .setKillerPlayerName(killerPlayerName)
           .setPlayerId(playerId)
@@ -118,12 +122,15 @@ public class MapService {
       String playerName = deathRecord.get(PLAYER.NAME);
       String killerPlayerName = deathRecord.get(killerPlayer.NAME);
 
+      LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
+
       Weapon killWeapon = Optional.ofNullable(killWeaponCode)
           .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
           .orElse(null);
 
       MapEvent deathEvent = new MapEvent()
           .setLocation(location)
+          .setTime(deathTime)
           .setKillerPlayerId(killerPlayerId)
           .setKillerPlayerName(killerPlayerName)
           .setPlayerId(playerId)
