@@ -7,8 +7,8 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
-	var nativeWidth = 1024;
-	var nativeHeight = 1024;
+	var nativeWidth = 2048;
+	var nativeHeight = 2048;
 
   var mapLargeContainer = document.getElementById("map_large_container");
   var mapLargeContainerWidth = 175;
