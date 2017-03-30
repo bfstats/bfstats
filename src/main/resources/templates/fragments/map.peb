@@ -18,7 +18,8 @@ document.addEventListener("DOMContentLoaded", function(){
   var b = mapLargeContainerHeight / 2;
 
   var mapLargeContent = mapLargeContainer.querySelector(".map_bg");
-
+  mapLargeContent.style.width = nativeWidth;
+  mapLargeContent.style.height = nativeHeight;
 
   var smallEl = document.querySelector(".small");
   var smallWidth = smallEl.offsetWidth;
