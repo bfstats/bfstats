@@ -128,7 +128,7 @@ th {
 
 #navigation {
   position: fixed;
-  top: 0;
+  top: 30;
   left: 0;
   bottom: 0;
   height: 100%;
