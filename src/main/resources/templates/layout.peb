@@ -11,9 +11,12 @@
 <div id="navigation">
   <a href="/ranking">Ranks</a>
   <a href="/rounds">Rounds</a>
-  <a href="/players/search">Search players</a>
   <a href="/maps">Maps</a>
   <a href="/chat">Chat</a>
+
+  <form action="/players">
+    <input type="text" id="menu_query" name="query" placeholder="Search player" value="{{query}}"/>
+  </form>
 </div>
 
 <div id="content">
