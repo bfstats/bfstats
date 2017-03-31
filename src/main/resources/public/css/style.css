@@ -77,6 +77,8 @@
 }
 
 body {
+  margin: 0;
+
   background-color: #252826;
 
   background-color: #000;
@@ -131,20 +133,27 @@ th {
   bottom: 0;
   height: 100%;
   width: 90px;
-  padding: 10px;
-  margin-right: 10px;
   line-height: 20px;
-  margin: 0 8px;
-  background-image: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.7) 70%, rgba(0,0,0,0)); ;
+  margin: 0 10px 0 0;
   font-weight: bold;
 }
 #navigation a {
   display: block;
+  padding: 5px;
+  padding-left: 10px;
+  background-color: rgba(50,50,10,0.3);
   text-decoration: none;
+  text-transform: uppercase;
+  transition: background-color 200ms linear;
+}
+
+#navigation a:hover {
+  background-color: rgba(50,50,10,0.6);
 }
 
 #content {
   margin-left: 120px;
+  padding-top: 20px;
 }
 
 .meter {
