@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -44,7 +45,7 @@ public class RoundService {
         .select(ROUND.fields())
         .select(ROUND_END_STATS.fields())
         .from(ROUND)
-        .join(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID)) // also skips rounds which don't have end result
+        .leftJoin(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID))
         .where(roundId == null ? DSL.trueCondition() : ROUND.ID.eq(roundId))
         .orderBy(ROUND.START_TIME.desc())
         .fetchMap(
@@ -74,26 +75,31 @@ public class RoundService {
         .setPunkbusterEnabled(roundRecord.getPunkbusterEnabled() == 1);
   }
 
-  private static Round toRound(RoundRecord roundRecord, RoundEndStatsRecord roundEndStatsRecord) {
+  private static Round toRound(@Nonnull RoundRecord roundRecord, @Nonnull RoundEndStatsRecord roundEndStatsRecord) {
     String mapCode = roundRecord.getMapCode();
     String mapName = TranslationUtil.getMapName(mapCode);
-
     LocalDateTime startTime = roundRecord.getStartTime().toLocalDateTime();
-    LocalDateTime endTime = roundEndStatsRecord.getEndTime().toLocalDateTime();
-    long durationMinutes = startTime.until(endTime, ChronoUnit.MINUTES);
-    //long durationMinutes = ChronoUnit.MINUTES.between(startTime, endTime);
 
-    return new Round()
+    Round round = new Round()
         .setId(roundRecord.getId())
         .setMapCode(mapCode)
         .setMapName(mapName)
-        .setStartTime(startTime)
-        .setEndTime(endTime)
-        .setDurationInMinutes(durationMinutes)
-        .setWinningTeam(roundEndStatsRecord.getWinningTeam())
-        .setVictoryType(roundEndStatsRecord.getVictoryType())
-        .setEndTicketsTeam1(roundEndStatsRecord.getEndTicketsTeam_1())
-        .setEndTicketsTeam2(roundEndStatsRecord.getEndTicketsTeam_2());
+        .setStartTime(startTime);
+
+    // though roundEndStatsRecord is not null, it might be empty
+    if (roundEndStatsRecord.getRoundId() != null) {
+      LocalDateTime endTime = roundEndStatsRecord.getEndTime().toLocalDateTime();
+      long durationMinutes = startTime.until(endTime, ChronoUnit.MINUTES);
+
+      round.setEndTime(endTime)
+          .setDurationInMinutes(durationMinutes)
+          .setWinningTeam(roundEndStatsRecord.getWinningTeam())
+          .setVictoryType(roundEndStatsRecord.getVictoryType())
+          .setEndTicketsTeam1(roundEndStatsRecord.getEndTicketsTeam_1())
+          .setEndTicketsTeam2(roundEndStatsRecord.getEndTicketsTeam_2());
+    }
+
+    return round;
   }
 
   public List<RoundPlayerStats> getRoundPlayerStats(int roundId) {
