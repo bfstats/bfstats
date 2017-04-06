@@ -6,6 +6,7 @@ import io.github.bfvstats.model.Round;
 import io.github.bfvstats.service.ChatService;
 import io.github.bfvstats.service.MapService;
 import io.github.bfvstats.service.RoundService;
+import io.github.bfvstats.util.SortUtils;
 import ro.pippo.controller.Controller;
 import ro.pippo.controller.GET;
 import ro.pippo.controller.Path;
@@ -34,12 +35,19 @@ public class RoundController extends Controller {
 
   @GET("/?")
   public void list() {
-    List<Round> rounds = roundService.getRounds();
+    int page = SortUtils.getPageFromRequest(getRequest());
+    List<Round> rounds = roundService.getRounds(page);
 
     Map<LocalDate, List<Round>> roundsByDay = rounds.stream()
         .collect(Collectors.groupingBy(r -> r.getStartTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
 
-    getResponse().bind("rounds", roundsByDay).render("rounds/list");
+    int totalRoundsCount = roundService.getTotalRoundsCount();
+
+    getResponse()
+        .bind("rounds", roundsByDay)
+        .bind("totalRoundsCount", totalRoundsCount)
+        .bind("currentPage", page)
+        .render("rounds/list");
   }
 
   @GET("{id}")

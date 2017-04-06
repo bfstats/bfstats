@@ -23,8 +23,8 @@ import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class RoundService {
-  public List<Round> getRounds() {
-    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStats(null);
+  public List<Round> getRounds(int page) {
+    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStats(null, page);
 
     return roundWithStats.entrySet().stream()
         .map(e -> toRound(e.getKey(), e.getValue()))
@@ -32,7 +32,7 @@ public class RoundService {
   }
 
   public Round getRound(int roundId) {
-    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStats(roundId);
+    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStats(roundId, 1);
     Map.Entry<RoundRecord, RoundEndStatsRecord> onlyEntry = roundWithStats.entrySet().iterator().next();
     RoundRecord roundRecord = onlyEntry.getKey();
     Round round = toRound(roundRecord, onlyEntry.getValue());
@@ -40,7 +40,10 @@ public class RoundService {
     return round;
   }
 
-  private static Map<RoundRecord, RoundEndStatsRecord> getRoundRecordsWithStats(@Nullable Integer roundId) {
+  private static Map<RoundRecord, RoundEndStatsRecord> getRoundRecordsWithStats(@Nullable Integer roundId, int page) {
+    int numberOfRows = 50;
+    int firstRowIndex = (page - 1) * numberOfRows;
+
     return getDslContext()
         .select(ROUND.fields())
         .select(ROUND_END_STATS.fields())
@@ -48,6 +51,7 @@ public class RoundService {
         .leftJoin(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID))
         .where(roundId == null ? DSL.trueCondition() : ROUND.ID.eq(roundId))
         .orderBy(ROUND.START_TIME.desc())
+        .limit(firstRowIndex, numberOfRows)
         .fetchMap(
             r -> r.into(ROUND),
             r -> r.into(ROUND_END_STATS)
@@ -128,6 +132,10 @@ public class RoundService {
         .setAttacks(r.getAttacks())
         .setDefences(r.getDefences());
 
+  }
+
+  public int getTotalRoundsCount() {
+    return getDslContext().selectCount().from(ROUND).fetchOne(0, int.class);
   }
 
   @Data

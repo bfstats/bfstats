@@ -16,6 +16,9 @@ There are no rounds.
     {% endfor %}
     </ul>
   {% endfor %}
+
+{% import "fragments/pagination" %}
+{{ pagination(totalRoundsCount, 50, page, currentPage)}}
 {% endif %}
 
 {% endblock %}
