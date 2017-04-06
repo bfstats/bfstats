@@ -75,15 +75,8 @@ There are no players.
 </table>
 {% endif %}
 
-<div class="pagination">
-  {% for page in range(1, totalPlayerCount / 50 + 1) %}
-  {% if page == currentPage %}
-    {{ page }}
-  {% else %}
-    <a href="?{{'sort=' + sortingColumn + ',' + sortingOrder}}&page={{page}}">{{ page }}</a>
-  {% endif %}
-  {% endfor %}
-</div>
+{% import "fragments/pagination" %}
+{{ pagination(totalPlayerCount, 50, page, currentPage, '?sort=' + sortingColumn + ',' + sortingOrder + '&')}}
 
 Total: {{totalPlayerCount }} players
 

@@ -15,7 +15,10 @@ import static io.github.bfvstats.util.DbUtils.getDslContext;
 
 public class ChatService {
 
-  public List<ChatMessage> getChatMessages(Integer roundId) {
+  public List<ChatMessage> getChatMessages(Integer roundId, int page) {
+    int numberOfRows = 50;
+    int firstRowIndex = (page - 1) * numberOfRows;
+
     return getDslContext()
         .select(ROUND_CHAT_LOG.PLAYER_ID, ROUND_CHAT_LOG.MESSAGE, ROUND_CHAT_LOG.EVENT_TIME, ROUND_CHAT_LOG.TO_TEAM, PLAYER.NAME, ROUND_PLAYER_TEAM.TEAM, ROUND_PLAYER_TEAM.ROUND_ID)
         .from(ROUND_CHAT_LOG)
@@ -25,8 +28,12 @@ public class ChatService {
             .and(ROUND_CHAT_LOG.EVENT_TIME.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
         )
         .where(roundId == null ? DSL.trueCondition() : ROUND_CHAT_LOG.ROUND_ID.eq(roundId))
-        .orderBy(ROUND_CHAT_LOG.EVENT_TIME.sortAsc())
-        //.limit(0, 50)
+        // order by date descending, but time ascending
+        .orderBy(
+            DSL.date(ROUND_CHAT_LOG.EVENT_TIME).desc(),
+            ROUND_CHAT_LOG.EVENT_TIME.asc()
+        )
+        .limit(firstRowIndex, numberOfRows)
         .fetch()
         .stream()
         .map(this::toChatMessage)
@@ -48,5 +55,9 @@ public class ChatService {
 
   private static LocalDateTime toLocalDateTime(Date date) {
     return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+  }
+
+  public int getTotalMessagesCount() {
+    return getDslContext().selectCount().from(ROUND_CHAT_LOG).fetchOne(0, int.class);
   }
 }

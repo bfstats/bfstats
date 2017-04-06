@@ -4,13 +4,12 @@ import io.github.bfvstats.model.PlayerStats;
 import io.github.bfvstats.service.PlayerService;
 import io.github.bfvstats.service.RankingService;
 import io.github.bfvstats.util.Sort;
+import io.github.bfvstats.util.SortUtils;
 import ro.pippo.controller.Controller;
 import ro.pippo.controller.GET;
 import ro.pippo.controller.Path;
-import ro.pippo.core.Request;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.List;
 
 import static io.github.bfvstats.util.SortUtils.getSortColumnAndOrderFromRequest;
@@ -27,20 +26,13 @@ public class RankingController extends Controller {
     this.playerService = playerService;
   }
 
-  public int getPageFromRequest(Request request) {
-    String page = Arrays.stream(request.getQueryParameter("page").getValues())
-        .findFirst()
-        .orElse("1");
-    return Integer.valueOf(page);
-  }
-
   @GET("/?")
   public void ranking() {
     Sort sort = getSortColumnAndOrderFromRequest(getRequest());
     if (sort == null) {
       sort = new Sort("player_rank", Sort.SortOrder.ASC);
     }
-    int page = getPageFromRequest(getRequest());
+    int page = SortUtils.getPageFromRequest(getRequest());
     List<PlayerStats> players = rankingService.getRankings(sort, page, null);
 
     int totalPlayerCount = rankingService.getTotalPlayerCount();
@@ -49,10 +41,10 @@ public class RankingController extends Controller {
 
     getResponse()
         .bind("totalPlayerCount", totalPlayerCount)
+        .bind("currentPage", page)
         .bind("players", players)
         .bind("sortingColumn", sort.getProperty())
         .bind("sortingOrder", sort.getOrder().name())
-        .bind("currentPage", page)
         .render("ranking/ranking");
   }
 }

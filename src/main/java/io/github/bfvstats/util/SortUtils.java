@@ -9,6 +9,12 @@ import ro.pippo.core.Request;
 import java.util.Arrays;
 
 public class SortUtils {
+  public static int getPageFromRequest(Request request) {
+    String page = Arrays.stream(request.getQueryParameter("page").getValues())
+        .findFirst()
+        .orElse("1");
+    return Integer.valueOf(page);
+  }
 
   // ?sort=column,order (order defaults to ASC)
   public static Sort getSortColumnAndOrderFromRequest(Request request) {

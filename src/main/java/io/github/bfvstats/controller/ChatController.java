@@ -2,6 +2,7 @@ package io.github.bfvstats.controller;
 
 import io.github.bfvstats.model.ChatMessage;
 import io.github.bfvstats.service.ChatService;
+import io.github.bfvstats.util.SortUtils;
 import ro.pippo.controller.Controller;
 import ro.pippo.controller.GET;
 import ro.pippo.controller.Path;
@@ -25,10 +26,19 @@ public class ChatController extends Controller {
 
   @GET("/?")
   public void list() {
-    List<ChatMessage> chatMessages = chatService.getChatMessages(null);
+    int page = SortUtils.getPageFromRequest(getRequest());
+
+    List<ChatMessage> chatMessages = chatService.getChatMessages(null, page);
 
     Map<LocalDate, List<ChatMessage>> messagesByDay = chatMessages.stream()
         .collect(Collectors.groupingBy(r -> r.getTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
-    getResponse().bind("chatMessages", messagesByDay).render("chat/list");
+
+    int totalMessagesCount = chatService.getTotalMessagesCount();
+
+    getResponse()
+        .bind("chatMessages", messagesByDay)
+        .bind("totalMessagesCount", totalMessagesCount)
+        .bind("currentPage", page)
+        .render("chat/list");
   }
 }

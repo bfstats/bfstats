@@ -22,4 +22,7 @@ There are no chat messages
 </table>
 {% endfor %}
 
+{% import "fragments/pagination" %}
+{{ pagination(totalMessagesCount, 50, page, currentPage)}}
+
 {% endif %}

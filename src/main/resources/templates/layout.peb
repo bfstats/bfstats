@@ -24,6 +24,10 @@
   {% block content %}{% endblock %}
 </div>
 
+<div style="text-align:center; margin: 40px auto 20px auto;">
+  log parsing provided by bfvstats
+</div>
+
 <script>
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
