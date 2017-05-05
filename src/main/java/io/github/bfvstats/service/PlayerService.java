@@ -68,6 +68,10 @@ public class PlayerService {
         .from(ROUND_PLAYER)
         .where(ROUND_PLAYER.PLAYER_ID.eq(playerId))
         .fetchOne("totalTime", BigDecimal.class);
+    if (totalTimeInMs == null) {
+      return null;
+      // player is probably still playing and has no round player record yet
+    }
     BigDecimal totalTimeInSeconds = totalTimeInMs.divide(BigDecimal.valueOf(1000), RoundingMode.DOWN);
 
     return totalTimeInSeconds.longValue();
