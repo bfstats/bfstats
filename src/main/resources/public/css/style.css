@@ -530,6 +530,24 @@ tr.team-3 .name {
   border-color: white;
 }
 
+.map_point:hover:after {
+  content: attr(title);
+  position: absolute;
+  top: -30;
+  left: -50;
+  border: 1px solid #ccc;
+  padding: 2px;
+  background: #bada55;
+  color: #000;
+  font-size: 10px;
+  display: block;
+  width: 100px;
+  xwhite-space: nowrap;
+  z-index: 10;
+  opacity: 0.8;
+  font-weight: bold;
+}
+
 .map_point_kills {
   background-color: yellow;
 }
