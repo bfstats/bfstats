@@ -15,6 +15,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.impl.DSL;
 
+import javax.annotation.Nonnull;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.InflaterInputStream;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
@@ -42,6 +44,10 @@ import static java.util.Optional.ofNullable;
 
 @Slf4j
 public class DbFiller {
+  // English, French, Italian, Spanish, German
+  public static final Set<String> STANDARD_NAMES = Stream.of("Player", "Joueur", "Giocatore", "Jugador", "Spieler")
+      .collect(Collectors.toSet());
+
   public static final int FAKE_BOT_SLOT_ID = -1;
   public static final int FAKE_BOT_TEAM = -1;
 
@@ -1000,7 +1006,7 @@ else: repair; number of repairs
     return roundChatLogRecord;
   }
 
-  private PlayerRecord addPlayerOrNickName(String name, String keyHash) {
+  private PlayerRecord addPlayerOrNickName(@Nonnull String name, String keyHash) {
     PlayerRecord playerRecord = transaction().selectFrom(PLAYER).where(PLAYER.KEYHASH.eq(keyHash)).fetchOne();
 
     if (playerRecord == null) {
@@ -1009,9 +1015,13 @@ else: repair; number of repairs
       playerRecord.setKeyhash(keyHash);
       playerRecord.insert();
     } else {
-      // update the "active" nickname
-      playerRecord.setName(name);
-      playerRecord.update();
+      if (STANDARD_NAMES.contains(name)) {
+        // don't prioritize default names, stay on previous active one
+      } else {
+        // update the "active" nickname
+        playerRecord.setName(name);
+        playerRecord.update();
+      }
     }
 
     addNickname(playerRecord.getId(), name);
