@@ -531,7 +531,7 @@ tr.team-3 .name {
 }
 
 .map_point:hover:after {
-  content: attr(title);
+  content: attr(data-title);
   position: absolute;
   top: -30;
   left: -50;
