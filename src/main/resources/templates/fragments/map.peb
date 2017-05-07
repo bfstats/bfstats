@@ -99,6 +99,113 @@ document.addEventListener("DOMContentLoaded", function(){
   </div>
 {% endmacro %}
 
+<div id="map" style="height: 512px"></div>
+
+<script>
+var killPoints = [
+{% for event in map.killEvents %}
+{
+    "type": "Feature",
+    "properties": {
+      "time": "{{event.time | dt("HH:mm") }}",
+      "pointType": "kill",
+      "killerName": "{{event.killerPlayerName}}",
+      "killerTeam": "{{event.killerPlayerTeam}}",
+      "killWeaponName": "{{event.killWeapon.name}}",
+      "victimName": "{{event.playerName}}",
+      "victimTeam": "{{event.playerTeam}}",
+      "popupContent": "{{event.time | dt("HH:mm") }} <span style='font-weight: bold'>{{event.killerPlayerName}}</span> ({{event.killerPlayerTeam}}) [{{event.killWeapon.name}}] {{event.playerName}} ({{event.playerTeam}})"
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [{{event.location.x}}, {{event.location.z}}]
+    }
+}{% if loop.index < loop.length-1 %},{% endif %}
+{% endfor %}
+];
+
+
+var deathPoints = [
+{% for event in map.deathEvents %}
+{
+    "type": "Feature",
+    "properties": {
+      "time": "{{event.time | dt("HH:mm") }}",
+      "pointType": "death",
+      "killerName": "{{event.killerPlayerName}}",
+      "killerTeam": "{{event.killerPlayerTeam}}",
+      "killWeaponName": "{{event.killWeapon.name}}",
+      "victimName": "{{event.playerName}}",
+      "victimTeam": "{{event.playerTeam}}",
+      "popupContent": "{{event.time | dt("HH:mm") }} <span style='font-weight: bold'>{{event.playerName}}</span> ({{event.playerTeam}}) killed by {{event.killerPlayerName}} ({{event.killerPlayerTeam}}) [{{event.killWeapon.name}}]"
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [{{event.location.x}}, {{event.location.z}}]
+    }
+}{% if loop.index < loop.length-1 %},{% endif %}
+{% endfor %}
+];
+
+
+var geoJsonProps = {
+    onEachFeature: function (feature, layer) {
+      // does this feature have a property named popupContent?
+      if (feature.properties && feature.properties.popupContent) {
+        layer.bindPopup(feature.properties.popupContent);
+      }
+    },
+    pointToLayer: function (feature, latlng) {
+      return L.circleMarker(latlng, {
+        radius: 4,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      });
+    },
+    style: function (feature) {
+        switch (feature.properties.pointType) {
+            case 'kill':  return {fillColor: "yellow"};
+            case 'death': return {fillColor: "gray"};
+        }
+    }
+};
+
+// parse the geojson (very simplified example here)
+var killsGroup = L.geoJson(killPoints, geoJsonProps);
+var deathsGroup = L.geoJson(deathPoints, geoJsonProps);
+
+var bounds = [[0, 0], [{{map.mapSize}}, {{map.mapSize}}]];
+var radarImagePath = '{{publicAt('img/maps/radar/' + map.mapFileName + '.png')}}';
+var radarLayer = L.imageOverlay(radarImagePath, bounds);
+var lightmapImagePath = '{{publicAt('img/maps/lightmap/' + map.mapFileName + '.png')}}';
+var lightmapLayer = L.imageOverlay(lightmapImagePath, bounds);
+
+
+var map = L.map('map', {
+  crs: L.CRS.Simple,
+  minZoom: -5,
+  maxZoom: 8,
+  layers: [radarLayer, killsGroup, deathsGroup] // default active layers
+});
+
+var bounds = [[0, 0], [{{map.mapSize}}, {{map.mapSize}}]];
+map.fitBounds(bounds);
+
+var baseMaps = {
+    "Radar": radarLayer,
+    "Lightmap": lightmapLayer
+};
+var overlayMaps = {
+    "Kills": killsGroup,
+    "Deaths": deathsGroup
+};
+L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+</script>
+
 <!-- Lets make a simple image magnifier -->
 <div class="magnify">
 {{renderMap(map, 'small', 'img/maps/radar/' + map.mapFileName + '.png')}}
