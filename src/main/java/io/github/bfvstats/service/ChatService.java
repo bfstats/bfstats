@@ -1,9 +1,11 @@
 package io.github.bfvstats.service;
 
 import io.github.bfvstats.model.ChatMessage;
+import io.github.bfvstats.model.Location;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -20,7 +22,8 @@ public class ChatService {
     int firstRowIndex = (page - 1) * numberOfRows;
 
     return getDslContext()
-        .select(ROUND_CHAT_LOG.PLAYER_ID, ROUND_CHAT_LOG.MESSAGE, ROUND_CHAT_LOG.EVENT_TIME, ROUND_CHAT_LOG.TO_TEAM, PLAYER.NAME, ROUND_PLAYER_TEAM.TEAM, ROUND_PLAYER_TEAM.ROUND_ID)
+        .select(ROUND_CHAT_LOG.fields())
+        .select(PLAYER.NAME, ROUND_PLAYER_TEAM.TEAM)
         .from(ROUND_CHAT_LOG)
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_CHAT_LOG.PLAYER_ID))
         .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_CHAT_LOG.ROUND_ID)
@@ -43,14 +46,20 @@ public class ChatService {
   private ChatMessage toChatMessage(Record r) {
     Date eventTimeDate = r.get(ROUND_CHAT_LOG.EVENT_TIME, Date.class);
 
+    BigDecimal x = r.get(ROUND_CHAT_LOG.PLAYER_LOCATION_X);
+    BigDecimal y = r.get(ROUND_CHAT_LOG.PLAYER_LOCATION_Y);
+    BigDecimal z = r.get(ROUND_CHAT_LOG.PLAYER_LOCATION_Z);
+    Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
+
     return new ChatMessage()
         .setPlayerId(r.get(ROUND_CHAT_LOG.PLAYER_ID, Integer.class))
         .setPlayerName(r.get(PLAYER.NAME, String.class))
+        .setLocation(location)
         .setText(r.get(ROUND_CHAT_LOG.MESSAGE, String.class))
         .setTime(toLocalDateTime(eventTimeDate))
         .setToTeam(r.get(ROUND_CHAT_LOG.TO_TEAM))
         .setPlayerTeam(r.get(ROUND_PLAYER_TEAM.TEAM))
-        .setRoundId(r.get(ROUND_PLAYER_TEAM.ROUND_ID));
+        .setRoundId(r.get(ROUND_CHAT_LOG.ROUND_ID));
   }
 
   private static LocalDateTime toLocalDateTime(Date date) {
