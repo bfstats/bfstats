@@ -1,6 +1,7 @@
 package io.github.bfvstats.service;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.bfvstats.game.jooq.tables.RoundPlayerTeam;
 import io.github.bfvstats.model.*;
 import io.github.bfvstats.util.TranslationUtil;
 import org.jooq.Record;
@@ -20,6 +21,8 @@ import static io.github.bfvstats.util.Utils.percentage;
 import static org.jooq.impl.DSL.trueCondition;
 
 public class MapService {
+  public static final io.github.bfvstats.game.jooq.tables.Player KILLER_PLAYER_TABLE = PLAYER.as("killerPlayer");
+  public static final RoundPlayerTeam KILLER_PLAYER_TEAM_TABLE = ROUND_PLAYER_TEAM.as("killerPlayerTeam");
   private static Map<String, Integer> mapSizesByMapCode = ImmutableMap.<String, Integer>builder()
       .put("defense_of_con_thien", 2048)
       .put("fall_of_saigon", 2048)
@@ -42,16 +45,24 @@ public class MapService {
       .build();
 
   public MapStatsInfo getMapStatsInfoForPlayer(String mapCode, Integer playerId, Integer roundId) {
-    io.github.bfvstats.game.jooq.tables.Player killerPlayer = PLAYER.as("killerPlayer");
-
     Result<Record> killRecords = getDslContext()
         .select(ROUND_PLAYER_DEATH.fields())
         .select(PLAYER.NAME)
-        .select(killerPlayer.NAME)
+        .select(KILLER_PLAYER_TABLE.NAME)
+        .select(ROUND_PLAYER_TEAM.TEAM)
+        .select(KILLER_PLAYER_TEAM_TABLE.TEAM)
         .from(ROUND_PLAYER_DEATH)
         .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_DEATH.PLAYER_ID))
-        .leftJoin(killerPlayer).on(killerPlayer.ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
+        .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_PLAYER_DEATH.ROUND_ID)
+            .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(ROUND_PLAYER_DEATH.PLAYER_ID))
+            .and(ROUND_PLAYER_DEATH.EVENT_TIME.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
+        )
+        .leftJoin(KILLER_PLAYER_TABLE).on(KILLER_PLAYER_TABLE.ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
+        .leftJoin(KILLER_PLAYER_TEAM_TABLE).on(KILLER_PLAYER_TEAM_TABLE.ROUND_ID.eq(ROUND_PLAYER_DEATH.ROUND_ID)
+            .and(KILLER_PLAYER_TEAM_TABLE.PLAYER_ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
+            .and(ROUND_PLAYER_DEATH.EVENT_TIME.between(KILLER_PLAYER_TEAM_TABLE.START_TIME, KILLER_PLAYER_TEAM_TABLE.END_TIME))
+        )
         .where(ROUND.MAP_CODE.eq(mapCode))
         .and(playerId == null ? ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.isNotNull() : ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
         .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
@@ -60,11 +71,21 @@ public class MapService {
     Result<Record> deathRecords = getDslContext()
         .select(ROUND_PLAYER_DEATH.fields())
         .select(PLAYER.NAME)
-        .select(killerPlayer.NAME)
+        .select(KILLER_PLAYER_TABLE.NAME)
+        .select(ROUND_PLAYER_TEAM.TEAM)
+        .select(KILLER_PLAYER_TEAM_TABLE.TEAM)
         .from(ROUND_PLAYER_DEATH)
         .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_DEATH.PLAYER_ID))
-        .leftJoin(killerPlayer).on(killerPlayer.ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
+        .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_PLAYER_DEATH.ROUND_ID)
+            .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(ROUND_PLAYER_DEATH.PLAYER_ID))
+            .and(ROUND_PLAYER_DEATH.EVENT_TIME.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
+        )
+        .leftJoin(KILLER_PLAYER_TABLE).on(KILLER_PLAYER_TABLE.ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
+        .leftJoin(KILLER_PLAYER_TEAM_TABLE).on(KILLER_PLAYER_TEAM_TABLE.ROUND_ID.eq(ROUND_PLAYER_DEATH.ROUND_ID)
+            .and(KILLER_PLAYER_TEAM_TABLE.PLAYER_ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
+            .and(ROUND_PLAYER_DEATH.EVENT_TIME.between(KILLER_PLAYER_TEAM_TABLE.START_TIME, KILLER_PLAYER_TEAM_TABLE.END_TIME))
+        )
         .where(ROUND.MAP_CODE.eq(mapCode))
         .and(playerId == null ? trueCondition() : ROUND_PLAYER_DEATH.PLAYER_ID.eq(playerId))
         .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
@@ -78,8 +99,6 @@ public class MapService {
     Collection<MapEvent> killEvents = new ArrayList<>();
     Collection<MapEvent> deathEvents = new ArrayList<>();
 
-    io.github.bfvstats.game.jooq.tables.Player killerPlayer = PLAYER.as("killerPlayer");
-
     for (Record deathRecord : killRecords) {
       BigDecimal x = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
       BigDecimal y = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
@@ -90,7 +109,9 @@ public class MapService {
       Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
       String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
       String playerName = deathRecord.get(PLAYER.NAME);
-      String killerPlayerName = deathRecord.get(killerPlayer.NAME);
+      String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
+      Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
+      Integer killerPlayerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
 
       LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
 
@@ -103,8 +124,10 @@ public class MapService {
           .setTime(deathTime)
           .setKillerPlayerId(killerPlayerId)
           .setKillerPlayerName(killerPlayerName)
+          .setKillerPlayerTeam(killerPlayerTeam)
           .setPlayerId(playerId)
           .setPlayerName(playerName)
+          .setPlayerTeam(playerTeam)
           .setKillWeapon(killWeapon);
 
       killEvents.add(killEvent);
@@ -120,7 +143,9 @@ public class MapService {
       Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
       String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
       String playerName = deathRecord.get(PLAYER.NAME);
-      String killerPlayerName = deathRecord.get(killerPlayer.NAME);
+      Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
+      String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
+      Integer killerPlayerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
 
       LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
 
@@ -133,8 +158,10 @@ public class MapService {
           .setTime(deathTime)
           .setKillerPlayerId(killerPlayerId)
           .setKillerPlayerName(killerPlayerName)
+          .setKillerPlayerTeam(killerPlayerTeam)
           .setPlayerId(playerId)
           .setPlayerName(playerName)
+          .setPlayerTeam(playerTeam)
           .setKillWeapon(killWeapon);
 
       deathEvents.add(deathEvent);
