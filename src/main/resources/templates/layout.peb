@@ -6,12 +6,14 @@
   <script src="http://code.highcharts.com/highcharts.js"></script>
   <script src="http://code.highcharts.com/themes/dark-unica.js"></script>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
-        integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
-        crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
-          integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
-          crossorigin=""></script>
+  <link rel="stylesheet" href="{{ publicAt('lib/leaflet/leaflet.css') }}"/>
+  <script src="{{ publicAt('lib/leaflet/leaflet.js') }}"></script>
+
+  <script src="{{ publicAt('lib/iso8601/iso8601.min.js') }}"></script>
+
+  <script src="{{ publicAt('lib/jquery/jquery-3.2.1.slim.min.js') }}"></script>
+  <script src="{{ publicAt('lib/leaflet/plugins/leaflet.timedimension.min.js') }}"></script>
+  <link rel="stylesheet" href="{{ publicAt('lib/leaflet/plugins/leaflet.timedimension.control.min.css') }}"/>
 </head>
 <body>
 
@@ -40,6 +42,7 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 document.body.className = "bg" + getRandomInt(1,2);
+
 </script>
 
 </body>

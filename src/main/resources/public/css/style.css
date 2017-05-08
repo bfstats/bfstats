@@ -511,8 +511,8 @@ tr.team-3 .name {
   position: absolute;
   margin-top: -2px; /* must be half of map point height */
   margin-left: -2px; /* must be half of map point width */
-  width: 4px;
-  height: 4px;
+  width: 8px;
+  height: 8px;
 
   background-color: white;
   border: 1px solid black;
