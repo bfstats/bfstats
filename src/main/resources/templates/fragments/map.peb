@@ -1,10 +1,3 @@
-<div class="clear">
-  <div class="legend map_point map_point_kills" style="float:left;"></div>
-  <span style="float:left;">Kills ({{map.killEvents.size}})</span>
-  <div class="legend map_point map_point_deaths" style="float:left;"></div>
-  <span style="float:left;">Deaths ({{map.deathEvents.size}})</span>
-</div>
-
 <div id="map" style="height: 512px"></div>
 
 <script>
@@ -61,6 +54,25 @@ function initMap(mapEvents) {
       "Deaths": deathsGroup
   };
   L.control.layers(baseMaps, overlayMaps).addTo(leafletMap);
+
+  var legend = L.control({position: 'bottomright'});
+
+  legend.onAdd = function (map) {
+      var kills = mapEvents.killFeatureCollection.features.length;
+      var deaths = mapEvents.deathFeatureCollection.features.length;
+
+      var div = L.DomUtil.create('div', 'info legend');
+
+      var inner = '<div class="legend map_point map_point_kills" style="float:left;"></div>' +
+      '<span style="float:left;">Kills (' + kills + ')</span>' +
+      '<div class="legend map_point map_point_deaths" style="float:left;"></div>' +
+      '<span style="float:left;">Deaths (' + deaths + ')</span>';
+
+      div.innerHTML = inner;
+      return div;
+  };
+
+  legend.addTo(leafletMap);
 }
 
 $.ajax({
