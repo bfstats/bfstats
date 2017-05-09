@@ -16,6 +16,7 @@ import org.jooq.impl.DSL;
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -213,8 +214,9 @@ public class MapService {
     Map<String, Object> props = new HashMap<>();
     props.put("type", "kill");
     String killWeaponName = ofNullable(mapEvent.getKillWeapon()).map(Weapon::getName).orElse(null);
-    String popupContent = String.format("%s <span style='font-weight: bold'>%s</span> %s %s %s %s", mapEvent.getTime(), mapEvent.getKillerPlayerName(), mapEvent.getKillerPlayerTeam(), killWeaponName, mapEvent.getPlayerName(), mapEvent.getPlayerTeam());
-    props.put("time", mapEvent.getTime());
+    String time = mapEvent.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME);
+    String popupContent = String.format("%s <span style='font-weight: bold'>%s</span> %s %s %s %s", time, mapEvent.getKillerPlayerName(), mapEvent.getKillerPlayerTeam(), killWeaponName, mapEvent.getPlayerName(), mapEvent.getPlayerTeam());
+    props.put("time", time);
     props.put("killerName", mapEvent.getKillerPlayerName());
     props.put("killerTeam", mapEvent.getKillerPlayerTeam());
     props.put("killWeaponName", killWeaponName);
