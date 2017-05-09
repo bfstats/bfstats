@@ -217,11 +217,10 @@ public class MapService {
     String killWeaponName = ofNullable(mapEvent.getKillWeapon()).map(Weapon::getName).orElse(null);
     String time = mapEvent.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME);
 
-    String killerTeamName = Team.fromValue(mapEvent.getKillerPlayerTeam()) == Team.TEAM_1 ? "NVA" : "USA";
     String victimTeamName = Team.fromValue(mapEvent.getPlayerTeam()) == Team.TEAM_1 ? "NVA" : "USA";
 
-    String popupContent = String.format("%s [%s] <span style='font-weight: bold'>%s</span> %s [%s] %s",
-        time, killerTeamName, mapEvent.getKillerPlayerName(), killWeaponName, victimTeamName, mapEvent.getPlayerName()
+    String popupContent = String.format("%s <span class='name team-%d' style='font-weight: bold'>%s</span> %s [%s] %s",
+        time, mapEvent.getKillerPlayerTeam(), mapEvent.getKillerPlayerName(), killWeaponName, victimTeamName, mapEvent.getPlayerName()
     );
     props.put("time", time);
     props.put("killerName", mapEvent.getKillerPlayerName());

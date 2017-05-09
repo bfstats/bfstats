@@ -368,17 +368,17 @@ tr.team-3 {
   color: #ffff00;
 }
 
-tr.chat-team .name {
+tr.chat-team .name, .name {
   padding-left: 16px;
   background: transparent url('../img/roundflagicons/nva_hud_flag.png') no-repeat center left;
 }
-tr.team-1 .name {
+tr.team-1 .name, .name.team-1 {
   background-image: url('../img/roundflagicons/nva_hud_flag.png');
 }
-tr.team-2 .name {
+tr.team-2 .name, .name.team-2 {
   background-image: url('../img/roundflagicons/us_hud_flag.png');
 }
-tr.team-3 .name {
+tr.team-3 .name, .name.team-3 {
   background-image: url('../img/roundflagicons/spec_hud_flag.png');
 }
 
