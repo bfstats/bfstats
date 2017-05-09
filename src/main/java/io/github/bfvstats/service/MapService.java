@@ -3,6 +3,9 @@ package io.github.bfvstats.service;
 import com.google.common.collect.ImmutableMap;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerTeam;
 import io.github.bfvstats.model.*;
+import io.github.bfvstats.model.geojson.Feature;
+import io.github.bfvstats.model.geojson.FeatureCollection;
+import io.github.bfvstats.model.geojson.PointGeometry;
 import io.github.bfvstats.util.TranslationUtil;
 import org.jooq.Record;
 import org.jooq.Record2;
@@ -10,6 +13,7 @@ import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
+import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -18,6 +22,7 @@ import java.util.stream.Collectors;
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static io.github.bfvstats.util.DbUtils.getDslContext;
 import static io.github.bfvstats.util.Utils.percentage;
+import static java.util.Optional.ofNullable;
 import static org.jooq.impl.DSL.trueCondition;
 
 public class MapService {
@@ -44,7 +49,17 @@ public class MapService {
       .put("saigon68", 1024)
       .build();
 
-  public MapStatsInfo getMapStatsInfoForPlayer(String mapCode, Integer playerId, Integer roundId) {
+  public BasicMapInfo getBasicMapInfo(String mapCode) {
+    Integer mapSize = mapSizesByMapCode.get(mapCode);
+    String mapName = TranslationUtil.getMapName(mapCode);
+
+    return new BasicMapInfo()
+        .setMapName(mapName)
+        .setMapFileName(mapCode)
+        .setMapSize(mapSize);
+  }
+
+  public MapEvents getMapEvents(String mapCode, Integer playerId, Integer roundId) {
     Result<Record> killRecords = getDslContext()
         .select(ROUND_PLAYER_DEATH.fields())
         .select(PLAYER.NAME)
@@ -91,14 +106,14 @@ public class MapService {
         .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
         .fetch();
 
-    return toMapStatsInfo(mapCode, killRecords, deathRecords);
+    return toMapEvents(mapCode, killRecords, deathRecords);
   }
 
-
-  private MapStatsInfo toMapStatsInfo(String mapCode, Result<Record> killRecords, Result<Record> deathRecords) {
+  private MapEvents toMapEvents(String mapCode, Result<Record> killRecords, Result<Record> deathRecords) {
     Collection<MapEvent> killEvents = new ArrayList<>();
     Collection<MapEvent> deathEvents = new ArrayList<>();
 
+    Collection<Feature> killFeatures = new ArrayList<>();
     for (Record deathRecord : killRecords) {
       BigDecimal x = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
       BigDecimal y = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
@@ -115,7 +130,7 @@ public class MapService {
 
       LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
 
-      Weapon killWeapon = Optional.ofNullable(killWeaponCode)
+      Weapon killWeapon = ofNullable(killWeaponCode)
           .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
           .orElse(null);
 
@@ -131,8 +146,15 @@ public class MapService {
           .setKillWeapon(killWeapon);
 
       killEvents.add(killEvent);
-    }
 
+      Feature feature = new Feature();
+      feature.geometry = new PointGeometry(new float[]{location.getX(), location.getZ()});
+      feature.properties = createProps(killEvent);
+      killFeatures.add(feature);
+    }
+    FeatureCollection killFeatureCollection = new FeatureCollection(killFeatures);
+
+    Collection<Feature> deathFeatures = new ArrayList<>();
     for (Record deathRecord : deathRecords) {
       BigDecimal x = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_X);
       BigDecimal y = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Y);
@@ -149,7 +171,7 @@ public class MapService {
 
       LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
 
-      Weapon killWeapon = Optional.ofNullable(killWeaponCode)
+      Weapon killWeapon = ofNullable(killWeaponCode)
           .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
           .orElse(null);
 
@@ -165,17 +187,41 @@ public class MapService {
           .setKillWeapon(killWeapon);
 
       deathEvents.add(deathEvent);
+
+      Feature feature = new Feature();
+      feature.geometry = new PointGeometry(new float[]{location.getX(), location.getZ()});
+      feature.properties = createProps(deathEvent);
+      feature.properties.put("type", "death");
+      //String popupContent = String.format("%s <span style='font-weight: bold'>%s</span> %s %s %s %s", mapEvent.getTime(), mapEvent.getKillerPlayerName(), mapEvent.getKillerPlayerTeam(), mapEvent.getKillWeapon().getName(), mapEvent.getPlayerName(), mapEvent.getPlayerTeam());
+      //feature.properties.put("popupContent", popupContent);
+      deathFeatures.add(feature);
     }
+    FeatureCollection deathFeatureCollection = new FeatureCollection(deathFeatures);
 
     Integer mapSize = mapSizesByMapCode.get(mapCode);
     String mapName = TranslationUtil.getMapName(mapCode);
 
-    return new MapStatsInfo()
+    return new MapEvents()
         .setMapName(mapName)
         .setMapFileName(mapCode)
         .setMapSize(mapSize)
-        .setKillEvents(killEvents)
-        .setDeathEvents(deathEvents);
+        .setKillFeatureCollection(killFeatureCollection)
+        .setDeathFeatureCollection(deathFeatureCollection);
+  }
+
+  private static Map<String, Object> createProps(@Nonnull MapEvent mapEvent) {
+    Map<String, Object> props = new HashMap<>();
+    props.put("type", "kill");
+    String killWeaponName = ofNullable(mapEvent.getKillWeapon()).map(Weapon::getName).orElse(null);
+    String popupContent = String.format("%s <span style='font-weight: bold'>%s</span> %s %s %s %s", mapEvent.getTime(), mapEvent.getKillerPlayerName(), mapEvent.getKillerPlayerTeam(), killWeaponName, mapEvent.getPlayerName(), mapEvent.getPlayerTeam());
+    props.put("time", mapEvent.getTime());
+    props.put("killerName", mapEvent.getKillerPlayerName());
+    props.put("killerTeam", mapEvent.getKillerPlayerTeam());
+    props.put("killWeaponName", killWeaponName);
+    props.put("victimName", mapEvent.getPlayerName());
+    props.put("victimTeam", mapEvent.getPlayerTeam());
+    props.put("popupContent", popupContent);
+    return props;
   }
 
   public List<MapUsage> getMapUsages() {

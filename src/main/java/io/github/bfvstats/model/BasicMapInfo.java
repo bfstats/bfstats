@@ -4,16 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.Collection;
-
 @Setter
 @Getter
 @Accessors(chain = true)
-public class MapStatsInfo {
+public class BasicMapInfo {
   private String mapName;
   private String mapFileName;
   private Integer mapSize;
-
-  private Collection<MapEvent> killEvents;
-  private Collection<MapEvent> deathEvents;
 }

@@ -1,11 +1,13 @@
 package io.github.bfvstats.controller;
 
-import io.github.bfvstats.model.MapStatsInfo;
+import io.github.bfvstats.model.BasicMapInfo;
+import io.github.bfvstats.model.MapEvents;
 import io.github.bfvstats.model.MapUsage;
 import io.github.bfvstats.service.MapService;
 import ro.pippo.controller.Controller;
 import ro.pippo.controller.GET;
 import ro.pippo.controller.Path;
+import ro.pippo.controller.Produces;
 import ro.pippo.controller.extractor.Param;
 
 import javax.inject.Inject;
@@ -30,10 +32,18 @@ public class MapController extends Controller {
 
   @GET("/{mapCode}")
   public void details(@Param("mapCode") String mapCode) {
-    MapStatsInfo mapStatsInfo = mapService.getMapStatsInfoForPlayer(mapCode, null, null);
+    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(mapCode);
 
     getResponse()
-        .bind("map", mapStatsInfo)
+        .bind("map", basicMapInfo)
+        .bind("mapEventsUrlPath", "maps/json/" + mapCode + "/events")
         .render("maps/details");
+  }
+
+  @GET("json/{mapCode}/events")
+  @Produces(Produces.JSON)
+  public void mapEventsJson(@Param("mapCode") String mapCode) {
+    MapEvents mapEvents = mapService.getMapEvents(mapCode, null, null);
+    getRouteContext().json().send(mapEvents);
   }
 }

@@ -1,9 +1,6 @@
 package io.github.bfvstats.controller;
 
-import io.github.bfvstats.model.ChatMessage;
-import io.github.bfvstats.model.MapStatsInfo;
-import io.github.bfvstats.model.Player;
-import io.github.bfvstats.model.Round;
+import io.github.bfvstats.model.*;
 import io.github.bfvstats.service.ChatService;
 import io.github.bfvstats.service.MapService;
 import io.github.bfvstats.service.PlayerService;
@@ -12,6 +9,7 @@ import io.github.bfvstats.util.SortUtils;
 import ro.pippo.controller.Controller;
 import ro.pippo.controller.GET;
 import ro.pippo.controller.Path;
+import ro.pippo.controller.Produces;
 import ro.pippo.controller.extractor.Param;
 
 import javax.inject.Inject;
@@ -60,8 +58,7 @@ public class RoundController extends Controller {
     Round round = roundService.getRound(roundId);
     List<RoundService.RoundPlayerStats> roundPlayerStats = roundService.getRoundPlayerStats(roundId);
 
-    MapStatsInfo mapStatsInfo = mapService.getMapStatsInfoForPlayer(round.getMapCode(), null, roundId);
-
+    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(round.getMapCode());
     List<ChatMessage> chatMessages = chatService.getChatMessages(roundId, 1);
     Map<LocalDate, List<ChatMessage>> messagesByDay = chatMessages.stream()
         .collect(Collectors.groupingBy(r -> r.getTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
@@ -69,18 +66,26 @@ public class RoundController extends Controller {
     getResponse()
         .bind("round", round)
         .bind("playerStats", roundPlayerStats)
-        .bind("map", mapStatsInfo)
+        .bind("map", basicMapInfo)
+        .bind("mapEventsUrlPath", "rounds/json/" + round.getId() + "/events")
         .bind("chatMessages", messagesByDay)
         .render("rounds/details");
   }
 
+  @GET("json/{id}/events")
+  @Produces(Produces.JSON)
+  public void mapEventsJson(@Param("id") int roundId) {
+    Round round = roundService.getRound(roundId);
+    MapEvents mapEvents = mapService.getMapEvents(round.getMapCode(), null, roundId);
+    getRouteContext().json().send(mapEvents);
+  }
 
   @GET("{id}/players/{playerId}")
-  public void details(@Param("id") int roundId, @Param("playerId") int playerId) {
+  public void playerDetails(@Param("id") int roundId, @Param("playerId") int playerId) {
     Round round = roundService.getRound(roundId);
     List<RoundService.RoundPlayerStats> roundPlayerStats = roundService.getRoundPlayerStats(roundId);
 
-    MapStatsInfo mapStatsInfo = mapService.getMapStatsInfoForPlayer(round.getMapCode(), playerId, roundId);
+    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(round.getMapCode());
 
     Player player = playerService.getPlayer(playerId);
 
@@ -88,8 +93,17 @@ public class RoundController extends Controller {
         .bind("player", player)
         .bind("round", round)
         .bind("playerStats", roundPlayerStats)
-        .bind("map", mapStatsInfo)
+        .bind("map", basicMapInfo)
+        .bind("mapEventsUrlPath", "rounds/json/" + round.getId() + "/players/" + player.getId() + "/events")
         .bind("chatMessages", new HashMap<>())
         .render("rounds/player");
+  }
+
+  @GET("json/{id}/players/{playerId}/events")
+  @Produces(Produces.JSON)
+  public void playerMapEventsJson(@Param("id") int roundId, @Param("playerId") int playerId) {
+    Round round = roundService.getRound(roundId);
+    MapEvents mapEvents = mapService.getMapEvents(round.getMapCode(), playerId, roundId);
+    getRouteContext().json().send(mapEvents);
   }
 }

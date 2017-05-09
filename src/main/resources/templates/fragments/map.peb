@@ -5,149 +5,9 @@
   <span style="float:left;">Deaths ({{map.deathEvents.size}})</span>
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-	var nativeWidth = 2048;
-	var nativeHeight = 2048;
-
-  var mapLargeContainer = document.getElementById("map_large_container");
-  var mapLargeContainerWidth = 175;
-  var mapLargeContainerHeight = 175;
-
-  var a = mapLargeContainerWidth / 2;
-  var b = mapLargeContainerHeight / 2;
-
-  var mapLargeContent = mapLargeContainer.querySelector(".map_bg");
-  mapLargeContent.style.width = nativeWidth;
-  mapLargeContent.style.height = nativeHeight;
-
-  var smallEl = document.querySelector(".small");
-  var smallWidth = smallEl.offsetWidth;
-  var smallHeight = smallEl.offsetHeight;
-
-  var magnifyEl = document.querySelector(".magnify");
-
-  magnifyEl.addEventListener("mousemove", function(e) {
-    //x/y coordinates of the mouse
-    //This is the position of .magnify with respect to the document.
-
-    var magnifyWidth = magnifyEl.clientWidth;
-    var magnifyHeight = magnifyEl.clientWidth;
-
-    //We will deduct the positions of .magnify from the mouse positions with
-    //respect to the document to get the mouse positions with respect to the
-    //container(.magnify)
-    var mx = e.pageX - magnifyEl.offsetLeft;
-    var my = e.pageY - magnifyEl.offsetTop;
-
-
-
-    //Finally the code to fade out the glass if the mouse is outside the container
-    if (
-      mx < magnifyWidth &&
-      my < magnifyHeight &&
-      mx > 0 &&
-      my > 0
-    ) {
-      mapLargeContainer.classList.remove("hidden");
-    } else {
-      mapLargeContainer.classList.add("hidden");
-    }
-
-    if (mapLargeContainer.style.display != "none") {
-      //The position of mapLargeContainer's actual content will be changed according to the position
-      //of the mouse over the .small image. So we will get the ratio of the pixel
-      //under the mouse pointer with respect to the image and use that to position the
-      //large image inside the magnifying glass
-
-
-      //Time to move the magnifying glass with the mouse
-      var magnifierX = mx - a;
-      var magnifierY = my - b;
-
-      var contentX = -Math.round(mx/smallWidth * nativeWidth - a);
-      var contentY = -Math.round(my/smallHeight * nativeHeight - b);
-
-      //Now the glass moves with the mouse
-      //The logic is to deduct half of the glass's width and height from the
-      //mouse coordinates to place it with its center at the mouse coordinates
-
-      //If you hover on the image now, you should see the magnifying glass in action
-      // luup
-      mapLargeContainer.style.transform = 'translate(' + magnifierX + 'px, ' + magnifierY + 'px)';
-      // luubi sisu
-      mapLargeContent.style.transform = 'translate(' + contentX + 'px, ' + contentY + 'px)';
-    }
-  });
-
-})
-</script>
-
-{% macro renderMap(map, cssClass, imagePath) %}
-  <div class="map_bg {{cssClass}}" style="background-image: url({{ publicAt(imagePath) }});">
-    {% for event in map.killEvents %}
-    <div class="map_point map_point_kills"
-      data-title="{{event.time | dt("HH:mm") }} {{event.killerPlayerName}} ({{event.killerPlayerTeam}}) [{{event.killWeapon.name}}] {{event.playerName}} ({{event.playerTeam}}) "
-      style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
-    {% endfor %}
-
-    {% for event in map.deathEvents %}
-    <div class="map_point map_point_deaths"
-      data-title="{{event.time | dt("HH:mm") }} {{event.playerName}} ({{event.playerTeam}}) killed by {{event.killerPlayerName}} ({{event.killerPlayerTeam}}) [{{event.killWeapon.name}}]"
-      style="left: {{ event.location.x*100/map.mapSize }}%; bottom: {{ event.location.z*100/map.mapSize}}%;"></div>
-    {% endfor %}
-  </div>
-{% endmacro %}
-
 <div id="map" style="height: 512px"></div>
 
 <script>
-var killPoints = [
-{% for event in map.killEvents %}
-{
-    "type": "Feature",
-    "properties": {
-      "time": "{{event.time | dt("HH:mm") }}",
-      "pointType": "kill",
-      "killerName": "{{event.killerPlayerName}}",
-      "killerTeam": "{{event.killerPlayerTeam}}",
-      "killWeaponName": "{{event.killWeapon.name}}",
-      "victimName": "{{event.playerName}}",
-      "victimTeam": "{{event.playerTeam}}",
-      "popupContent": "{{event.time | dt("HH:mm") }} <span style='font-weight: bold'>{{event.killerPlayerName}}</span> ({{event.killerPlayerTeam}}) [{{event.killWeapon.name}}] {{event.playerName}} ({{event.playerTeam}})"
-    },
-    "geometry": {
-        "type": "Point",
-        "coordinates": [{{event.location.x}}, {{event.location.z}}]
-    }
-}{% if loop.index < loop.length-1 %},{% endif %}
-{% endfor %}
-];
-
-
-var deathPoints = [
-{% for event in map.deathEvents %}
-{
-    "type": "Feature",
-    "properties": {
-      "time": "{{event.time | dt("HH:mm") }}",
-      "pointType": "death",
-      "killerName": "{{event.killerPlayerName}}",
-      "killerTeam": "{{event.killerPlayerTeam}}",
-      "killWeaponName": "{{event.killWeapon.name}}",
-      "victimName": "{{event.playerName}}",
-      "victimTeam": "{{event.playerTeam}}",
-      "popupContent": "{{event.time | dt("HH:mm") }} <span style='font-weight: bold'>{{event.playerName}}</span> ({{event.playerTeam}}) killed by {{event.killerPlayerName}} ({{event.killerPlayerTeam}}) [{{event.killWeapon.name}}]"
-    },
-    "geometry": {
-        "type": "Point",
-        "coordinates": [{{event.location.x}}, {{event.location.z}}]
-    }
-}{% if loop.index < loop.length-1 %},{% endif %}
-{% endfor %}
-];
-
-
 var geoJsonProps = {
     onEachFeature: function (feature, layer) {
       // does this feature have a property named popupContent?
@@ -166,51 +26,49 @@ var geoJsonProps = {
       });
     },
     style: function (feature) {
-        switch (feature.properties.pointType) {
+        switch (feature.properties.type) {
             case 'kill':  return {fillColor: "yellow"};
             case 'death': return {fillColor: "gray"};
         }
     }
 };
 
-// parse the geojson (very simplified example here)
-var killsGroup = L.geoJson(killPoints, geoJsonProps);
-var deathsGroup = L.geoJson(deathPoints, geoJsonProps);
+function initMap(mapEvents) {
+  var killsGroup = L.geoJson(mapEvents.killFeatureCollection, geoJsonProps);
+  var deathsGroup = L.geoJson(mapEvents.deathFeatureCollection, geoJsonProps);
 
-var bounds = [[0, 0], [{{map.mapSize}}, {{map.mapSize}}]];
-var radarImagePath = '{{publicAt('img/maps/radar/' + map.mapFileName + '.png')}}';
-var radarLayer = L.imageOverlay(radarImagePath, bounds);
-var lightmapImagePath = '{{publicAt('img/maps/lightmap/' + map.mapFileName + '.png')}}';
-var lightmapLayer = L.imageOverlay(lightmapImagePath, bounds);
+  var bounds = [[0, 0], [mapEvents.mapSize, mapEvents.mapSize]];
+  var radarImagePath = '{{publicAt('img/maps/radar/' + map.mapFileName + '.png')}}';
+  var radarLayer = L.imageOverlay(radarImagePath, bounds);
+  var lightmapImagePath = '{{publicAt('img/maps/lightmap/' + map.mapFileName + '.png')}}';
+  var lightmapLayer = L.imageOverlay(lightmapImagePath, bounds);
 
+  var leafletMap = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -2,
+    maxZoom: 8,
+    layers: [radarLayer, killsGroup, deathsGroup] // default active layers
+  });
 
-var map = L.map('map', {
-  crs: L.CRS.Simple,
-  minZoom: -5,
-  maxZoom: 8,
-  layers: [radarLayer, killsGroup, deathsGroup] // default active layers
+  leafletMap.fitBounds(bounds);
+
+  var baseMaps = {
+      "Radar": radarLayer,
+      "Lightmap": lightmapLayer
+  };
+  var overlayMaps = {
+      "Kills": killsGroup,
+      "Deaths": deathsGroup
+  };
+  L.control.layers(baseMaps, overlayMaps).addTo(leafletMap);
+}
+
+$.ajax({
+    url: "http://localhost:8081/{{mapEventsUrlPath}}",
+    dataType: 'json',
+    success: function (response) {
+      initMap(response);
+    }
 });
 
-var bounds = [[0, 0], [{{map.mapSize}}, {{map.mapSize}}]];
-map.fitBounds(bounds);
-
-var baseMaps = {
-    "Radar": radarLayer,
-    "Lightmap": lightmapLayer
-};
-var overlayMaps = {
-    "Kills": killsGroup,
-    "Deaths": deathsGroup
-};
-L.control.layers(baseMaps, overlayMaps).addTo(map);
-
 </script>
-
-<!-- Lets make a simple image magnifier -->
-<div class="magnify">
-{{renderMap(map, 'small', 'img/maps/radar/' + map.mapFileName + '.png')}}
-
-<div id="map_large_container" class="hidden large">
-{{renderMap(map, 'large', 'img/maps/lightmap/' + map.mapFileName + '.png')}}
-</div>
-</div>
