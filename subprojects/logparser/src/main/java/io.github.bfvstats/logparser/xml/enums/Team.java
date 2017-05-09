@@ -29,7 +29,10 @@ public enum Team {
     return value;
   }
 
-  public static Team fromValue(int teamId) {
+  public static Team fromValue(Integer teamId) {
+    if (teamId == null) {
+      return null;
+    }
     for (Team c : Team.values()) {
       if (c.value == teamId) {
         return c;

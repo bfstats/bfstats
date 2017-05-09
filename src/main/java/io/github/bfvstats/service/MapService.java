@@ -2,6 +2,7 @@ package io.github.bfvstats.service;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerTeam;
+import io.github.bfvstats.logparser.xml.enums.Team;
 import io.github.bfvstats.model.*;
 import io.github.bfvstats.model.geojson.Feature;
 import io.github.bfvstats.model.geojson.FeatureCollection;
@@ -215,7 +216,13 @@ public class MapService {
     props.put("type", "kill");
     String killWeaponName = ofNullable(mapEvent.getKillWeapon()).map(Weapon::getName).orElse(null);
     String time = mapEvent.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME);
-    String popupContent = String.format("%s <span style='font-weight: bold'>%s</span> %s %s %s %s", time, mapEvent.getKillerPlayerName(), mapEvent.getKillerPlayerTeam(), killWeaponName, mapEvent.getPlayerName(), mapEvent.getPlayerTeam());
+
+    String killerTeamName = Team.fromValue(mapEvent.getKillerPlayerTeam()) == Team.TEAM_1 ? "NVA" : "USA";
+    String victimTeamName = Team.fromValue(mapEvent.getPlayerTeam()) == Team.TEAM_1 ? "NVA" : "USA";
+
+    String popupContent = String.format("%s [%s] <span style='font-weight: bold'>%s</span> %s [%s] %s",
+        time, killerTeamName, mapEvent.getKillerPlayerName(), killWeaponName, victimTeamName, mapEvent.getPlayerName()
+    );
     props.put("time", time);
     props.put("killerName", mapEvent.getKillerPlayerName());
     props.put("killerTeam", mapEvent.getKillerPlayerTeam());
