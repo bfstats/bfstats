@@ -1,0 +1,23 @@
+{% if rounds is not empty %}
+<table class="styled_table half">
+  <caption>Latest Rounds</caption>
+  <thead>
+  <tr>
+    <th><div><span class="label">#</span></div></th>
+    <th><div><span class="label">Round</span></div></th>
+    <th><div><span class="label">Time</span></div></th>
+    <th><div><span class="label">Duration</span></div></th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for round in rounds %}
+  <tr>
+    <td>{{ loop.index + 1 }}</td>
+    <td class="left"><a href="/rounds/{{ round.id }}">{{ round.id }} {{ round.mapName }}</a></td>
+    <td>{{ round.startTime | dt("dd-MM-yyyy HH:mm") }} - {{ round.endTime | dt("HH:mm") }}</td>
+    <td>{{ round.durationInMinutes }} min</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}

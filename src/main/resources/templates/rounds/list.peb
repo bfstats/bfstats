@@ -11,7 +11,7 @@ There are no rounds.
     {% for round in entry.value %}
     <li>
     {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)
-    {{ round.id }} <a href="/rounds/{{ round.id }}">{{ round.mapName }}</a>
+      <a href="/rounds/{{ round.id }}">{{ round.id }} {{ round.mapName }}</a>
     </li>
     {% endfor %}
     </ul>

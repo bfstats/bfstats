@@ -4,6 +4,7 @@ import io.github.bfvstats.model.*;
 import io.github.bfvstats.service.MapService;
 import io.github.bfvstats.service.PlayerService;
 import io.github.bfvstats.service.RankingService;
+import io.github.bfvstats.service.RoundService;
 import io.github.bfvstats.util.Sort;
 import ro.pippo.controller.Controller;
 import ro.pippo.controller.GET;
@@ -21,12 +22,14 @@ public class PlayerController extends Controller {
   private PlayerService playerService;
   private MapService mapService;
   private RankingService rankingService;
+  private RoundService roundService;
 
   @Inject
-  public PlayerController(PlayerService playerService, MapService mapService, RankingService rankingService) {
+  public PlayerController(PlayerService playerService, MapService mapService, RankingService rankingService, RoundService roundService) {
     this.playerService = playerService;
     this.mapService = mapService;
     this.rankingService = rankingService;
+    this.roundService = roundService;
   }
 
   @GET({"/?", "/search"})
@@ -60,6 +63,8 @@ public class PlayerController extends Controller {
     List<PlayerAndTotal> killsByVictims = playerService.getKillsByVictims(playerId);
     List<PlayerAndTotal> deathsByKillers = playerService.getDeathsByKillers(playerId);
 
+    List<Round> rounds = roundService.getRoundsForPlayer(playerId);
+
     getResponse()
         .bind("player", player)
         .bind("nicknames", nicknameUsages)
@@ -71,6 +76,7 @@ public class PlayerController extends Controller {
         .bind("kits", kits)
         .bind("vehicles", vehicles)
         .bind("maps", maps)
+        .bind("rounds", rounds)
         .render("players/details");
   }
 

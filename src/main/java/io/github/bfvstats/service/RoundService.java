@@ -58,6 +58,32 @@ public class RoundService {
         );
   }
 
+  public List<Round> getRoundsForPlayer(int playerId) {
+    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStatsForPlayer(playerId);
+
+    return roundWithStats.entrySet().stream()
+        .map(e -> toRound(e.getKey(), e.getValue()))
+        .collect(Collectors.toList());
+  }
+
+  private static Map<RoundRecord, RoundEndStatsRecord> getRoundRecordsWithStatsForPlayer(int playerId) {
+    int numberOfRows = 10;
+    int firstRowIndex = 0;
+
+    return getDslContext()
+        .select(ROUND.fields())
+        .select(ROUND_END_STATS.fields())
+        .from(ROUND)
+        .leftJoin(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID))
+        .where(ROUND.ID.in(getDslContext().selectDistinct(ROUND_PLAYER_TEAM.ROUND_ID).from(ROUND_PLAYER_TEAM).where(ROUND_PLAYER_TEAM.PLAYER_ID.eq(playerId))))
+        .orderBy(ROUND.START_TIME.desc())
+        .limit(firstRowIndex, numberOfRows)
+        .fetchMap(
+            r -> r.into(ROUND),
+            r -> r.into(ROUND_END_STATS)
+        );
+  }
+
   private static ServerSettings toServerSettings(RoundRecord roundRecord) {
     return new ServerSettings()
         .setServerName(roundRecord.getServerName())
