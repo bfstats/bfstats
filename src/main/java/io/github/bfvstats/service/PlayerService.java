@@ -18,6 +18,7 @@ import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class PlayerService {
 
   private static final int BOT_PLAYER_ID = 1;
   private static final int LIMIT_PLAYER_STATS = 10;
+  public static final DateTimeFormatter HM_FORMAT = DateTimeFormatter.ofPattern("H'h' mm'm'");
 
   public List<Player> getPlayers() {
     Result<PlayerRecord> records = getDslContext().selectFrom(PLAYER).fetch();
@@ -293,7 +295,7 @@ public class PlayerService {
     return new VehicleUsage()
         .setCode(code)
         .setName(vehicleName)
-        .setDriveTime(convertSecondToHHMMSSString(driveTime)) // seconds
+        .setDriveTime(convertSecondsToLocalTime(driveTime).format(HM_FORMAT)) // seconds
         .setPercentage(percentage(driveTime, totalVehiclesDriveTimeInSeconds))
         .setTimesUsed(r.get("times_used", Integer.class));
   }
@@ -333,6 +335,10 @@ public class PlayerService {
   }
 
   private static String convertSecondToHHMMSSString(int nSecondTime) {
-    return LocalTime.MIN.plusSeconds(nSecondTime).toString();
+    return convertSecondsToLocalTime(nSecondTime).toString();
+  }
+
+  private static LocalTime convertSecondsToLocalTime(int nSecondTime) {
+    return LocalTime.MIN.plusSeconds(nSecondTime);
   }
 }
