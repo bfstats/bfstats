@@ -108,12 +108,15 @@ public class RoundService {
   private static Round toRound(@Nonnull RoundRecord roundRecord, @Nonnull RoundEndStatsRecord roundEndStatsRecord) {
     String mapCode = roundRecord.getMapCode();
     String mapName = TranslationUtil.getMapName(mapCode);
+    String modeName = TranslationUtil.getModeName(roundRecord.getGameMode());
+
     LocalDateTime startTime = roundRecord.getStartTime().toLocalDateTime();
 
     Round round = new Round()
         .setId(roundRecord.getId())
         .setMapCode(mapCode)
         .setMapName(mapName)
+        .setModeName(modeName)
         .setStartTime(startTime);
 
     // though roundEndStatsRecord is not null, it might be empty

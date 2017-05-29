@@ -12,6 +12,7 @@ public class Round {
   private Integer id;
   private String mapCode;
   private String mapName;
+  private String modeName;
   private LocalDateTime startTime;
 
   // end stats

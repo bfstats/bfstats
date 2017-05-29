@@ -1,5 +1,6 @@
 package io.github.bfvstats.util;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,16 +16,27 @@ public class TranslationUtil {
   private static Map<String, String> vehicleNameByCode;
   private static Map<String, String> mapNameByMapCode;
   private static Map<String, String> weaponNameByCode;
+  private static Map<String, String> modeNameByCode;
 
   static {
     mapNameByMapCode = loadPropertiesFileFromResources("translations/maps.properties");
     vehicleNameByCode = loadPropertiesFileFromResources("translations/vehicles.properties");
     weaponNameByCode = loadPropertiesFileFromResources("translations/weapons.properties");
+
+    modeNameByCode = ImmutableMap.<String, String>builder()
+        .put("GPM_COOP", "CO-OP")
+        .put("GPM_CQ", "Conquest")
+        .build();
   }
 
   @Nonnull
   public static String getMapName(@Nonnull String mapCode) {
     return mapNameByMapCode.getOrDefault(mapCode, mapCode);
+  }
+
+  @Nonnull
+  public static String getModeName(@Nonnull String modeCode) {
+    return modeNameByCode.getOrDefault(modeCode, modeCode);
   }
 
   @Nonnull
