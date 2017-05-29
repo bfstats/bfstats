@@ -1,22 +1,25 @@
 {% if serverSettings is not empty %}
 <ul>
- <li>Name: {{ serverSettings.serverName }}</li>
+ <li>Game mode: {{ serverSettings.gameModeName }}</li>
+
+ <li>Server name: {{ serverSettings.serverName }}</li>
+ <li>Max players: {{ serverSettings.maxPlayers }}</li>
+ <li>Time limit: {{ serverSettings.maxGameTime }} s</li>
+ <li>Score limit: {{ serverSettings.scoreLimit == 0 ? 'no' : serverSettings.scoreLimit }}</li>
+ <li># of rounds: {{ serverSettings.numberOfRoundsPerMap }}</li>
+ <li>Spawn time: {{ serverSettings.spawnTime }} s</li>
+ <li>Spawn delay: {{ serverSettings.spawnDelay }} s</li>
+ <li>Game start delay: {{ serverSettings.gameStartDelay }} s</li>
+ <li>Round start delay: {{ serverSettings.roundStartDelay }} s</li>
+ <li>Soldier FF: {{ serverSettings.soldierFriendlyFire }}%</li>
+ <li>Vehicle FF: {{ serverSettings.vehicleFriendlyFire }}%</li>
+ <li>Ticket ratio: {{ serverSettings.ticketRatio }}%</li>
+ <li>TK punish: {{ serverSettings.teamKillPunish ? 'yes': 'no' }}</li>
+ <!--
  <li>Port: {{ serverSettings.serverPort }}</li>
  <li>Mod: {{ serverSettings.modId }}</li>
- <li>Game mode: {{ serverSettings.gameMode }}</li>
- <li>Max game time: {{ serverSettings.maxGameTime }}</li>
- <li>Max players: {{ serverSettings.maxPlayers }}</li>
- <li>Score limit: {{ serverSettings.scoreLimit }}</li>
- <li># of rounds: {{ serverSettings.numberOfRoundsPerMap }}</li>
- <li>Spawn time: {{ serverSettings.spawnTime }}</li>
- <li>Spawn delay: {{ serverSettings.spawnDelay }}</li>
- <li>Game start delay: {{ serverSettings.gameStartDelay }}</li>
- <li>Round start delay: {{ serverSettings.roundStartDelay }}</li>
- <li>Soldier FF: {{ serverSettings.soldierFriendlyFire }}</li>
- <li>Vehicle FF: {{ serverSettings.vehicleFriendlyFire }}</li>
- <li>Ticket ratio: {{ serverSettings.ticketRatio }}</li>
- <li>TK punish: {{ serverSettings.teamKillPunish }}</li>
  <li>Punkbuster: {{ serverSettings.punkbusterEnabled }}</li>
+ -->
 </ul>
 
 {% endif %}

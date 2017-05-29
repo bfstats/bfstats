@@ -9,7 +9,8 @@ public class ServerSettings {
   private String serverName;
   private int serverPort;
   private String modId;
-  private String gameMode;
+  private String gameModeCode;
+  private String gameModeName;
   private int maxGameTime;
   private int maxPlayers;
   private int scoreLimit;
