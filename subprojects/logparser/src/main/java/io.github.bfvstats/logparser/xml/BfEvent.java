@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,8 +29,10 @@ public class BfEvent {
     return toDuration(timestamp);
   }
 
+  // initializing with non-null, because jaxb would otherwise keep it null if there are no events
+  // params are missing for gamePaused and gameUnpaused events
   @XmlElement(name = "param", type = BfEventParam.class)
-  private List<BfEventParam> params;
+  private List<BfEventParam> params = new ArrayList<>();
 
   @XmlTransient
   private Map<String, Object> typeConvertedParameters;
