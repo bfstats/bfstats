@@ -8,6 +8,7 @@ import lombok.ToString;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,8 +36,9 @@ public class BfRoundStats {
   @XmlElement(name = "teamtickets")
   public List<BfTeamTickets> teamTicketses;
 
+  // initializing with non-null, because jaxb would otherwise keep it null if there are no events
   @XmlElement(name = "playerstat")
-  public List<BfPlayerStat> playerStats;
+  public List<BfPlayerStat> playerStats = new ArrayList<>();
 
   public Integer getTicketsForTeam(Team team) {
     return getTicketsForTeam(team.value());
