@@ -9,7 +9,6 @@ import org.apache.commons.net.ftp.FTPFileFilter;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,14 +27,11 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 @Log
 public class FtpDownloader {
   public static void main(String[] args) throws IOException {
-    InputStream ftpConfig = FtpDownloader.class.getResourceAsStream("/ftpconfig.properties");
-    downloadFiles(ftpConfig);
+    Properties props = DbFiller.loadConfigProperties();
+    downloadFiles(props);
   }
 
-  public static void downloadFiles(InputStream configFileInputStream) throws IOException {
-    Properties props = new Properties();
-    props.load(configFileInputStream);
-
+  public static void downloadFiles(Properties props) throws IOException {
     ConnectDetails connectDetails = new ConnectDetails()
         .setServerAddress(props.getProperty("serverAddress").trim())
         .setUserId(props.getProperty("userId").trim())

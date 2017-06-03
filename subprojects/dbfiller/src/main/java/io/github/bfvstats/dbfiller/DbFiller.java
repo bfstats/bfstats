@@ -75,14 +75,20 @@ public class DbFiller {
     return transactionDslContext;
   }
 
+  public static Properties loadConfigProperties() throws IOException {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    InputStream configFileInputStream = loader.getResourceAsStream("ftpconfig.properties");
+    Properties props = new Properties();
+    props.load(configFileInputStream);
+    return props;
+  }
+
   public static void main(String[] args) throws JAXBException, IOException, SQLException {
     System.setProperty("org.jooq.no-logo", "true");
 
-    InputStream ftpConfig = DbFiller.class.getResourceAsStream("/ftpconfig.properties");
-    FtpDownloader.downloadFiles(ftpConfig);
+    Properties props = loadConfigProperties();
+    FtpDownloader.downloadFiles(props);
 
-    Properties props = new Properties();
-    props.load(ftpConfig);
     String localDirectory = props.getProperty("localDirectory").trim();
     String logDirPath = localDirectory;
     //String xmlFilePath = "D:\\bflogs\\ev_15567-20170105_2340.xml";
