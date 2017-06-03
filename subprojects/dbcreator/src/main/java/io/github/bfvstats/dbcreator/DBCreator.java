@@ -1,21 +1,31 @@
 package io.github.bfvstats.dbcreator;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class DBCreator {
 
-  public static void main(String[] args) throws FileNotFoundException, SQLException {
-    InputStream is = DBCreator.class.getResourceAsStream("/db/install.sql");
-
+  public static void main(String[] args) throws IOException, SQLException {
+    Properties props = loadConfigProperties();
+    String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:baas.db");
     DriverManager.registerDriver(new org.sqlite.JDBC());
-    Connection connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
+    Connection connection = DriverManager.getConnection(dbUrl);
+    InputStream is = DBCreator.class.getResourceAsStream("/db/install.sql");
     importSQL(connection, is);
+  }
+
+  public static Properties loadConfigProperties() throws IOException {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    InputStream configFileInputStream = loader.getResourceAsStream("ftpconfig.properties");
+    Properties props = new Properties();
+    props.load(configFileInputStream);
+    return props;
   }
 
   private static void importSQL(Connection conn, InputStream in) throws SQLException {

@@ -12,3 +12,11 @@ dependencies {
 }
 
 mainClassName = 'io.github.bfvstats.dbcreator.DBCreator'
+
+sourceSets {
+  main {
+    resources {
+      srcDir "../../config"
+    }
+  }
+}

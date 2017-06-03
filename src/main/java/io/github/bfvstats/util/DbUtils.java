@@ -5,25 +5,38 @@ import org.jooq.impl.DSL;
 import ro.pippo.core.route.RouteContext;
 import ro.pippo.core.route.RouteDispatcher;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class DbUtils {
-  private static final String url = "jdbc:sqlite:baas.db";
   private static final String username = "";
   private static final String password = "";
 
   private static Connection connection;
   private static DSLContext genericDslContext;
 
+
   static {
     try {
-      connection = DriverManager.getConnection(url, username, password);
-    } catch (SQLException e) {
+      Properties props = loadConfigProperties();
+      String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:baas.db");
+      connection = DriverManager.getConnection(dbUrl, username, password);
+    } catch (SQLException | IOException e) {
       throw new RuntimeException(e);
     }
 
+  }
+
+  public static Properties loadConfigProperties() throws IOException {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    InputStream configFileInputStream = loader.getResourceAsStream("ftpconfig.properties");
+    Properties props = new Properties();
+    props.load(configFileInputStream);
+    return props;
   }
 
   public static DSLContext getDslContext() {

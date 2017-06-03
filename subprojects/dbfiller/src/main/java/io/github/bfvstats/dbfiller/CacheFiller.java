@@ -4,25 +4,28 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
 import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import static io.github.bfvstats.game.jooq.Tables.*;
 import static org.jooq.impl.DSL.sum;
 
 public class CacheFiller {
-  public static void main(String[] args) throws JAXBException, FileNotFoundException, SQLException {
-    fillCacheTables();
+  public static void main(String[] args) throws JAXBException, IOException, SQLException {
+    Properties props = DbFiller.loadConfigProperties();
+    String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:baas.db");
+    fillCacheTables(dbUrl);
   }
 
-  public static void fillCacheTables() throws SQLException {
+  public static void fillCacheTables(String url) throws SQLException {
     Connection connection;
     DSLContext dslContext;
 
     try {
-      connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
+      connection = DriverManager.getConnection(url);
       dslContext = DSL.using(connection);
     } catch (SQLException e) {
       throw new RuntimeException(e);

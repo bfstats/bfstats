@@ -93,7 +93,8 @@ public class DbFiller {
     String logDirPath = localDirectory;
     //String xmlFilePath = "D:\\bflogs\\ev_15567-20170105_2340.xml";
 
-    prepareConnection();
+    String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:baas.db");
+    prepareConnection(dbUrl);
     try {
       //addFromXmlFile(xmlFilePath);
       parseAllInDir(logDirPath);
@@ -101,7 +102,7 @@ public class DbFiller {
       closeConnection();
     }
 
-    CacheFiller.fillCacheTables();
+    CacheFiller.fillCacheTables(dbUrl);
   }
 
   public static void parseAllInDir(String logDirPath) {
@@ -186,9 +187,9 @@ public class DbFiller {
     return null;
   }
 
-  private static void prepareConnection() {
+  private static void prepareConnection(String url) {
     try {
-      connection = DriverManager.getConnection("jdbc:sqlite:baas.db");
+      connection = DriverManager.getConnection(url);
       dslContext = DSL.using(connection);
     } catch (SQLException e) {
       throw new RuntimeException(e);
