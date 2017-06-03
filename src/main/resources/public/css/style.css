@@ -368,12 +368,6 @@ tr.team-3 {
   color: #ffff00;
 }
 
-
-.leaflet-popup-content-wrapper, .leaflet-popup-tip {
-  background-color: rgba(0,0,0,0.7) !important;
-  color: white !important;
-}
-
 .team-color-1, .team-color-2, tr.chat-team {
   text-shadow:
      -1px -1px 0 #000,
@@ -522,6 +516,15 @@ tr.team-3 .name, .name.team-3 {
   background-color: gray;
 }
 
+
+.leaflet-container {
+  background-color: rgba(0,0,0,0.5) !important;
+}
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background-color: rgba(0,0,0,0.7) !important;
+  color: white !important;
+}
 
 .info {
     padding: 6px 8px;
