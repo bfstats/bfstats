@@ -47,8 +47,8 @@ There are no players.
     <th title="Team kills">{{sortableLink('TKs','tks',sortingColumn,sortingOrder)}}</th>
     <th title="Captured flags">{{sortableLink('Captures','captures',sortingColumn,sortingOrder)}}</th>
     <th title="Rounds played">{{sortableLink('Rounds','rounds_played',sortingColumn,sortingOrder)}}</th>
-    <th title="Heals" class="icon icon-heals">{{sortableLink('Heals','heals_count',sortingColumn,sortingOrder)}}</th>
-    <th title="Repairs" class="icon icon-repairs">{{sortableLink('Repairs','repairs_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Heals" class="icon icon-heals">{{sortableLink('Heals','heals_all_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Repairs" class="icon icon-repairs">{{sortableLink('Repairs','repairs_all_count',sortingColumn,sortingOrder)}}</th>
   </tr>
   </thead>
   <tbody>
