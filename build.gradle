@@ -48,6 +48,14 @@ dependencies {
   compile project(':subprojects/dbstats')
 }
 
+sourceSets {
+  main {
+    resources {
+      srcDir "config"
+    }
+  }
+}
+
 mainClassName = 'io.github.bfvstats.Launcher'
 
 jar {
