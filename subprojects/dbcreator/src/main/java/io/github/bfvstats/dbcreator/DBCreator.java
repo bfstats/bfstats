@@ -1,6 +1,5 @@
-package io.github.bfvstats.install;
+package io.github.bfvstats.dbcreator;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -12,7 +11,7 @@ import java.util.Scanner;
 public class DBCreator {
 
   public static void main(String[] args) throws FileNotFoundException, SQLException {
-    InputStream is = new FileInputStream("D:\\Projects\\bfvstats\\subprojects\\dbcreator\\src\\main\\resources\\db\\install.sql");
+    InputStream is = DBCreator.class.getResourceAsStream("/db/install.sql");
 
     DriverManager.registerDriver(new org.sqlite.JDBC());
     Connection connection = DriverManager.getConnection("jdbc:sqlite:baas.db");

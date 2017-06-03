@@ -11,4 +11,4 @@ dependencies {
   compile "org.xerial:sqlite-jdbc:3.15.1"
 }
 
-mainClassName = 'io.github.bfvstats.install.DBCreator'
+mainClassName = 'io.github.bfvstats.dbcreator.DBCreator'
