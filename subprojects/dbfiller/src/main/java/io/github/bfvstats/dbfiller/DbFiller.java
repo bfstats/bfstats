@@ -17,10 +17,7 @@ import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,12 +78,11 @@ public class DbFiller {
   public static void main(String[] args) throws JAXBException, IOException, SQLException {
     System.setProperty("org.jooq.no-logo", "true");
 
-    String configurationFile = "config/ftpconfig.properties";
-
-    FtpDownloader.downloadFiles(configurationFile);
+    InputStream ftpConfig = DbFiller.class.getResourceAsStream("/ftpconfig.properties");
+    FtpDownloader.downloadFiles(ftpConfig);
 
     Properties props = new Properties();
-    props.load(new FileInputStream(configurationFile));
+    props.load(ftpConfig);
     String localDirectory = props.getProperty("localDirectory").trim();
     String logDirPath = localDirectory;
     //String xmlFilePath = "D:\\bflogs\\ev_15567-20170105_2340.xml";
