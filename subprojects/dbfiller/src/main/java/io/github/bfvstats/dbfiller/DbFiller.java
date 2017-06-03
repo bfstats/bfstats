@@ -81,7 +81,7 @@ public class DbFiller {
   public static void main(String[] args) throws JAXBException, IOException, SQLException {
     System.setProperty("org.jooq.no-logo", "true");
 
-    String configurationFile = "ftpconfig.properties";
+    String configurationFile = "config/ftpconfig.properties";
 
     FtpDownloader.downloadFiles(configurationFile);
 

@@ -28,7 +28,7 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 @Log
 public class FtpDownloader {
   public static void main(String[] args) throws IOException {
-    downloadFiles("ftpconfig.properties");
+    downloadFiles("config/ftpconfig.properties");
   }
 
   public static void downloadFiles(String configFilename) throws IOException {
