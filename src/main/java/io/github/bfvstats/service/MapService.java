@@ -2,6 +2,7 @@ package io.github.bfvstats.service;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerTeam;
+import io.github.bfvstats.logparser.xml.enums.Team;
 import io.github.bfvstats.model.*;
 import io.github.bfvstats.model.geojson.Feature;
 import io.github.bfvstats.model.geojson.FeatureCollection;
@@ -110,6 +111,26 @@ public class MapService {
     return toMapEvents(mapCode, killRecords, deathRecords);
   }
 
+  private static Integer findPlayerTeam(Record deathRecord) {
+    Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
+    if (playerTeam == null && deathRecord.get(PLAYER.NAME) != null && "Kill".equals(deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE))) {
+      Integer killerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
+      // we don't store bot team, so guessing it instead
+      playerTeam = Objects.equals(killerTeam, Team.TEAM_1.value()) ? Team.TEAM_2.value() : Team.TEAM_1.value();
+    }
+    return playerTeam;
+  }
+
+  private static Integer findKillerTeam(Record deathRecord) {
+    Integer killerPlayerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
+    if (killerPlayerTeam == null && deathRecord.get(KILLER_PLAYER_TABLE.NAME) != null && "Kill".equals(deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE))) {
+      Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
+      // we don't store bot team, so guessing it instead
+      killerPlayerTeam = Objects.equals(playerTeam, Team.TEAM_1.value()) ? Team.TEAM_2.value() : Team.TEAM_1.value();
+    }
+    return killerPlayerTeam;
+  }
+
   private MapEvents toMapEvents(String mapCode, Result<Record> killRecords, Result<Record> deathRecords) {
     Collection<MapEvent> killEvents = new ArrayList<>();
     Collection<MapEvent> deathEvents = new ArrayList<>();
@@ -120,20 +141,23 @@ public class MapService {
       BigDecimal y = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
       BigDecimal z = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
       Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
+      String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
 
       Integer killerPlayerId = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
       Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
       String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
       String playerName = deathRecord.get(PLAYER.NAME);
       String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
-      Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
-      Integer killerPlayerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
+
+      Integer playerTeam = findPlayerTeam(deathRecord);
+      Integer killerPlayerTeam = findKillerTeam(deathRecord);
 
       LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
 
       Weapon killWeapon = ofNullable(killWeaponCode)
           .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
           .orElse(null);
+
 
       MapEvent killEvent = new MapEvent()
           .setLocation(location)
@@ -144,7 +168,8 @@ public class MapService {
           .setPlayerId(playerId)
           .setPlayerName(playerName)
           .setPlayerTeam(playerTeam)
-          .setKillWeapon(killWeapon);
+          .setKillWeapon(killWeapon)
+          .setKillType(killType);
 
       killEvents.add(killEvent);
 
@@ -161,14 +186,15 @@ public class MapService {
       BigDecimal y = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Y);
       BigDecimal z = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Z);
       Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
+      String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
 
       Integer killerPlayerId = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
       Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
       String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
       String playerName = deathRecord.get(PLAYER.NAME);
-      Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
       String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
-      Integer killerPlayerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
+      Integer playerTeam = findPlayerTeam(deathRecord);
+      Integer killerPlayerTeam = findKillerTeam(deathRecord);
 
       LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
 
@@ -185,7 +211,8 @@ public class MapService {
           .setPlayerId(playerId)
           .setPlayerName(playerName)
           .setPlayerTeam(playerTeam)
-          .setKillWeapon(killWeapon);
+          .setKillWeapon(killWeapon)
+          .setKillType(killType);
 
       deathEvents.add(deathEvent);
 
@@ -214,7 +241,7 @@ public class MapService {
 
     String killWeaponName = ofNullable(mapEvent.getKillWeapon()).map(Weapon::getName).orElse("killed");
 
-    String styleBold = "style='font-weight: bold'";
+    String styleBold = "style='font-weight: bold;font-size:1.2em'";
 
     if (mapEvent.getKillerPlayerName() == null) {
       String victim = String.format("<span class='name team-%d'" + (!kill ? styleBold : "") + ">%s</span> died", mapEvent.getPlayerTeam(), mapEvent.getPlayerName());
@@ -222,7 +249,7 @@ public class MapService {
     } else {
       String killer = String.format("<span class='name team-%d'" + (kill ? styleBold : "") + ">%s</span>", mapEvent.getKillerPlayerTeam(), mapEvent.getKillerPlayerName());
       String victim = String.format("<span class='name team-%d'" + (!kill ? styleBold : "") + ">%s</span>", mapEvent.getPlayerTeam(), mapEvent.getPlayerName());
-      return String.format("%s %s [%s] %s", time, killer, killWeaponName, victim);
+      return String.format("<span class='team-color-%d'>%s %s [%s] %s</span>", mapEvent.getKillerPlayerTeam(), time, killer, killWeaponName, victim);
     }
   }
 

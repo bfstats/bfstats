@@ -17,4 +17,5 @@ public class MapEvent {
   private Weapon killWeapon;
   private String playerName;
   private Integer playerTeam;
+  private String killType;
 }

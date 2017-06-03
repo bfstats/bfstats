@@ -368,6 +368,34 @@ tr.team-3 {
   color: #ffff00;
 }
 
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background-color: rgba(0,0,0,0.7) !important;
+  color: white !important;
+}
+
+.team-color-1, .team-color-2, tr.chat-team {
+  text-shadow:
+     -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+       1px 1px 0 #000;
+}
+
+/* NVA */
+.team-color-1 {
+  color: #ff5959;
+}
+/* USA */
+.team-color-2 {
+  color: #6699ff;
+}
+/* Spectator */
+.team-color-3 {
+  color: #ffff00;
+}
+
+
 tr.chat-team .name, .name {
   padding-left: 16px;
   background: transparent url('../img/roundflagicons/nva_hud_flag.png') no-repeat center left;
