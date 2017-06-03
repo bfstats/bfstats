@@ -2,7 +2,6 @@ package io.github.bfvstats.service;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerTeam;
-import io.github.bfvstats.logparser.xml.enums.Team;
 import io.github.bfvstats.model.*;
 import io.github.bfvstats.model.geojson.Feature;
 import io.github.bfvstats.model.geojson.FeatureCollection;
@@ -151,7 +150,7 @@ public class MapService {
 
       Feature feature = new Feature();
       feature.geometry = new PointGeometry(new float[]{location.getX(), location.getZ()});
-      feature.properties = createProps(killEvent);
+      feature.properties = createProps(killEvent, true);
       killFeatures.add(feature);
     }
     FeatureCollection killFeatureCollection = new FeatureCollection(killFeatures);
@@ -192,8 +191,7 @@ public class MapService {
 
       Feature feature = new Feature();
       feature.geometry = new PointGeometry(new float[]{location.getX(), location.getZ()});
-      feature.properties = createProps(deathEvent);
-      feature.properties.put("type", "death");
+      feature.properties = createProps(deathEvent, false);
       //String popupContent = String.format("%s <span style='font-weight: bold'>%s</span> %s %s %s %s", mapEvent.getTime(), mapEvent.getKillerPlayerName(), mapEvent.getKillerPlayerTeam(), mapEvent.getKillWeapon().getName(), mapEvent.getPlayerName(), mapEvent.getPlayerTeam());
       //feature.properties.put("popupContent", popupContent);
       deathFeatures.add(feature);
@@ -211,24 +209,33 @@ public class MapService {
         .setDeathFeatureCollection(deathFeatureCollection);
   }
 
-  private static Map<String, Object> createProps(@Nonnull MapEvent mapEvent) {
-    Map<String, Object> props = new HashMap<>();
-    props.put("type", "kill");
-    String killWeaponName = ofNullable(mapEvent.getKillWeapon()).map(Weapon::getName).orElse(null);
+  private static String createPopupContent(@Nonnull MapEvent mapEvent, boolean kill) {
     String time = mapEvent.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME);
 
-    String victimTeamName = Team.fromValue(mapEvent.getPlayerTeam()) == Team.TEAM_1 ? "NVA" : "USA";
+    String killWeaponName = ofNullable(mapEvent.getKillWeapon()).map(Weapon::getName).orElse("killed");
 
-    String popupContent = String.format("%s <span class='name team-%d' style='font-weight: bold'>%s</span> %s [%s] %s",
-        time, mapEvent.getKillerPlayerTeam(), mapEvent.getKillerPlayerName(), killWeaponName, victimTeamName, mapEvent.getPlayerName()
-    );
-    props.put("time", time);
+    String styleBold = "style='font-weight: bold'";
+
+    if (mapEvent.getKillerPlayerName() == null) {
+      String victim = String.format("<span class='name team-%d'" + (!kill ? styleBold : "") + ">%s</span> died", mapEvent.getPlayerTeam(), mapEvent.getPlayerName());
+      return String.format("%s %s", time, victim);
+    } else {
+      String killer = String.format("<span class='name team-%d'" + (kill ? styleBold : "") + ">%s</span>", mapEvent.getKillerPlayerTeam(), mapEvent.getKillerPlayerName());
+      String victim = String.format("<span class='name team-%d'" + (!kill ? styleBold : "") + ">%s</span>", mapEvent.getPlayerTeam(), mapEvent.getPlayerName());
+      return String.format("%s %s [%s] %s", time, killer, killWeaponName, victim);
+    }
+  }
+
+  private static Map<String, Object> createProps(@Nonnull MapEvent mapEvent, boolean kill) {
+    Map<String, Object> props = new HashMap<>();
+    props.put("type", kill ? "kill" : "death");
+    props.put("time", mapEvent.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME));
     props.put("killerName", mapEvent.getKillerPlayerName());
     props.put("killerTeam", mapEvent.getKillerPlayerTeam());
-    props.put("killWeaponName", killWeaponName);
+    props.put("killWeaponName", ofNullable(mapEvent.getKillWeapon()).map(Weapon::getName).orElse(null));
     props.put("victimName", mapEvent.getPlayerName());
     props.put("victimTeam", mapEvent.getPlayerTeam());
-    props.put("popupContent", popupContent);
+    props.put("popupContent", createPopupContent(mapEvent, kill));
     return props;
   }
 
