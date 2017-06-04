@@ -2,7 +2,6 @@ package io.github.bfvstats.service;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.bfvstats.game.jooq.tables.RoundPlayerTeam;
-import io.github.bfvstats.logparser.xml.enums.Team;
 import io.github.bfvstats.model.*;
 import io.github.bfvstats.model.geojson.Feature;
 import io.github.bfvstats.model.geojson.FeatureCollection;
@@ -116,7 +115,7 @@ public class MapService {
     if (playerTeam == null && deathRecord.get(PLAYER.NAME) != null && "Kill".equals(deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE))) {
       Integer killerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
       // we don't store bot team, so guessing it instead
-      playerTeam = Objects.equals(killerTeam, Team.TEAM_1.value()) ? Team.TEAM_2.value() : Team.TEAM_1.value();
+      playerTeam = Objects.equals(killerTeam, 1) ? 2 : 1;
     }
     return playerTeam;
   }
@@ -126,7 +125,7 @@ public class MapService {
     if (killerPlayerTeam == null && deathRecord.get(KILLER_PLAYER_TABLE.NAME) != null && "Kill".equals(deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE))) {
       Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
       // we don't store bot team, so guessing it instead
-      killerPlayerTeam = Objects.equals(playerTeam, Team.TEAM_1.value()) ? Team.TEAM_2.value() : Team.TEAM_1.value();
+      killerPlayerTeam = Objects.equals(playerTeam, 1) ? 2 : 1;
     }
     return killerPlayerTeam;
   }
