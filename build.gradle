@@ -57,3 +57,5 @@ sourceSets {
 }
 
 mainClassName = 'io.github.bfvstats.Launcher'
+
+applicationDefaultJvmArgs = ["-Xms64m", "-Xmx64m"]
