@@ -82,3 +82,8 @@ task fatJar(type: Jar) {
   from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
   with jar
 }
+
+task copyToLib(type: Copy) {
+  into "$rootDir/lib"
+  from configurations.runtime
+}
