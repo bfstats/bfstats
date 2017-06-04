@@ -76,7 +76,7 @@ public class FtpDownloader {
     }
 
     ftpClient.enterLocalPassiveMode();
-
+    ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
     ftpClient.changeWorkingDirectory(connectDetails.getRemoteDirectory());
     System.out.println("Current directory is " + ftpClient.printWorkingDirectory());
 
