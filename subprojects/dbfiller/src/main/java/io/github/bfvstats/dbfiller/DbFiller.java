@@ -174,7 +174,7 @@ public class DbFiller {
       String xmlFilePath = filePath.substring(0, filePath.length() - 5) + ".xml";
 
       try {
-        return unzip(filePath); // replace with .xml counterpart
+        return decompress(filePath); // replace with .xml counterpart
       } catch (IOException e) {
         log.warn("looks like " + filePath + " is not complete. " + e.getMessage());
         File xmlFile = new File(xmlFilePath);
@@ -217,13 +217,16 @@ public class DbFiller {
     }
   }
 
-  public static String unzip(String filepath) throws IOException {
-    String xmlFilePath = filepath.substring(0, filepath.length() - 5) + ".xml";
+  public static String decompress(String compressedFilepath) throws IOException {
+    String outputFilepath = compressedFilepath.substring(0, compressedFilepath.length() - 5) + ".xml";
 
+    File compressedFile = new File(compressedFilepath);
+    File outputFile = new File(outputFilepath);
+
+    // power of 2 recommended, 8192 = 2^13
     int blockSize = 8192;
-
-    try (InflaterInputStream zipin = new InflaterInputStream(new FileInputStream(filepath));
-         FileOutputStream out = new FileOutputStream(xmlFilePath)
+    try (InflaterInputStream zipin = new InflaterInputStream(new FileInputStream(compressedFile));
+         OutputStream out = new FileOutputStream(outputFile)
     ) {
       byte[] buffer = new byte[blockSize];
       int length;
@@ -232,7 +235,7 @@ public class DbFiller {
       }
     }
 
-    return xmlFilePath;
+    return outputFile.getAbsolutePath();
   }
 
   private void fillDb() throws SQLException {
