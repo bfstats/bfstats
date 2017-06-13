@@ -28,3 +28,9 @@ sourceSets {
     }
   }
 }
+
+task copyToLib(type: Copy) {
+  // rootDir vs projectDir?
+  into "$rootDir/lib"
+  from configurations.runtime
+}
