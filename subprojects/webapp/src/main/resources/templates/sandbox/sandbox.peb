@@ -42,7 +42,7 @@
 
 
 <span class="wtb-ew-v1" style="margin-top: 50px;width: 204px; display:inline-block">
-<script src="http://www.worldtimebuddy.com/clock_widget.js?h=2925533&bc=7F7F7F&cn=Server+Time&wt=c1"></script>
-<i><a href="http://www.worldtimebuddy.com/gmt-to-pst-converter">gmt to pst</a></i>
+<script src="//www.worldtimebuddy.com/clock_widget.js?h=2925533&bc=7F7F7F&cn=Server+Time&wt=c1"></script>
+<i><a href="//www.worldtimebuddy.com/gmt-to-pst-converter">gmt to pst</a></i>
 <script>window[wtb_event_widgets.pop()].init()</script></span>
 {% endblock %}

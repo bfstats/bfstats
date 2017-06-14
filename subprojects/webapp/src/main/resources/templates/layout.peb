@@ -5,8 +5,8 @@
 
   <link href="{{ publicAt('css/style.css') }}" rel="stylesheet">
 
-  <script src="http://code.highcharts.com/highcharts.js"></script>
-  <script src="http://code.highcharts.com/themes/dark-unica.js"></script>
+  <script src="//code.highcharts.com/highcharts.js"></script>
+  <script src="//code.highcharts.com/themes/dark-unica.js"></script>
 
   <link rel="stylesheet" href="{{ publicAt('lib/leaflet/leaflet.css') }}"/>
   <script src="{{ publicAt('lib/leaflet/leaflet.js') }}"></script>

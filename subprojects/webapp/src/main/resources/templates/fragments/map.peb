@@ -76,7 +76,7 @@ function initMap(mapEvents) {
 }
 
 $.ajax({
-    url: "/{{mapEventsUrlPath}}",
+    url: "{{appPath}}/{{mapEventsUrlPath}}",
     dataType: 'json',
     success: function (response) {
       initMap(response);
