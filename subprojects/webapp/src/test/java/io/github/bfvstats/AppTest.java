@@ -1,6 +1,7 @@
 package io.github.bfvstats;
 
 import com.jayway.restassured.response.Response;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import ro.pippo.core.HttpConstants;
@@ -15,6 +16,7 @@ public class AppTest extends PippoTest {
   @Rule
   public PippoRule pippoRule = new PippoRule(new BasicApplication());
 
+  @Ignore
   @Test
   public void testHello() {
     Response response = get("/");
