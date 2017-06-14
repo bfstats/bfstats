@@ -30,12 +30,6 @@ sourceSets {
 }
 
 task copyToLib(type: Copy) {
-  into "$rootDir/lib"
   into "$projectDir/lib"
-
-  // rootDir vs projectDir:
-  // rootDir D:\Projects\bfvstats
-  // projectDir D:\Projects\bfvstats\subprojects\dbfiller
-
   from configurations.runtime
 }

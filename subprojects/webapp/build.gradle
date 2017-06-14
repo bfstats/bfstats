@@ -38,7 +38,6 @@ dependencies {
 
   compile "org.jooq:jooq:${jooqVersion}"
   compile "org.jooq:jooq-meta:${jooqVersion}"
-  compile "org.jooq:jooq-codegen:${jooqVersion}"
 
   compile "org.xerial:sqlite-jdbc:3.15.1"
 
@@ -63,6 +62,6 @@ applicationDefaultJvmArgs = ["-Xms64m", "-Xmx64m"]
 
 
 task copyToLib(type: Copy) {
-  into "$rootDir/lib"
+  into "$projectDir/lib"
   from configurations.runtime
 }
