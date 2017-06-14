@@ -1,4 +1,4 @@
-<div id="map" style="height: 512px"></div>
+<div id="map" style="height: 512px; min-width: 525px; max-width:645px;"></div>
 
 <script>
 var geoJsonProps = {

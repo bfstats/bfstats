@@ -10,11 +10,15 @@ Tickets left:
   {% if round.winningTeam == 2 %}<strong>{%endif%}USA - {{ round.endTicketsTeam2 }} {% if round.winningTeam == 2 %}</strong>{%endif%}
 </p>
 
-<div style="float:right;overflow-y: auto; width: 700px; max-height: 400px;">
-  {% include "fragments/chat" %}
-</div>
+<div class="clear">
+  <div style="float:left;">
+    {% include "fragments/map" %}
+  </div>
 
-{% include "fragments/map" %}
+  <div style="float:left;overflow-y: auto; max-height: 400px;">
+    {% include "fragments/chat" %}
+  </div>
+</div>
 
 <!--<li>Victory type: {{ round.victoryType }}</li>-->
 
