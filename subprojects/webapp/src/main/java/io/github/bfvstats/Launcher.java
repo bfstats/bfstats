@@ -10,6 +10,8 @@ public class Launcher {
     System.setProperty("pippo.hideLogo", "true");
     System.setProperty("org.jooq.no-logo", "true");
     Pippo pippo = new Pippo(new BasicApplication());
+    // The pippoFilterPath must start with "/" and end with "/*". For example: /*, /app/*
+    pippo.setFilterPath("/stats/*");
     pippo.start();
   }
 }

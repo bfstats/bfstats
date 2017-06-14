@@ -13,7 +13,7 @@
   {% for kit in kits %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td class="left"><a href="/kits/{{ kit.code }}">{{ kit.name }}</a></td>
+    <td class="left"><a href="{{appPath}}/kits/{{ kit.code }}">{{ kit.name }}</a></td>
     <td>{{ kit.timesUsed }}</td>
     <td class="percent">{{ kit.percentage | numberformat("0.0") }}
       <div class="meter">

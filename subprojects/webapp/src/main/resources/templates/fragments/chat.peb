@@ -13,8 +13,8 @@ There are no chat messages
   <tbody>
   {% for chatMessage in entry.value %}
   <tr class="chat-team team-{{ chatMessage.playerTeam }}">
-    <td class="time"><a href="/rounds/{{ chatMessage.roundId }}">{{ chatMessage.time | dt('HH:mm') }}</a></td>
-    <td class="name" style="text-align:right"><a href="/players/{{ chatMessage.playerId }}">{{ chatMessage.playerName }}</a> {{ teamName(chatMessage.toTeam) }}:</td>
+    <td class="time"><a href="{{appPath}}/rounds/{{ chatMessage.roundId }}">{{ chatMessage.time | dt('HH:mm') }}</a></td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ chatMessage.playerId }}">{{ chatMessage.playerName }}</a> {{ teamName(chatMessage.toTeam) }}:</td>
     <td class="message left">{{ chatMessage.text }}</td>
   </tr>
   {% endfor %}

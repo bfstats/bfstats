@@ -20,10 +20,10 @@
 <body>
 
 <div id="navigation">
-  <a href="/ranking">Ranks</a>
-  <a href="/rounds">Rounds</a>
-  <a href="/maps">Maps</a>
-  <a href="/chat">Chat</a>
+  <a href="{{appPath}}/ranking">Ranks</a>
+  <a href="{{appPath}}/rounds">Rounds</a>
+  <a href="{{appPath}}/maps">Maps</a>
+  <a href="{{appPath}}/chat">Chat</a>
 
   <form action="/players">
     <input type="text" id="menu_query" name="query" placeholder="Search player" value="{{query}}"/>

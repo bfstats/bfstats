@@ -2,9 +2,9 @@
 {% block title %}Player {{ player.name}} in round {{ round.mapName }} at {{ round.startTime | dt("dd-MM-yyyy HH:mm") }}{% endblock %}
 
 {% block content %}
-<h3>Player {{ player.name}} in <a href="/rounds/{{ round.id }}">{{ round.mapName }} {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)</a></h3>
+<h3>Player {{ player.name}} in <a href="{{appPath}}/rounds/{{ round.id }}">{{ round.mapName }} {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)</a></h3>
 
-<a href="/players/{{ player.id }}">View player profile</a>
+<a href="{{appPath}}/players/{{ player.id }}">View player profile</a>
 
 {% include "fragments/map" %}
 

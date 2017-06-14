@@ -14,7 +14,7 @@
   {% for vehicle in vehicles %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td class="left"><a href="/vehicles/{{ vehicle.code }}">{{ vehicle.name }}</a></td>
+    <td class="left"><a href="{{appPath}}/vehicles/{{ vehicle.code }}">{{ vehicle.name }}</a></td>
     <td>{{ vehicle.driveTime }}</td>
     <td>{{ vehicle.timesUsed }}</td>
     <td class="percent">{{ vehicle.percentage | numberformat("0.0") }}

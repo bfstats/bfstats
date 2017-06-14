@@ -55,7 +55,7 @@ There are no players.
   {% for player in players %}
   <tr>
     <td>{{ player.rank }}</td>
-    <td class="left" style="width: 180px"><a href="/players/{{ player.playerId }}">{{ player.name }}</a></td>
+    <td class="left" style="width: 180px"><a href="{{appPath}}/players/{{ player.playerId }}">{{ player.name }}</a></td>
     <td>{{ player.averageScore }}</td>
     <td>{{ player.score }}</td>
     <td style="width: 4em">{{ player.kills }}</td>

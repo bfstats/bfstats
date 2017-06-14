@@ -13,7 +13,7 @@
 {% else %}
   <ul>
     {% for player in players %}
-    <li><a href="/players/{{ player.id }}">{{ player.name }}</a></li>
+    <li><a href="{{appPath}}/players/{{ player.id }}">{{ player.name }}</a></li>
     {% endfor %}
   </ul>
 {% endif %}

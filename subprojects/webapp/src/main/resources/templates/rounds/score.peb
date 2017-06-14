@@ -17,7 +17,7 @@
   {% for playerStat in playerStats %}
   <tr>
     <td>{{ playerStat.rank }}</td>
-    <td><a href="/rounds/{{round.id}}/players/{{ playerStat.playerId }}">{{ playerStat.playerName }}</a></td>
+    <td><a href="{{appPath}}/rounds/{{round.id}}/players/{{ playerStat.playerId }}">{{ playerStat.playerName }}</a></td>
     <td>{{ playerStat.team }}</td>
     <td>{{ playerStat.score }}</td>
     <td>{{ playerStat.kills }}</td>

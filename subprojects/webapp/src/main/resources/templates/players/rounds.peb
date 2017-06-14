@@ -14,7 +14,7 @@
   {% for round in rounds %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td class="left"><a href="/rounds/{{ round.id }}">{{ round.id }} {{ round.mapName }}</a></td>
+    <td class="left"><a href="{{appPath}}/rounds/{{ round.id }}">{{ round.id }} {{ round.mapName }}</a></td>
     <td>{{ round.startTime | dt("dd-MM-yyyy HH:mm") }}</td>
     <td>{{ round.endTime | dt("HH:mm") }}</td>
     <td>{{ round.durationInMinutes }} min</td>
