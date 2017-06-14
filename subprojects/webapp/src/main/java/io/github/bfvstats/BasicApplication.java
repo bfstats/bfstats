@@ -68,9 +68,6 @@ public class BasicApplication extends ControllerApplication {
 
     //addWebjarsResourceRoute();
 
-    // send 'Hello World' as response
-    GET("/", routeContext -> routeContext.send("Hello World"));
-
     addControllers("io.github.bfvstats.controller");
     closeDbConnections();
   }

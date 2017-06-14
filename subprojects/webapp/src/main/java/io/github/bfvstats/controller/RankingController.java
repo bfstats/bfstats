@@ -14,7 +14,7 @@ import java.util.List;
 
 import static io.github.bfvstats.util.SortUtils.getSortColumnAndOrderFromRequest;
 
-@Path("/ranking")
+@Path({"/", "/ranking"})
 public class RankingController extends Controller {
 
   private RankingService rankingService;
