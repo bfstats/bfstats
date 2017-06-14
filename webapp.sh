@@ -1,4 +1,8 @@
-./gradlew :subprojects/webapp:build
-./gradlew :subprojects/webapp:copyToLib
+projectPath="subprojects/webapp"
+mainClass="io.github.bfvstats.Launcher"
 
-java -classpath subprojects/webapp/lib/*:subprojects/webapp/build/classes/main:subprojects/webapp/build/resources/main io.github.bfvstats.Launcher
+./gradlew :$projectPath:build :$projectPath:copyToLib
+
+echo Now starting to run %projectPath%
+
+java -classpath $projectPath/lib/*:$projectPath/build/classes/main:$projectPath/build/resources/main $mainClass

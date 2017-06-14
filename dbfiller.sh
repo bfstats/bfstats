@@ -1,4 +1,8 @@
-./gradlew :subprojects/dbfiller:build
-./gradlew :subprojects/dbfiller:copyToLib
+projectPath="subprojects/dbfiller"
+mainClass="io.github.bfvstats.dbfiller.DbFiller"
 
-java -classpath subprojects/dbfiller/lib/*:subprojects/dbfiller/build/classes/main:subprojects/dbfiller/build/resources/main io.github.bfvstats.dbfiller.DbFiller
+./gradlew :$projectPath:build :$projectPath:copyToLib
+
+echo Now starting to run %projectPath%
+
+java -classpath $projectPath/lib/*:$projectPath/build/classes/main:$projectPath/build/resources/main $mainClass
