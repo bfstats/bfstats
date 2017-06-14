@@ -1,1 +1,0 @@
-java -classpath lib/*:build/classes/main:build/resources/main io.github.bfvstats.Launcher
