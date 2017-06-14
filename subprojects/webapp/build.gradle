@@ -1,7 +1,6 @@
 group 'io.github.bfvstats'
 version '1.0-SNAPSHOT'
 
-apply plugin: 'application'
 apply plugin: 'java'
 
 
@@ -51,14 +50,6 @@ sourceSets {
     }
   }
 }
-
-mainClassName = 'io.github.bfvstats.Launcher'
-
-applicationName = 'bfvstats'
-applicationDefaultJvmArgs = ["-Xms64m", "-Xmx64m"]
-
-
-
 
 
 task copyToLib(type: Copy) {
