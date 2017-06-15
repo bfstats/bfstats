@@ -25,7 +25,7 @@
   <a href="{{appPath}}/maps">Maps</a>
   <a href="{{appPath}}/chat">Chat</a>
 
-  <form action="/players">
+  <form action="{{appPath}}/players">
     <input type="text" id="menu_query" name="query" placeholder="Search player" value="{{query}}"/>
   </form>
 </div>
