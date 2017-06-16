@@ -7,10 +7,7 @@ import io.github.bfvstats.model.geojson.Feature;
 import io.github.bfvstats.model.geojson.FeatureCollection;
 import io.github.bfvstats.model.geojson.PointGeometry;
 import io.github.bfvstats.util.TranslationUtil;
-import org.jooq.Record;
-import org.jooq.Record2;
-import org.jooq.Record3;
-import org.jooq.Result;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
@@ -292,17 +289,19 @@ public class MapService {
   }
 
   public List<MapUsage> getMapUsagesForPlayer(int playerId) {
-    Result<Record3<String, Integer, Integer>> records = getDslContext().select(ROUND.MAP_CODE, ROUND_END_STATS_PLAYER.SCORE, DSL.count().as("times_used"))
+    Field<BigDecimal> fieldMapTotalScore = DSL.sum(ROUND_END_STATS_PLAYER.SCORE).as("map_total_score");
+    Result<Record3<String, BigDecimal, Integer>> records = getDslContext()
+        .select(ROUND.MAP_CODE, fieldMapTotalScore, DSL.count().as("times_used"))
         .from(ROUND_END_STATS_PLAYER)
         .join(ROUND).on(ROUND.ID.eq(ROUND_END_STATS_PLAYER.ROUND_ID))
         .where(ROUND_END_STATS_PLAYER.PLAYER_ID.eq(playerId))
         .groupBy(ROUND.MAP_CODE)
-        .orderBy(ROUND_END_STATS_PLAYER.SCORE.desc())
+        .orderBy(fieldMapTotalScore.desc())
         .limit(10)
         .fetch();
 
     int totalMapsScore = records.stream()
-        .map(r -> r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class))
+        .map(r -> r.get("map_total_score", Integer.class))
         .reduce(0, Integer::sum);
 
     return records.stream().map(r -> toMapUsage(r, totalMapsScore)).collect(Collectors.toList());
@@ -310,11 +309,12 @@ public class MapService {
 
   private static MapUsage toMapUsage(Record r, int totalMapsScore) {
     String mapCode = r.get(ROUND.MAP_CODE);
+    Integer mapTotalScore = r.get("map_total_score", Integer.class);
     return new MapUsage()
         .setCode(mapCode)
         .setName(TranslationUtil.getMapName(mapCode))
-        .setScore(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class))
-        .setPercentage(percentage(r.get(ROUND_END_STATS_PLAYER.SCORE, Integer.class), totalMapsScore))
+        .setScore(mapTotalScore)
+        .setPercentage(percentage(mapTotalScore, totalMapsScore))
         .setTimesUsed(r.get("times_used", Integer.class));
   }
 }
