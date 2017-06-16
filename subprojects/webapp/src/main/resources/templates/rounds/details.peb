@@ -4,12 +4,6 @@
 {% block content %}
 <h3>{{ round.mapName }} {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)</h3>
 
-<p>
-Tickets left:
-  {% if round.winningTeam == 1 %}<strong>{%endif%} NVA - {{ round.endTicketsTeam1 }} {% if round.winningTeam == 1 %}</strong>{%endif%}
-  {% if round.winningTeam == 2 %}<strong>{%endif%}USA - {{ round.endTicketsTeam2 }} {% if round.winningTeam == 2 %}</strong>{%endif%}
-</p>
-
 <div class="clear">
   <div style="float:left;">
     {% include "fragments/map" %}
@@ -20,10 +14,14 @@ Tickets left:
   </div>
 </div>
 
+<p>
+  Tickets left:
+  {% if round.winningTeam == 1 %}<strong>{%endif%} NVA - {{ round.endTicketsTeam1 }} {% if round.winningTeam == 1 %}</strong>{%endif%}
+  {% if round.winningTeam == 2 %}<strong>{%endif%}USA - {{ round.endTicketsTeam2 }} {% if round.winningTeam == 2 %}</strong>{%endif%}
+</p>
 <!--<li>Victory type: {{ round.victoryType }}</li>-->
 
 {% include "rounds/score" %}
-
 
 {% include "rounds/serversettings" with {"serverSettings":round.serverSettings} %}
 

@@ -261,6 +261,10 @@ th .sorted {
   text-align: left;
 }
 
+.styled_table td.center {
+  text-align: center;
+}
+
 .styled_table td:first-child {
   border-left: 0;
 }
