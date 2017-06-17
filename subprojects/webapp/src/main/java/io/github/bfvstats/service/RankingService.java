@@ -2,8 +2,7 @@ package io.github.bfvstats.service;
 
 import io.github.bfvstats.model.PlayerStats;
 import io.github.bfvstats.util.Sort;
-import org.jooq.Field;
-import org.jooq.Record;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
@@ -30,6 +29,30 @@ public class RankingService {
     int numberOfRows = 50;
     int firstRowIndex = (page - 1) * numberOfRows;
 
+    Table<Record4<Integer, Integer, BigDecimal, BigDecimal>> nestedHeals = getDslContext().select(
+        ROUND_PLAYER_MEDPACK.PLAYER_ID,
+        DSL.count(ROUND_PLAYER_MEDPACK.ID).as("heals_all_count"),
+        DSL.sum(DSL.when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.eq(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
+            .as("heals_self_count"),
+        DSL.sum(DSL.when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.notEqual(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
+            .as("heals_others_count")
+    ).from(ROUND_PLAYER_MEDPACK)
+        .groupBy(ROUND_PLAYER_MEDPACK.PLAYER_ID)
+        .asTable().as("table_heals");
+
+    Table<Record5<Integer, Integer, BigDecimal, BigDecimal, BigDecimal>> nestedRepairs = getDslContext().select(
+        ROUND_PLAYER_REPAIR.PLAYER_ID,
+        DSL.count(ROUND_PLAYER_REPAIR.ID).as("repairs_all_count"),
+        DSL.sum(DSL.when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.eq(ROUND_PLAYER_REPAIR.PLAYER_ID), 1).otherwise(0))
+            .as("repairs_self_count"),
+        DSL.sum(DSL.when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNotNull().and(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.notEqual(ROUND_PLAYER_REPAIR.PLAYER_ID)), 1).otherwise(0))
+            .as("repairs_others_count"),
+        DSL.sum(DSL.when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNull(), 1).otherwise(0))
+            .as("repairs_unmanned_count")
+    ).from(ROUND_PLAYER_REPAIR)
+        .groupBy(ROUND_PLAYER_REPAIR.PLAYER_ID)
+        .asTable().as("table_repairs");
+
     return getDslContext().select(
         DSL.count().as("rounds_played"),
         PLAYER.NAME.as("player_name"),
@@ -48,25 +71,27 @@ public class RankingService {
         DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(1), 1).otherwise(0)).as("gold_count"),
         DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(2), 1).otherwise(0)).as("silver_count"),
         DSL.sum(DSL.when(ROUND_END_STATS_PLAYER.RANK.eq(3), 1).otherwise(0)).as("bronze_count"),
-        DSL.count(ROUND_PLAYER_MEDPACK.ID).as("heals_all_count"),
-        DSL.sum(DSL.when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.eq(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
-            .as("heals_self_count"),
-        DSL.sum(DSL.when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.notEqual(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
-            .as("heals_others_count"),
-        DSL.count(ROUND_PLAYER_REPAIR.ID).as("repairs_all_count"),
-        DSL.sum(DSL.when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.eq(ROUND_PLAYER_REPAIR.PLAYER_ID), 1).otherwise(0))
-            .as("repairs_self_count"),
-        DSL.sum(DSL.when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNotNull().and(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.notEqual(ROUND_PLAYER_REPAIR.PLAYER_ID)), 1).otherwise(0))
-            .as("repairs_others_count"),
-        DSL.sum(DSL.when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNull(), 1).otherwise(0))
-            .as("repairs_unmanned_count"))
+
+
+        DSL.nvl(nestedHeals.field("heals_all_count"), 0).as("heals_all_count"),
+        DSL.nvl(nestedHeals.field("heals_self_count"), 0).as("heals_self_count"),
+        DSL.nvl(nestedHeals.field("heals_others_count"), 0).as("heals_others_count"),
+
+        DSL.nvl(nestedRepairs.field("repairs_all_count"), 0).as("repairs_all_count"),
+        DSL.nvl(nestedRepairs.field("repairs_self_count"), 0).as("repairs_self_count"),
+        DSL.nvl(nestedRepairs.field("repairs_others_count"), 0).as("repairs_others_count"),
+        DSL.nvl(nestedRepairs.field("repairs_unmanned_count"), 0).as("repairs_unmanned_count")
+    )
         .from(ROUND_END_STATS_PLAYER)
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
         .join(PLAYER_RANK).on(PLAYER_RANK.PLAYER_ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
-        .leftJoin(ROUND_PLAYER_MEDPACK).on(ROUND_PLAYER_MEDPACK.PLAYER_ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID)
-            .and(ROUND_PLAYER_MEDPACK.ROUND_ID.eq(ROUND_END_STATS_PLAYER.ROUND_ID)))
-        .leftJoin(ROUND_PLAYER_REPAIR).on(ROUND_PLAYER_REPAIR.PLAYER_ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID)
-            .and(ROUND_PLAYER_REPAIR.ROUND_ID.eq(ROUND_END_STATS_PLAYER.ROUND_ID)))
+
+        .leftJoin(nestedHeals)
+        .on(nestedHeals.field(ROUND_PLAYER_MEDPACK.PLAYER_ID).eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
+
+        .leftJoin(nestedRepairs)
+        .on(nestedRepairs.field(ROUND_PLAYER_REPAIR.PLAYER_ID).eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
+
         .where(playerId == null ? DSL.trueCondition() : ROUND_END_STATS_PLAYER.PLAYER_ID.eq(playerId))
         .groupBy(ROUND_END_STATS_PLAYER.PLAYER_ID)
         .orderBy(sortableField.sort(getJooqSortOrder(sort.getOrder())))
