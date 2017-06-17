@@ -47,17 +47,8 @@ dependencies {
 
 
 val java = the<JavaPluginConvention>()
-
 java.sourceSets.getByName("main").resources.srcDir("../../config")
-//java.sourceSets.getByName("main").resources.getSrcDirs().add("config")
 java.sourceCompatibility = JavaVersion.VERSION_1_8
-
-configure<ApplicationPluginConvention> {
-    mainClassName = "io.github.bfvstats.Launcher"
-    applicationName = "bfvstats"
-    applicationDefaultJvmArgs = listOf("-Xms64m", "-Xmx64m")
-}
-
 
 task("copyToLib", Copy::class) {
     into("$rootDir/lib")
