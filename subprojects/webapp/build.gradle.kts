@@ -2,7 +2,6 @@ import org.gradle.api.tasks.Copy
 
 
 plugins {
-    application
     java
 }
 
