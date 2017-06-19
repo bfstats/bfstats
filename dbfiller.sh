@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 projectPath="subprojects/dbfiller"
 mainClass="io.github.bfvstats.dbfiller.DbFiller"
 
@@ -5,4 +7,4 @@ mainClass="io.github.bfvstats.dbfiller.DbFiller"
 
 echo Now starting to run $projectPath
 
-java -classpath $projectPath/lib/*:$projectPath/build/classes/main:$projectPath/build/resources/main $mainClass
+java -classpath $projectPath/lib/*:$projectPath/build/classes/java/main:$projectPath/build/resources/main $mainClass
