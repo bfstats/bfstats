@@ -2,3 +2,6 @@
 .idea/
 build/
 out/
+
+jooq_gen/lib/*
+!jooq_gen/lib/.gitkeep
