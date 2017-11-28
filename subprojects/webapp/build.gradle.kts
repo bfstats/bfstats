@@ -5,8 +5,8 @@ plugins {
     java
 }
 
-val pippoVersion = "1.2.0"
-val jooqVersion = "3.9.0"
+val pippoVersion = "1.6.0"
+val jooqVersion = "3.10.1"
 
 repositories {
     mavenCentral()
@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.16.12")
+    compileOnly("org.projectlombok:lombok:1.16.18")
 
     testCompile("junit:junit:4.11")
     testCompile("ro.pippo:pippo-test:$pippoVersion")
@@ -39,7 +39,7 @@ dependencies {
     compile("org.jooq:jooq-meta:$jooqVersion")
     compile("org.jooq:jooq-codegen:$jooqVersion")
 
-    compile("org.xerial:sqlite-jdbc:3.15.1")
+    compile("org.xerial:sqlite-jdbc:3.21.0")
 
     compile(project(":subprojects/dbstats"))
 }

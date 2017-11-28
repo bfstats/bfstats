@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    compile("org.xerial:sqlite-jdbc:3.15.1")
+    compile("org.xerial:sqlite-jdbc:3.21.0")
 }
 
 val java = the<JavaPluginConvention>()

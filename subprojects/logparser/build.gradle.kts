@@ -8,6 +8,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.16.12")
+    compileOnly("org.projectlombok:lombok:1.16.18")
 }
 

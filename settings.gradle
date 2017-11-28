@@ -1,6 +1,7 @@
 rootProject.name = 'bfvstats'
 
 include 'subprojects/dbcreator'
+include 'subprojects/jooqgen'
 include 'subprojects/logparser'
 include 'subprojects/dbfiller'
 include 'subprojects/dbstats'

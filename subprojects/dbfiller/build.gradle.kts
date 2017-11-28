@@ -7,10 +7,8 @@ repositories {
     gradleScriptKotlin()
 }
 
-val jooqVersion = "3.9.0"
-
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.16.12")
+    compileOnly("org.projectlombok:lombok:1.16.18")
 
     compile(project(":subprojects/logparser"))
     compile(project(":subprojects/dbstats"))
