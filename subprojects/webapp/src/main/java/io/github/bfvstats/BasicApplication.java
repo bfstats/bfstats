@@ -73,7 +73,7 @@ public class BasicApplication extends ControllerApplication {
   }
 
   private void closeDbConnections() {
-    ALL("/.*", (routeContext) -> DbUtils.closeDslContext())
+    ANY("/.*", (routeContext) -> DbUtils.closeDslContext())
         .runAsFinally();
   }
 }
