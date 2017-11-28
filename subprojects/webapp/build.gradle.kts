@@ -16,7 +16,7 @@ repositories {
 dependencies {
     compileOnly("org.projectlombok:lombok:1.16.18")
 
-    testCompile("junit:junit:4.11")
+    testCompile("junit:junit:4.12")
     testCompile("ro.pippo:pippo-test:$pippoVersion")
 
     compile("com.google.code.findbugs:jsr305:3.0.1")
