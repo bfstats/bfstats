@@ -5,7 +5,7 @@ plugins {
     java
 }
 
-val pippoVersion = "1.6.0"
+val pippoVersion = "1.7.0"
 val jooqVersion = "3.10.1"
 
 repositories {
