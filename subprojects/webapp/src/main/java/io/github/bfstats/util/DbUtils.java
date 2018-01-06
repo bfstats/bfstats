@@ -23,7 +23,7 @@ public class DbUtils {
   static {
     try {
       Properties props = loadConfigProperties();
-      String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:baas.db");
+      String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:database.db");
       connection = DriverManager.getConnection(dbUrl, username, password);
     } catch (SQLException | IOException e) {
       throw new RuntimeException(e);

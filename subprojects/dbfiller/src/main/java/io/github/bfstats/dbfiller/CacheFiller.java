@@ -16,7 +16,7 @@ import static org.jooq.impl.DSL.sum;
 public class CacheFiller {
   public static void main(String[] args) throws JAXBException, IOException, SQLException {
     Properties props = DbFiller.loadConfigProperties();
-    String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:baas.db");
+    String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:database.db");
     fillCacheTables(dbUrl);
   }
 

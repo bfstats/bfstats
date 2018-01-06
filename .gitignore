@@ -7,3 +7,9 @@ jooq_gen/lib/*
 !jooq_gen/lib/.gitkeep
 
 *.iml
+
+/database.db
+/config/ftpconfig.properties
+
+/lib/*
+/temp/*

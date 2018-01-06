@@ -93,7 +93,7 @@ public class DbFiller {
     String logDirPath = localDirectory;
     //String xmlFilePath = "D:\\bflogs\\ev_15567-20170105_2340.xml";
 
-    String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:baas.db");
+    String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:database.db");
     prepareConnection(dbUrl);
     try {
       //addFromXmlFile(xmlFilePath);

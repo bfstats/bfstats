@@ -3,4 +3,4 @@ userId=
 password=
 remoteDirectory=
 localDirectory=/home/bfstats/bflogs
-databaseUrl=jdbc:sqlite:baas.db
+databaseUrl=jdbc:sqlite:database.db

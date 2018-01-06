@@ -13,7 +13,7 @@ public class DBCreator {
 
   public static void main(String[] args) throws IOException, SQLException {
     Properties props = loadConfigProperties();
-    String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:baas.db");
+    String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:database.db");
     DriverManager.registerDriver(new org.sqlite.JDBC());
     Connection connection = DriverManager.getConnection(dbUrl);
     InputStream is = DBCreator.class.getResourceAsStream("/db/install.sql");
