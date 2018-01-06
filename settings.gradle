@@ -1,4 +1,4 @@
-rootProject.name = 'bfvstats'
+rootProject.name = 'bfstats'
 
 include 'subprojects/dbcreator'
 include 'subprojects/logparser'

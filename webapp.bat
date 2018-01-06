@@ -1,5 +1,5 @@
 set projectPath=subprojects/webapp
-set mainClass=io.github.bfvstats.Launcher
+set mainClass=io.github.bfstats.Launcher
 
 call gradlew.bat :%projectPath%:build :%projectPath%:copyToLib
 

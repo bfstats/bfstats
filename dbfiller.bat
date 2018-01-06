@@ -1,5 +1,5 @@
 set projectPath=subprojects/dbfiller
-set mainClass=io.github.bfvstats.dbfiller.DbFiller
+set mainClass=io.github.bfstats.dbfiller.DbFiller
 
 call gradlew.bat :%projectPath%:build :%projectPath%:copyToLib
 

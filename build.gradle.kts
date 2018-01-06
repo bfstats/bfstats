@@ -1,4 +1,4 @@
 allprojects {
-    group = "io.github.bfvstats"
+    group = "io.github.bfstats"
     version = "1.0-SNAPSHOT"
 }

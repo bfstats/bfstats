@@ -2,5 +2,5 @@ serverAddress=
 userId=
 password=
 remoteDirectory=
-localDirectory=/home/bfvstats/bflogs
+localDirectory=/home/bfstats/bflogs
 databaseUrl=jdbc:sqlite:baas.db

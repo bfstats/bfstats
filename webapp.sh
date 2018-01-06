@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 projectPath="subprojects/webapp"
-mainClass="io.github.bfvstats.Launcher"
+mainClass="io.github.bfstats.Launcher"
 
 ./gradlew :$projectPath:build :$projectPath:copyToLib
 

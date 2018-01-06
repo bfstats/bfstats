@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 projectPath="subprojects/dbfiller"
-mainClass="io.github.bfvstats.dbfiller.DbFiller"
+mainClass="io.github.bfstats.dbfiller.DbFiller"
 
 ./gradlew :$projectPath:build :$projectPath:copyToLib
 
