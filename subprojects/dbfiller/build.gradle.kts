@@ -27,6 +27,6 @@ java.sourceSets.getByName("main").resources.srcDir("../../config")
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 task("copyToLib", Copy::class) {
-    into("$rootDir/lib")
+    into("$projectDir/lib")
     from(configurations.runtime)
 }
