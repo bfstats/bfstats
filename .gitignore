@@ -10,6 +10,7 @@ jooq_gen/lib/*
 
 /database.db
 /config/ftpconfig.properties
+/config/dbconfig.properties
 
 /lib/*
 /temp/*
