@@ -22,7 +22,7 @@ public class DbUtils {
 
   static {
     try {
-      Properties props = loadConfigProperties();
+      Properties props = loadDbConfigProperties();
       String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:database.db");
       connection = DriverManager.getConnection(dbUrl, username, password);
     } catch (SQLException | IOException e) {
@@ -31,9 +31,9 @@ public class DbUtils {
 
   }
 
-  public static Properties loadConfigProperties() throws IOException {
+  public static Properties loadDbConfigProperties() throws IOException {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    InputStream configFileInputStream = loader.getResourceAsStream("ftpconfig.properties");
+    InputStream configFileInputStream = loader.getResourceAsStream("dbconfig.properties");
     Properties props = new Properties();
     props.load(configFileInputStream);
     return props;

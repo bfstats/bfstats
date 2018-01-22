@@ -83,6 +83,14 @@ public class DbFiller {
     return props;
   }
 
+  public static Properties loadDbConfigProperties() throws IOException {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    InputStream configFileInputStream = loader.getResourceAsStream("dbconfig.properties");
+    Properties props = new Properties();
+    props.load(configFileInputStream);
+    return props;
+  }
+
   public static void main(String[] args) throws JAXBException, IOException, SQLException {
     System.setProperty("org.jooq.no-logo", "true");
 
@@ -93,7 +101,8 @@ public class DbFiller {
     String logDirPath = localDirectory;
     //String xmlFilePath = "D:\\bflogs\\ev_15567-20170105_2340.xml";
 
-    String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:database.db");
+    Properties dbConfigProperties = loadDbConfigProperties();
+    String dbUrl = dbConfigProperties.getProperty("databaseUrl", "jdbc:sqlite:database.db");
     prepareConnection(dbUrl);
     try {
       //addFromXmlFile(xmlFilePath);

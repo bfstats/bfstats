@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class DBCreator {
 
   public static void main(String[] args) throws IOException, SQLException {
-    Properties props = loadConfigProperties();
+    Properties props = loadDbConfigProperties();
     String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:database.db");
     DriverManager.registerDriver(new org.sqlite.JDBC());
     Connection connection = DriverManager.getConnection(dbUrl);
@@ -20,9 +20,9 @@ public class DBCreator {
     importSQL(connection, is);
   }
 
-  public static Properties loadConfigProperties() throws IOException {
+  public static Properties loadDbConfigProperties() throws IOException {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    InputStream configFileInputStream = loader.getResourceAsStream("ftpconfig.properties");
+    InputStream configFileInputStream = loader.getResourceAsStream("dbconfig.properties");
     Properties props = new Properties();
     props.load(configFileInputStream);
     return props;
