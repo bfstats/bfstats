@@ -6,7 +6,7 @@ repositories {
     mavenCentral()
 }
 
-val jooqVersion = "3.10.1"
+val jooqVersion = "3.10.4"
 
 dependencies {
     compile("org.jooq:jooq:$jooqVersion")

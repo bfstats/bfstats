@@ -6,7 +6,7 @@ repositories {
     mavenCentral()
 }
 
-val jooqVersion = "3.10.1"
+val jooqVersion = "3.10.4"
 
 dependencies {
     compileOnly("org.projectlombok:lombok:1.16.18")
