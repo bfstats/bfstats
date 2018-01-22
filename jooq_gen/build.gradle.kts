@@ -4,7 +4,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    gradleScriptKotlin()
 }
 
 val jooqVersion = "3.10.1"

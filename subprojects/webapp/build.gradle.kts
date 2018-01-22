@@ -10,7 +10,6 @@ val jooqVersion = "3.10.1"
 
 repositories {
     mavenCentral()
-    gradleScriptKotlin()
 }
 
 dependencies {

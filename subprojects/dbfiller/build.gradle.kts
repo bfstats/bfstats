@@ -4,7 +4,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    gradleScriptKotlin()
 }
 
 dependencies {
