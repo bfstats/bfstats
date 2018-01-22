@@ -1,6 +1,5 @@
 package io.github.bfstats.service;
 
-import com.google.common.collect.ImmutableMap;
 import io.github.bfstats.game.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.model.*;
 import io.github.bfstats.model.geojson.Feature;
@@ -19,36 +18,21 @@ import java.util.stream.Collectors;
 
 import static io.github.bfstats.game.jooq.Tables.*;
 import static io.github.bfstats.util.DbUtils.getDslContext;
+import static io.github.bfstats.util.Utils.loadPropertiesFileFromResources;
 import static io.github.bfstats.util.Utils.percentage;
 import static java.util.Optional.ofNullable;
 import static org.jooq.impl.DSL.trueCondition;
 
 public class MapService {
-  public static final io.github.bfstats.game.jooq.tables.Player KILLER_PLAYER_TABLE = PLAYER.as("killerPlayer");
-  public static final RoundPlayerTeam KILLER_PLAYER_TEAM_TABLE = ROUND_PLAYER_TEAM.as("killerPlayerTeam");
-  private static Map<String, Integer> mapSizesByMapCode = ImmutableMap.<String, Integer>builder()
-      .put("defense_of_con_thien", 2048)
-      .put("fall_of_saigon", 2048)
-      .put("ho_chi_minh_trail", 1024)
-      .put("ho_chi_minh_trail_alt", 1024)
-      .put("hue", 1024)
-      .put("hue_alt", 1024)
-      .put("ia_drang", 2048)
-      .put("khe_sahn", 2048)
-      .put("landing_zone_albany", 2048)
-      .put("lang_vei", 2048)
-      .put("operation_cedar_falls", 2048)
-      .put("operation_flaming_dart", 2048)
-      .put("operation_game_warden", 2048)
-      .put("operation_hastings", 2048)
-      .put("operation_irving", 2048)
-      .put("quang_tri", 1024)
-      .put("quang_tri_alt", 1024)
-      .put("saigon68", 1024)
-      .build();
+  private static final io.github.bfstats.game.jooq.tables.Player KILLER_PLAYER_TABLE = PLAYER.as("killerPlayer");
+  private static final RoundPlayerTeam KILLER_PLAYER_TEAM_TABLE = ROUND_PLAYER_TEAM.as("killerPlayerTeam");
+
+  private static Map<String, Integer> mapSizeByMapCode = loadPropertiesFileFromResources("maps/mapsizes.properties")
+      .entrySet().stream()
+      .collect(Collectors.toMap(Map.Entry::getKey, e -> Integer.parseInt(e.getValue())));
 
   public BasicMapInfo getBasicMapInfo(String mapCode) {
-    Integer mapSize = mapSizesByMapCode.get(mapCode);
+    Integer mapSize = mapSizeByMapCode.get(mapCode);
     String mapName = TranslationUtil.getMapName(mapCode);
 
     return new BasicMapInfo()
@@ -227,7 +211,7 @@ public class MapService {
     }
     FeatureCollection deathFeatureCollection = new FeatureCollection(deathFeatures);
 
-    Integer mapSize = mapSizesByMapCode.get(mapCode);
+    Integer mapSize = mapSizeByMapCode.get(mapCode);
     String mapName = TranslationUtil.getMapName(mapCode);
 
     return new MapEvents()
