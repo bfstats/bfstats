@@ -211,13 +211,12 @@ public class MapService {
     }
     FeatureCollection deathFeatureCollection = new FeatureCollection(deathFeatures);
 
-    Integer mapSize = mapSizeByMapCode.get(mapCode);
-    String mapName = TranslationUtil.getMapName(mapCode);
+    BasicMapInfo basicMapInfo = getBasicMapInfo(mapCode);
 
     return new MapEvents()
-        .setMapName(mapName)
-        .setMapFileName(mapCode)
-        .setMapSize(mapSize)
+        .setMapName(basicMapInfo.getMapName())
+        .setMapFileName(basicMapInfo.getMapFileName())
+        .setMapSize(basicMapInfo.getMapSize())
         .setKillFeatureCollection(killFeatureCollection)
         .setDeathFeatureCollection(deathFeatureCollection);
   }
