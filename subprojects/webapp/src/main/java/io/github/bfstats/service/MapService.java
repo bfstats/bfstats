@@ -251,7 +251,10 @@ public class MapService {
     } else {
       String killer = String.format("<span class='name team-%d'" + (kill ? styleBold : "") + ">%s</span>", mapEvent.getKillerPlayerTeam(), mapEvent.getKillerPlayerName());
       String victim = String.format("<span class='name team-%d'" + (!kill ? styleBold : "") + ">%s</span>", mapEvent.getPlayerTeam(), mapEvent.getPlayerName());
-      return String.format("<span class='team-color-%d'>%s %s [%s] %s</span>", mapEvent.getKillerPlayerTeam(), time, killer, killWeaponName, victim);
+
+      String cssClass = "team-color-" + mapEvent.getKillerPlayerTeam();
+      String distance = String.format("%.0f", Math.floor(mapEvent.getDistance()));
+      return String.format("<span class='%s'>%s [%s] %s<br>%s (%s meters)</span>", cssClass, killer, killWeaponName, victim, time, distance);
     }
   }
 

@@ -19,4 +19,12 @@ public class MapEvent {
   private String playerName;
   private Integer playerTeam;
   private String killType;
+
+  public Double getDistance() {
+    if (getRelatedLocation() == null) {
+      return null;
+    }
+
+    return getLocation().distance(getRelatedLocation());
+  }
 }
