@@ -1,33 +1,26 @@
 package io.github.bfstats.util;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
-import java.util.Properties;
+
+import static io.github.bfstats.util.Utils.loadPropertiesFileFromResources;
 
 @Slf4j
 public class TranslationUtil {
-  private static Map<String, String> vehicleNameByCode;
-  private static Map<String, String> mapNameByMapCode;
-  private static Map<String, String> weaponNameByCode;
-  private static Map<String, String> modeNameByCode;
+  private static Map<String, String> vehicleNameByCode =
+      loadPropertiesFileFromResources("translations/vehicles.properties");
 
-  static {
-    mapNameByMapCode = loadPropertiesFileFromResources("translations/maps.properties");
-    vehicleNameByCode = loadPropertiesFileFromResources("translations/vehicles.properties");
-    weaponNameByCode = loadPropertiesFileFromResources("translations/weapons.properties");
+  private static Map<String, String> mapNameByMapCode =
+      loadPropertiesFileFromResources("translations/maps.properties");
 
-    modeNameByCode = ImmutableMap.<String, String>builder()
-        .put("GPM_COOP", "CO-OP")
-        .put("GPM_CQ", "Conquest")
-        .build();
-  }
+  private static Map<String, String> weaponNameByCode =
+      loadPropertiesFileFromResources("translations/weapons.properties");
+
+  private static Map<String, String> modeNameByCode =
+      loadPropertiesFileFromResources("translations/gamemodes.properties");
 
   @Nonnull
   public static String getMapName(@Nonnull String mapCode) {
@@ -61,16 +54,5 @@ public class TranslationUtil {
       weaponName = TranslationUtil.getVehicleName(weaponOrVehicleCode);
     }
     return weaponName;
-  }
-
-  private static Map<String, String> loadPropertiesFileFromResources(String filePath) {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    Properties props = new Properties();
-    try (InputStream resourceStream = loader.getResourceAsStream(filePath)) {
-      props.load(resourceStream);
-    } catch (IOException e) {
-      log.warn("Could not load properties for path " + filePath, e);
-    }
-    return Maps.fromProperties(props);
   }
 }

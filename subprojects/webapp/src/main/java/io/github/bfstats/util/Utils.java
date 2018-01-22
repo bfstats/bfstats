@@ -1,6 +1,12 @@
 package io.github.bfstats.util;
 
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Properties;
 
 @Slf4j
 public class Utils {
@@ -17,5 +23,16 @@ public class Utils {
       return 0;
     }
     return a * 100f / total;
+  }
+
+  public static Map<String, String> loadPropertiesFileFromResources(String filePath) {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    Properties props = new Properties();
+    try (InputStream resourceStream = loader.getResourceAsStream(filePath)) {
+      props.load(resourceStream);
+    } catch (IOException e) {
+      log.warn("Could not load properties for path " + filePath, e);
+    }
+    return Maps.fromProperties(props);
   }
 }
