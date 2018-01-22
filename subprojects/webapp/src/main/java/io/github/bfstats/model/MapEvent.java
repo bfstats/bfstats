@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class MapEvent {
   private Location location;
+  private Location relatedLocation;
   private LocalDateTime time;
   private Integer killerPlayerId;
   private String killerPlayerName;
