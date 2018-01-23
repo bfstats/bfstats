@@ -100,13 +100,11 @@ public class DbFiller {
 
     String localDirectory = props.getProperty("localDirectory").trim();
     String logDirPath = localDirectory;
-    //String xmlFilePath = "D:\\bflogs\\ev_15567-20170105_2340.xml";
 
     Properties dbConfigProperties = loadDbConfigProperties();
     String dbUrl = dbConfigProperties.getProperty("databaseUrl", "jdbc:sqlite:database.db");
     prepareConnection(dbUrl);
     try {
-      //addFromXmlFile(xmlFilePath);
       parseAllInDir(logDirPath);
     } finally {
       closeConnection();
@@ -122,6 +120,10 @@ public class DbFiller {
       throw new IllegalArgumentException("could not list files in " + logDirPath);
     }
 
+    // order by filename, which assumes the resulting order will be by logfile creation date ascending
+    // so we can skip parsing the last file.
+    Arrays.sort(dirFiles, Comparator.comparing(File::getName));
+
     int totalNumberOfFiles = dirFiles.length;
     int numberOfFilesCompleted = 0;
 
@@ -134,6 +136,12 @@ public class DbFiller {
       }
       numberOfFilesCompleted++;
 
+      // true if last file
+      // Btw, xml counterpart will come before zxml,
+      // but if both are present, xml is anyway skipped and hope is on zxml which usually comes on next iteration
+      // and will have probablyLiveFile as true then
+      boolean probablyLiveFile = numberOfFilesCompleted == totalNumberOfFiles;
+
       String dtsAndExtStr = fileI.getName().split("-")[1];
       String dateTimeStr = dtsAndExtStr.split("\\.")[0];
       LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, DATE_TIME_FORMATTER);
@@ -145,11 +153,8 @@ public class DbFiller {
       String filePath = fileI.getPath();
       filePath = extractIfNecessary(filePath);
       if (filePath != null) {
-        // TODO: skip live-file!
-
         try {
-          boolean tryFixing = true;
-          addFromXmlFile(filePath, tryFixing);
+          addFromXmlFile(filePath, !probablyLiveFile);
           lastValidDateTimeStr = dateTimeStr;
         } catch (RuntimeException e) {
           log.warn("Could not parse " + filePath, e);
