@@ -68,7 +68,8 @@ public class XmlParser {
       System.out.println("last valid line was " + lastValidLine);
     }
 
-    // TODO: check if round is actually open
+    lines.add("<!-- xml file ending fixed by bfstats -->");
+    // TODO: check if round is actually open (remember, there can be multiple rounds in one file)
     lines.add("</bf:round>");
     lines.add("</bf:log>");
 
