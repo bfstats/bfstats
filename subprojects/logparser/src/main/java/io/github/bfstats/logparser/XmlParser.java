@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class XmlParser {
-  public static BfLog parseXmlLogFile(File file) throws IOException, JAXBException {
+  public static BfLog parseXmlLogFile(File file, boolean tryFixing) throws IOException, JAXBException {
     if (file.length() == 0) {
       throw new IOException("skipping empty file");
     }
@@ -25,15 +25,18 @@ public class XmlParser {
     try {
       return (BfLog) um.unmarshal(new FileReader(file));
     } catch (UnmarshalException e) {
-      File fixedFile = fixFileEnding(file);
-      return (BfLog) um.unmarshal(new FileReader(fixedFile));
+      if (tryFixing) {
+        File fixedFile = fixFileEnding(file);
+        return (BfLog) um.unmarshal(new FileReader(fixedFile));
+      }
+      throw e;
     }
   }
 
   public static void main(String[] args) throws JAXBException, IOException {
     String fileName = "D:\\bflogs\\ev_15567-20170114_1327.xml";
     File file = new File(fileName);
-    BfLog bfLog = parseXmlLogFile(file);
+    BfLog bfLog = parseXmlLogFile(file, true);
   }
 
   private static File fixFileEnding(File file) throws IOException {

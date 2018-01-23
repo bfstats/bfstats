@@ -16,6 +16,7 @@ import org.jooq.Record1;
 import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.math.BigDecimal;
@@ -124,12 +125,7 @@ public class DbFiller {
     int totalNumberOfFiles = dirFiles.length;
     int numberOfFilesCompleted = 0;
 
-    LocalDateTime latestAdded = null;
-    Record1<String> lastParsedDatetimeRecord = dslContext.select(CONFIGURATION.LAST_PARSED_DATETIME).from(CONFIGURATION).fetchOne();
-    String lastParsedDateTime = lastParsedDatetimeRecord.get(CONFIGURATION.LAST_PARSED_DATETIME);
-    if (lastParsedDateTime != null) {
-      latestAdded = LocalDateTime.parse(lastParsedDateTime, DATE_TIME_FORMATTER);
-    }
+    LocalDateTime latestAdded = findLatestAddedLogFileTime();
 
     String lastValidDateTimeStr = null;
     for (File fileI : dirFiles) {
@@ -152,7 +148,8 @@ public class DbFiller {
         // TODO: skip live-file!
 
         try {
-          addFromXmlFile(filePath);
+          boolean tryFixing = true;
+          addFromXmlFile(filePath, tryFixing);
           lastValidDateTimeStr = dateTimeStr;
         } catch (RuntimeException e) {
           log.warn("Could not parse " + filePath, e);
@@ -161,10 +158,25 @@ public class DbFiller {
     }
 
     if (lastValidDateTimeStr != null) {
-      dslContext.update(CONFIGURATION)
-          .set(CONFIGURATION.LAST_PARSED_DATETIME, lastValidDateTimeStr)
-          .execute();
+      updateLatestAddedLogFileTime(lastValidDateTimeStr);
     }
+  }
+
+  @Nullable
+  private static LocalDateTime findLatestAddedLogFileTime() {
+    LocalDateTime latestAdded = null;
+    Record1<String> lastParsedDatetimeRecord = dslContext.select(CONFIGURATION.LAST_PARSED_DATETIME).from(CONFIGURATION).fetchOne();
+    String lastParsedDateTime = lastParsedDatetimeRecord.get(CONFIGURATION.LAST_PARSED_DATETIME);
+    if (lastParsedDateTime != null) {
+      latestAdded = LocalDateTime.parse(lastParsedDateTime, DATE_TIME_FORMATTER);
+    }
+    return latestAdded;
+  }
+
+  private static void updateLatestAddedLogFileTime(String lastValidDateTimeStr) {
+    dslContext.update(CONFIGURATION)
+        .set(CONFIGURATION.LAST_PARSED_DATETIME, lastValidDateTimeStr)
+        .execute();
   }
 
   private static String extractIfNecessary(String filePath) {
@@ -214,11 +226,11 @@ public class DbFiller {
     }
   }
 
-  private static void addFromXmlFile(String xmlFilePath) {
+  private static void addFromXmlFile(String xmlFilePath, boolean tryFixing) {
     try {
       log.info("Parsing " + xmlFilePath);
       File file = new File(xmlFilePath);
-      BfLog bfLog = XmlParser.parseXmlLogFile(file);
+      BfLog bfLog = XmlParser.parseXmlLogFile(file, tryFixing);
       DbFiller dbFiller = new DbFiller(bfLog);
       dbFiller.fillDb();
     } catch (SQLException | JAXBException | IOException e) {
