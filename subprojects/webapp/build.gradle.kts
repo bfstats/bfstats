@@ -40,7 +40,7 @@ dependencies {
 
     compile("org.xerial:sqlite-jdbc:3.21.0")
 
-    compile(project(":subprojects/dbstats"))
+    compile(project(":dbstats"))
 }
 
 

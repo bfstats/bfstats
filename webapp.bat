@@ -1,7 +1,9 @@
-set projectPath=subprojects/webapp
+set projectName=webapp
+set projectPath="subprojects/%projectName%"
+
 set mainClass=io.github.bfstats.Launcher
 
-call gradlew.bat :%projectPath%:build :%projectPath%:copyToLib
+call gradlew.bat :%projectName%:build :%projectName%:copyToLib
 
 echo Now starting to run %projectPath%
 

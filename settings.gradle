@@ -1,9 +1,9 @@
 rootProject.name = 'bfstats'
 
-include 'subprojects/dbcreator'
-include 'subprojects/logparser'
-include 'subprojects/dbfiller'
-include 'subprojects/dbstats'
-include 'subprojects/webapp'
+// include all projects from subprojects directory and name it without subproject/ prefix
+file('subprojects').eachDir { dir ->
+  include dir.name
+  project(":${dir.name}").projectDir = dir
+}
 
 include 'jooq_gen'

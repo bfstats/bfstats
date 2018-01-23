@@ -9,8 +9,8 @@ repositories {
 dependencies {
     compileOnly("org.projectlombok:lombok:1.16.18")
 
-    compile(project(":subprojects/logparser"))
-    compile(project(":subprojects/dbstats"))
+    compile(project(":logparser"))
+    compile(project(":dbstats"))
 
     compile("org.slf4j:slf4j-api:1.7.22")
     compile("ch.qos.logback:logback-classic:1.0.13")

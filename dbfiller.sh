@@ -1,9 +1,10 @@
 #!/usr/bin/env sh
 
-projectPath="subprojects/dbfiller"
+projectName="dbfiller"
+projectPath="subprojects/$projectName"
 mainClass="io.github.bfstats.dbfiller.DbFiller"
 
-./gradlew :$projectPath:build :$projectPath:copyToLib
+./gradlew :$projectName:build :$projectName:copyToLib
 
 echo Now starting to run $projectPath
 

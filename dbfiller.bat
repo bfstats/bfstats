@@ -1,7 +1,8 @@
-set projectPath=subprojects/dbfiller
+set projectName=dbfiller
+set projectPath="subprojects/%projectName%"
 set mainClass=io.github.bfstats.dbfiller.DbFiller
 
-call gradlew.bat :%projectPath%:build :%projectPath%:copyToLib
+call gradlew.bat :%projectName%:build :%projectName%:copyToLib
 
 echo Now starting to run %projectPath%
 
