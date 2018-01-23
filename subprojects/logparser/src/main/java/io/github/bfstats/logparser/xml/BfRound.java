@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.github.bfstats.logparser.xml.Helpers.toDuration;
+import static java.util.Optional.ofNullable;
 
 @ToString(of = {"timestamp"})
 @XmlRootElement(name = "round")
@@ -54,6 +55,20 @@ public class BfRound {
       return null;
     }
     return Integer.valueOf(settingValue);
+  }
+
+  public Float getFloatSettingValue(String settingName) {
+    String settingValue = getSettingValue(settingName);
+    if (settingValue == null) {
+      return null;
+    }
+    return Float.valueOf(settingValue);
+  }
+
+  public Boolean getBooleanSettingValue(String settingName) {
+    return ofNullable(getIntegerSettingValue(settingName))
+        .map(integerValue -> integerValue.equals(1))
+        .orElse(null);
   }
 
   public String getServerName() {
@@ -116,8 +131,28 @@ public class BfRound {
     return getIntegerSettingValue("soldierff");
   }
 
+  public int getSoldierFriendlyFireOnSplash() {
+    return getIntegerSettingValue("soldierffonsplash");
+  }
+
   public int getVehicleFriendlyFire() {
     return getIntegerSettingValue("vehicleff");
+  }
+
+  public int getVehicleFriendlyFireOnSplash() {
+    return getIntegerSettingValue("vehicleffonsplash");
+  }
+
+  public int getFriendlyFireKickback() {
+    // for some reason kickback is kept as fractional 0..1, which is different from other similar values
+    float kickback = getFloatSettingValue("kickback") * 100;
+    return Math.round(kickback);
+  }
+
+  public int getFriendlyFireKickbackOnSplash() {
+    // for some reason kickbacksplash is kept as fractional 0..1, which is different from other similar values
+    float kickbacksplash = getFloatSettingValue("kickbacksplash") * 100;
+    return Math.round(kickbacksplash);
   }
 
   public int getTicketRatio() {
@@ -125,13 +160,62 @@ public class BfRound {
   }
 
   public boolean isTeamKillPunished() {
-    Integer tkpunish = getIntegerSettingValue("tkpunish");
-    return tkpunish.equals(1);
+    return getBooleanSettingValue("tkpunish");
   }
 
   public boolean isPunkBusterEnabled() {
-    Integer punkbuster = getIntegerSettingValue("sv_punkbuster");
-    return punkbuster.equals(1);
+    return getBooleanSettingValue("sv_punkbuster");
+  }
+
+  public boolean isAutoBalanceEnabled() {
+    return getBooleanSettingValue("autobalance");
+  }
+
+  public int getTagDistance() {
+    return getIntegerSettingValue("tagdistance");
+  }
+
+  public int getTagDistanceScope() {
+    return getIntegerSettingValue("tagdistancescope");
+  }
+
+  public boolean isNoseCameraAllowed() {
+    return getBooleanSettingValue("allownosecam");
+  }
+
+  public boolean isFreeCameraAllowed() {
+    return getBooleanSettingValue("freecamera");
+  }
+
+  public boolean isExternalViewsAllowed() {
+    return getBooleanSettingValue("externalviews");
+  }
+
+  public boolean isHitIndicationEnabled() {
+    return getBooleanSettingValue("hit_indication");
+  }
+
+  /**
+   * If false, then the server is accessible only in LAN
+   */
+  public boolean isInternet() {
+    return getBooleanSettingValue("internet");
+  }
+
+  public Integer getCoopCpu() {
+    return getIntegerSettingValue("coopcpu");
+  }
+
+  public Integer getCoopSkill() {
+    return getIntegerSettingValue("coopskill");
+  }
+
+  public Integer getAlliedPlayerCountRatio() {
+    return getIntegerSettingValue("alliedtr");
+  }
+
+  public Integer getAxisPlayerCountRatio() {
+    return getIntegerSettingValue("axistr");
   }
   /*
 
