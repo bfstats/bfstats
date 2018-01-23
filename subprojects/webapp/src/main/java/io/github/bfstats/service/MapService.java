@@ -163,11 +163,6 @@ public class MapService {
 
     Collection<Feature> deathFeatures = new ArrayList<>();
     for (Record deathRecord : deathRecords) {
-      BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
-      BigDecimal killerY = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
-      BigDecimal killerZ = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
-      Location killerLocation = new Location(killerX.floatValue(), killerY.floatValue(), killerZ.floatValue());
-
       BigDecimal deathX = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_X);
       BigDecimal deathY = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Y);
       BigDecimal deathZ = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Z);
@@ -182,6 +177,13 @@ public class MapService {
       String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
       Integer playerTeam = findPlayerTeam(deathRecord);
       Integer killerPlayerTeam = findKillerTeam(deathRecord);
+
+      BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
+      BigDecimal killerY = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
+      BigDecimal killerZ = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
+      Location killerLocation = killerX != null ?
+          new Location(killerX.floatValue(), killerY.floatValue(), killerZ.floatValue()) :
+          null;
 
       LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
 
