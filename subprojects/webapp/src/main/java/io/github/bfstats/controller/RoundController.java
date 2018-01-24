@@ -36,6 +36,23 @@ public class RoundController extends Controller {
     this.playerService = playerService;
   }
 
+  @GET("active/?")
+  public void activeRoundsList() {
+    int page = SortUtils.getPageFromRequest(getRequest());
+    List<Round> rounds = roundService.getActiveRounds(page);
+
+    Map<LocalDate, List<Round>> roundsByDay = rounds.stream()
+        .collect(Collectors.groupingBy(r -> r.getStartTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
+
+    int totalRoundsCount = roundService.getTotalRoundsCount();
+
+    getResponse()
+        .bind("rounds", roundsByDay)
+        .bind("totalRoundsCount", totalRoundsCount)
+        .bind("currentPage", page)
+        .render("rounds/list");
+  }
+
   @GET("/?")
   public void list() {
     int page = SortUtils.getPageFromRequest(getRequest());

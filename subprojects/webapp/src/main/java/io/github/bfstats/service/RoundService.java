@@ -23,6 +23,32 @@ import static io.github.bfstats.game.jooq.Tables.*;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 
 public class RoundService {
+  public List<Round> getActiveRounds(int page) {
+    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getActiveRoundRecordsWithStats(page);
+
+    return roundWithStats.entrySet().stream()
+        .map(e -> toRound(e.getKey(), e.getValue()))
+        .collect(Collectors.toList());
+  }
+
+  private static Map<RoundRecord, RoundEndStatsRecord> getActiveRoundRecordsWithStats(int page) {
+    int numberOfRows = 50;
+    int firstRowIndex = (page - 1) * numberOfRows;
+
+    return getDslContext()
+        .select(ROUND.fields())
+        .select(ROUND_END_STATS.fields())
+        .from(ROUND)
+        .leftJoin(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID))
+        .where(DSL.exists(getDslContext().selectOne().from(ROUND_PLAYER_DEATH).where(ROUND_PLAYER_DEATH.ROUND_ID.eq(ROUND.ID))))
+        .orderBy(ROUND.START_TIME.desc())
+        .limit(firstRowIndex, numberOfRows)
+        .fetchMap(
+            r -> r.into(ROUND),
+            r -> r.into(ROUND_END_STATS)
+        );
+  }
+
   public List<Round> getRounds(int page) {
     Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStats(null, page);
 

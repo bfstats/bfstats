@@ -22,6 +22,7 @@
 <div id="navigation">
   <a href="{{appPath}}/ranking">Ranks</a>
   <a href="{{appPath}}/rounds">Rounds</a>
+  <a href="{{appPath}}/rounds/active">Active Rounds</a>
   <a href="{{appPath}}/maps">Maps</a>
   <a href="{{appPath}}/chat">Chat</a>
 
