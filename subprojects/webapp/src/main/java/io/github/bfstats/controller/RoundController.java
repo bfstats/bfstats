@@ -44,7 +44,7 @@ public class RoundController extends Controller {
     Map<LocalDate, List<Round>> roundsByDay = rounds.stream()
         .collect(Collectors.groupingBy(r -> r.getStartTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
 
-    int totalRoundsCount = roundService.getTotalRoundsCount();
+    int totalRoundsCount = roundService.getTotalActiveRoundsCount();
 
     getResponse()
         .bind("rounds", roundsByDay)

@@ -190,6 +190,12 @@ public class RoundService {
 
   }
 
+  public int getTotalActiveRoundsCount() {
+    return getDslContext().selectCount().from(ROUND)
+        .where(DSL.exists(getDslContext().selectOne().from(ROUND_PLAYER_DEATH).where(ROUND_PLAYER_DEATH.ROUND_ID.eq(ROUND.ID))))
+        .fetchOne(0, int.class);
+  }
+
   public int getTotalRoundsCount() {
     return getDslContext().selectCount().from(ROUND).fetchOne(0, int.class);
   }
