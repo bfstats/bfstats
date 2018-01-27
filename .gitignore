@@ -13,4 +13,6 @@ jooq_gen/lib/*
 /config/dbconfig.properties
 
 /lib/*
+/subprojects/*/lib/*
+
 /temp/*
