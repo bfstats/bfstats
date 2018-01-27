@@ -96,10 +96,11 @@ public class DbFiller {
     System.setProperty("org.jooq.no-logo", "true");
 
     Properties props = loadConfigProperties();
-    FtpDownloader.downloadFiles(props);
+    if (props.getProperty("download", "false").equals("true")) {
+      FtpDownloader.downloadFiles(props);
+    }
 
-    String localDirectory = props.getProperty("localDirectory").trim();
-    String logDirPath = localDirectory;
+    String logDirPath = props.getProperty("localDirectory").trim();
 
     Properties dbConfigProperties = loadDbConfigProperties();
     String dbUrl = dbConfigProperties.getProperty("databaseUrl", "jdbc:sqlite:database.db");
@@ -286,16 +287,60 @@ public class DbFiller {
     }
   }
 
+  private GameRecord createGameRecord(int serverId, BfRound firstRound) {
+    GameRecord gameRecord = transaction().newRecord(GAME);
+
+    gameRecord.setServerId(serverId);
+    gameRecord.setStartTime(Timestamp.valueOf(logStartTime));
+
+    gameRecord.setServerName(firstRound.getServerName());
+    gameRecord.setServerPort(firstRound.getPort());
+    gameRecord.setModId(firstRound.getModId());
+    gameRecord.setMapCode(firstRound.getMap());
+    gameRecord.setGameMode(firstRound.getGameMode());
+    gameRecord.setMaxGameTime(firstRound.getMaxGameTime());
+    gameRecord.setMaxPlayers(firstRound.getMaxPlayers());
+    gameRecord.setScoreLimit(firstRound.getScoreLimit());
+    gameRecord.setNoOfRounds(firstRound.getNumberOfRoundsPerMap());
+    gameRecord.setSpawnTime(firstRound.getSpawnTime());
+    gameRecord.setSpawnDelay(firstRound.getSpawnDelay());
+    gameRecord.setGameStartDelay(firstRound.getGameStartDelay());
+    gameRecord.setRoundStartDelay(firstRound.getRoundStartDelay());
+    gameRecord.setSoldierFf(firstRound.getSoldierFriendlyFire());
+    gameRecord.setVehicleFf(firstRound.getVehicleFriendlyFire());
+    gameRecord.setTicketRatio(firstRound.getTicketRatio());
+    gameRecord.setTeamKillPunish(firstRound.isTeamKillPunished() ? 1 : 0);
+    gameRecord.setPunkbusterEnabled(firstRound.isPunkBusterEnabled() ? 1 : 0);
+
+    gameRecord.insert();
+    return gameRecord;
+  }
+
   private void parseLog() {
+    BfRound firstRound = bfLog.getRootEventsAndRounds().stream()
+        .filter(child -> child instanceof BfRound)
+        .map(child -> (BfRound) child)
+        .findFirst().orElseThrow(() -> new IllegalStateException("log file does not contain any rounds " + logStartTime));
+
+    ServerRecord serverRecord = addOrGetServer(firstRound.getPort(), firstRound.getServerName(), "EST");
+    GameRecord gameRecord = createGameRecord(serverRecord.getId(), firstRound);
+    int gameRecordId = gameRecord.getId();
+
+    // Events can be out-of-round, so mixing out-of-round events and rounds.
+    // For chat using the last round id, as chances was that it belongs to that more than to the new round
+    // (because during long round initialization you probably cant chat anymore).
     int lastRoundId = -1;
     for (Object child : bfLog.getRootEventsAndRounds()) {
       if (child instanceof BfEvent) {
+        if (lastRoundId == -1) {
+          log.info("round has not started yet, so ignoring event " + child);
+          continue;
+        }
         BfEvent bfEvent = (BfEvent) child;
         parseEvent(lastRoundId, bfEvent);
       } else if (child instanceof BfRound) {
         BfRound bfRound = (BfRound) child;
-        int roundId = parseRound(bfRound, lastRoundId);
-        lastRoundId = roundId;
+        lastRoundId = parseRound(bfRound, lastRoundId, gameRecordId);
       } else if (child instanceof String) {
         if (!child.toString().equals("\n")) {
           log.warn("got non-newline string child " + child.toString());
@@ -313,13 +358,34 @@ public class DbFiller {
     lastEnterVehicleByPlayerSlotId.clear();
   }
 
-  private int parseRound(BfRound bfRound, int previousRoundId) {
-    RoundRecord roundRecord = addRound(bfRound);
+  private ServerRecord addOrGetServer(int port, String name, String timezoneName) {
+    // TODO: add ip to server (unfortunately not present in log file)
+    ServerRecord server = transaction().selectFrom(SERVER).where(SERVER.PORT.eq(port)).fetchOne();
+
+    if (server == null) {
+      server = transaction().newRecord(SERVER);
+
+      server.setPort(port);
+      server.setName(name);
+      server.setTimezoneName(timezoneName);
+
+      server.insert();
+    } else {
+      server.setName(name);
+      server.update();
+    }
+
+    return server;
+  }
+
+  private int parseRound(BfRound bfRound, int previousRoundId, int gameRecordId) {
+    RoundRecord roundRecord = addRound(bfRound, gameRecordId);
     int roundId = requireNonNull(roundRecord.getId());
 
+    // if this is not the first round of a game
     if (previousRoundId != -1) {
-      // put team between two rounds into the first round
-      // kind of waste of db - should merge this and previous round team usage
+      // put team between two rounds into the previous round
+      // kind of waste of db - should merge this to existing previous round team usage?
       recordEndGame(previousRoundId, bfRound.getDurationSinceLogStart());
     }
 
@@ -1081,7 +1147,7 @@ else: repair; number of repairs
     return playerNicknameRecord;
   }
 
-  private RoundRecord addRound(BfRound bfRound) {
+  private RoundRecord addRound(BfRound bfRound, int gameId) {
     BfEvent roundInitEvent = bfRound.getEvents().stream()
         .filter(e -> e.getEventName() == EventName.roundInit)
         .findFirst().orElse(null);
@@ -1108,6 +1174,7 @@ else: repair; number of repairs
 
     // Create a new record
     RoundRecord round = transaction().newRecord(ROUND);
+    round.setGameId(gameId);
     round.setStartTime(Timestamp.valueOf(logStartTime.plus(roundStartSinceLogStart)));
     round.setStartTicketsTeam_1(ticketsTeam1);
     round.setStartTicketsTeam_2(ticketsTeam2);
@@ -1130,7 +1197,6 @@ else: repair; number of repairs
     round.setTeamKillPunish(bfRound.isTeamKillPunished() ? 1 : 0);
     round.setPunkbusterEnabled(bfRound.isPunkBusterEnabled() ? 1 : 0);
 
-    // inserts
     round.insert();
     return round;
   }

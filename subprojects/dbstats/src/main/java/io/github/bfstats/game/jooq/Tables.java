@@ -5,6 +5,7 @@ package io.github.bfstats.game.jooq;
 
 
 import io.github.bfstats.game.jooq.tables.Configuration;
+import io.github.bfstats.game.jooq.tables.Game;
 import io.github.bfstats.game.jooq.tables.Player;
 import io.github.bfstats.game.jooq.tables.PlayerNickname;
 import io.github.bfstats.game.jooq.tables.PlayerRank;
@@ -20,6 +21,7 @@ import io.github.bfstats.game.jooq.tables.RoundPlayerRepair;
 import io.github.bfstats.game.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfstats.game.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.game.jooq.tables.RoundPlayerVehicle;
+import io.github.bfstats.game.jooq.tables.Server;
 import io.github.bfstats.game.jooq.tables.SqliteSequence;
 
 import javax.annotation.Generated;
@@ -42,6 +44,11 @@ public class Tables {
      * The table <code>configuration</code>.
      */
     public static final Configuration CONFIGURATION = io.github.bfstats.game.jooq.tables.Configuration.CONFIGURATION;
+
+    /**
+     * The table <code>game</code>.
+     */
+    public static final Game GAME = io.github.bfstats.game.jooq.tables.Game.GAME;
 
     /**
      * The table <code>player</code>.
@@ -117,6 +124,11 @@ public class Tables {
      * The table <code>round_player_vehicle</code>.
      */
     public static final RoundPlayerVehicle ROUND_PLAYER_VEHICLE = io.github.bfstats.game.jooq.tables.RoundPlayerVehicle.ROUND_PLAYER_VEHICLE;
+
+    /**
+     * The table <code>server</code>.
+     */
+    public static final Server SERVER = io.github.bfstats.game.jooq.tables.Server.SERVER;
 
     /**
      * The table <code>sqlite_sequence</code>.

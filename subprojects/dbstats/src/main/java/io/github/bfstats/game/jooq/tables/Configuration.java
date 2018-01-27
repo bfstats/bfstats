@@ -5,7 +5,11 @@ package io.github.bfstats.game.jooq.tables;
 
 
 import io.github.bfstats.game.jooq.DefaultSchema;
+import io.github.bfstats.game.jooq.Keys;
 import io.github.bfstats.game.jooq.tables.records.ConfigurationRecord;
+
+import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.Generated;
 
@@ -14,6 +18,7 @@ import org.jooq.Name;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 
@@ -31,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Configuration extends TableImpl<ConfigurationRecord> {
 
-    private static final long serialVersionUID = -144853702;
+    private static final long serialVersionUID = -371192880;
 
     /**
      * The reference instance of <code>configuration</code>
@@ -45,6 +50,11 @@ public class Configuration extends TableImpl<ConfigurationRecord> {
     public Class<ConfigurationRecord> getRecordType() {
         return ConfigurationRecord.class;
     }
+
+    /**
+     * The column <code>configuration.lock</code>.
+     */
+    public final TableField<ConfigurationRecord, Integer> LOCK = createField("lock", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>configuration.last_parsed_datetime</code>.
@@ -86,6 +96,22 @@ public class Configuration extends TableImpl<ConfigurationRecord> {
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UniqueKey<ConfigurationRecord> getPrimaryKey() {
+        return Keys.PK_CONFIGURATION;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UniqueKey<ConfigurationRecord>> getKeys() {
+        return Arrays.<UniqueKey<ConfigurationRecord>>asList(Keys.PK_CONFIGURATION);
     }
 
     /**

@@ -5,6 +5,7 @@ package io.github.bfstats.game.jooq;
 
 
 import io.github.bfstats.game.jooq.tables.Configuration;
+import io.github.bfstats.game.jooq.tables.Game;
 import io.github.bfstats.game.jooq.tables.Player;
 import io.github.bfstats.game.jooq.tables.PlayerNickname;
 import io.github.bfstats.game.jooq.tables.PlayerRank;
@@ -20,6 +21,7 @@ import io.github.bfstats.game.jooq.tables.RoundPlayerRepair;
 import io.github.bfstats.game.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfstats.game.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.game.jooq.tables.RoundPlayerVehicle;
+import io.github.bfstats.game.jooq.tables.Server;
 import io.github.bfstats.game.jooq.tables.SqliteSequence;
 
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 1094508346;
+    private static final long serialVersionUID = 2118195224;
 
     /**
      * The reference instance of <code></code>
@@ -57,6 +59,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>configuration</code>.
      */
     public final Configuration CONFIGURATION = io.github.bfstats.game.jooq.tables.Configuration.CONFIGURATION;
+
+    /**
+     * The table <code>game</code>.
+     */
+    public final Game GAME = io.github.bfstats.game.jooq.tables.Game.GAME;
 
     /**
      * The table <code>player</code>.
@@ -134,6 +141,11 @@ public class DefaultSchema extends SchemaImpl {
     public final RoundPlayerVehicle ROUND_PLAYER_VEHICLE = io.github.bfstats.game.jooq.tables.RoundPlayerVehicle.ROUND_PLAYER_VEHICLE;
 
     /**
+     * The table <code>server</code>.
+     */
+    public final Server SERVER = io.github.bfstats.game.jooq.tables.Server.SERVER;
+
+    /**
      * The table <code>sqlite_sequence</code>.
      */
     public final SqliteSequence SQLITE_SEQUENCE = io.github.bfstats.game.jooq.tables.SqliteSequence.SQLITE_SEQUENCE;
@@ -164,6 +176,7 @@ public class DefaultSchema extends SchemaImpl {
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
             Configuration.CONFIGURATION,
+            Game.GAME,
             Player.PLAYER,
             PlayerNickname.PLAYER_NICKNAME,
             PlayerRank.PLAYER_RANK,
@@ -179,6 +192,7 @@ public class DefaultSchema extends SchemaImpl {
             RoundPlayerScoreEvent.ROUND_PLAYER_SCORE_EVENT,
             RoundPlayerTeam.ROUND_PLAYER_TEAM,
             RoundPlayerVehicle.ROUND_PLAYER_VEHICLE,
+            Server.SERVER,
             SqliteSequence.SQLITE_SEQUENCE);
     }
 }

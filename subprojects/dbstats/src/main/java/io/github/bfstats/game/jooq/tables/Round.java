@@ -5,6 +5,7 @@ package io.github.bfstats.game.jooq.tables;
 
 
 import io.github.bfstats.game.jooq.DefaultSchema;
+import io.github.bfstats.game.jooq.Indexes;
 import io.github.bfstats.game.jooq.Keys;
 import io.github.bfstats.game.jooq.tables.records.RoundRecord;
 
@@ -15,7 +16,9 @@ import java.util.List;
 import javax.annotation.Generated;
 
 import org.jooq.Field;
+import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Schema;
 import org.jooq.Table;
@@ -38,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Round extends TableImpl<RoundRecord> {
 
-    private static final long serialVersionUID = -623150720;
+    private static final long serialVersionUID = 1389227805;
 
     /**
      * The reference instance of <code>round</code>
@@ -57,6 +60,11 @@ public class Round extends TableImpl<RoundRecord> {
      * The column <code>round.id</code>.
      */
     public final TableField<RoundRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
+    /**
+     * The column <code>round.game_id</code>.
+     */
+    public final TableField<RoundRecord, Integer> GAME_ID = createField("game_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>round.start_time</code>.
@@ -204,6 +212,14 @@ public class Round extends TableImpl<RoundRecord> {
      * {@inheritDoc}
      */
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.ROUND_GAME_ID_IDX);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Identity<RoundRecord, Integer> getIdentity() {
         return Keys.IDENTITY_ROUND;
     }
@@ -222,6 +238,14 @@ public class Round extends TableImpl<RoundRecord> {
     @Override
     public List<UniqueKey<RoundRecord>> getKeys() {
         return Arrays.<UniqueKey<RoundRecord>>asList(Keys.PK_ROUND);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ForeignKey<RoundRecord, ?>> getReferences() {
+        return Arrays.<ForeignKey<RoundRecord, ?>>asList(Keys.FK_ROUND_GAME_1);
     }
 
     /**

@@ -13,8 +13,45 @@ CREATE TABLE IF NOT EXISTS player_nickname (
 );
 CREATE INDEX IF NOT EXISTS player_nickname_player_id_idx ON player_nickname(player_id);
 
+CREATE TABLE IF NOT EXISTS server (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ip INTEGER, -- ip as integer
+  port INTEGER NOT NULL,
+  name VARCHAR(150) NOT NULL, -- last known name
+  timezone_name VARCHAR(64) NOT NULL DEFAULT 'GMT' -- timezone name used in java
+);
+
+-- single log file, consists of 1 or more rounds; same map
+CREATE TABLE IF NOT EXISTS game (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  server_id INTEGER NOT NULL,
+  start_time DATETIME NOT NULL, -- log file timestamp
+  -- following attributes are basically from first round (if it exists), and are common to all rounds
+  server_name VARCHAR(150) NOT NULL,
+  server_port INTEGER NOT NULL,
+  mod_id VARCHAR(100) NOT NULL,
+  map_code VARCHAR(100) NOT NULL,
+  game_mode VARCHAR(100) NOT NULL,
+  max_game_time INTEGER NOT NULL,
+  max_players INTEGER NOT NULL,
+  score_limit INTEGER NOT NULL,
+  no_of_rounds INTEGER NOT NULL, -- number of planned rounds, not necessarily actual rounds
+  spawn_time INTEGER NOT NULL,
+  spawn_delay INTEGER NOT NULL,
+  game_start_delay INTEGER NOT NULL,
+  round_start_delay INTEGER NOT NULL,
+  soldier_ff INTEGER NOT NULL,
+  vehicle_ff INTEGER NOT NULL,
+  ticket_ratio INTEGER NOT NULL,
+  team_kill_punish INTEGER NOT NULL,
+  punkbuster_enabled INTEGER NOT NULL,
+  FOREIGN KEY (server_id) REFERENCES server(id)
+);
+CREATE INDEX IF NOT EXISTS game_server_id_idx ON game(server_id);
+
 CREATE TABLE IF NOT EXISTS round (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  game_id INTEGER NOT NULL,
   start_time DATETIME NOT NULL, -- from roundInit event
   start_tickets_team_1 INTEGER NOT NULL, -- from roundInit event
   start_tickets_team_2 INTEGER NOT NULL, -- from roundInit event
@@ -35,8 +72,10 @@ CREATE TABLE IF NOT EXISTS round (
   vehicle_ff INTEGER NOT NULL,
   ticket_ratio INTEGER NOT NULL,
   team_kill_punish INTEGER NOT NULL,
-  punkbuster_enabled INTEGER NOT NULL
+  punkbuster_enabled INTEGER NOT NULL,
+  FOREIGN KEY (game_id) REFERENCES game(id)
 );
+CREATE INDEX IF NOT EXISTS round_game_id_idx ON round(game_id);
 
 CREATE TABLE IF NOT EXISTS round_end_stats (
   round_id INTEGER PRIMARY KEY,
@@ -82,7 +121,7 @@ CREATE TABLE IF NOT EXISTS round_chat_log (
   to_team INTEGER NOT NULL, -- 0 is all, maybe: 1 (NVA) or 2 (USA)
   message VARCHAR(50) NOT NULL,
   event_time DATETIME NOT NULL,
-  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (round_id) REFERENCES round(id),
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
 CREATE INDEX IF NOT EXISTS round_chat_log_round_id_idx ON round_chat_log(round_id);
@@ -97,7 +136,7 @@ CREATE TABLE IF NOT EXISTS round_player_score_event (
   player_location_z DECIMAL(4,4) NOT NULL,
   event_time DATETIME NOT NULL,
   score_type VARCHAR(30) NOT NULL, -- FlagCapture, Defence
-  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (round_id) REFERENCES round(id),
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
 CREATE INDEX IF NOT EXISTS round_player_score_round_id_idx ON round_player_score_event(round_id);
@@ -111,8 +150,8 @@ CREATE TABLE IF NOT EXISTS round_player (
   player_id INTEGER NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL,
-  FOREIGN KEY (joined_round_id) REFERENCES round(round_id),
-  FOREIGN KEY (end_round_id) REFERENCES round(round_id),
+  FOREIGN KEY (joined_round_id) REFERENCES round(id),
+  FOREIGN KEY (end_round_id) REFERENCES round(id),
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
 CREATE INDEX IF NOT EXISTS round_player_joined_round_id_idx ON round_player(joined_round_id);
@@ -126,7 +165,7 @@ CREATE TABLE IF NOT EXISTS round_player_team (
   team INTEGER NOT NULL, -- 1 (NVA); 2 (USA); 3 (Spectator)
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL,
-  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (round_id) REFERENCES round(id),
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
 CREATE INDEX IF NOT EXISTS round_player_team_id_idx ON round_player_team(round_id);
@@ -147,7 +186,7 @@ CREATE TABLE IF NOT EXISTS round_player_death (
   killer_location_z DECIMAL(4,4),
   kill_type VARCHAR(30), -- Kill, TK
   kill_weapon VARCHAR(50),
-  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (round_id) REFERENCES round(id),
   FOREIGN KEY (player_id) REFERENCES player(id),
   FOREIGN KEY (killer_player_id) REFERENCES player(id)
 );
@@ -166,7 +205,7 @@ CREATE TABLE IF NOT EXISTS round_player_vehicle (
   end_time DATETIME NOT NULL,
   duration_seconds INTEGER NOT NULL,
   vehicle VARCHAR(50),
-  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (round_id) REFERENCES round(id),
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
 CREATE INDEX IF NOT EXISTS round_player_vehicle_round_id_idx ON round_player_vehicle(round_id);
@@ -189,7 +228,7 @@ CREATE TABLE IF NOT EXISTS round_player_repair (
   end_player_location_y DECIMAL(4,4),
   end_player_location_z DECIMAL(4,4),
   end_repair_status INTEGER, -- null because it might've ended with death event
-  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (round_id) REFERENCES round(id),
   FOREIGN KEY (player_id) REFERENCES player(id),
   FOREIGN KEY (vehicle_player_id) REFERENCES player(id)
 );
@@ -213,7 +252,7 @@ CREATE TABLE IF NOT EXISTS round_player_medpack (
   end_player_location_y DECIMAL(4,4),
   end_player_location_z DECIMAL(4,4),
   end_medpack_status INTEGER, -- null because it might've ended with death event
-  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (round_id) REFERENCES round(id),
   FOREIGN KEY (player_id) REFERENCES player(id),
   FOREIGN KEY (healed_player_id) REFERENCES player(id)
 );
@@ -230,14 +269,17 @@ CREATE TABLE IF NOT EXISTS round_player_pickup_kit (
   player_location_z DECIMAL(4,4) NOT NULL,
   kit VARCHAR(50) NOT NULL,
   event_time DATETIME NOT NULL,
-  FOREIGN KEY (round_id) REFERENCES round(round_id),
+  FOREIGN KEY (round_id) REFERENCES round(id),
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
 CREATE INDEX IF NOT EXISTS round_player_pickup_kit_round_id_idx ON round_player_pickup_kit(round_id);
 CREATE INDEX IF NOT EXISTS round_player_pickup_kit_player_id_idx ON round_player_pickup_kit(player_id);
 
 CREATE TABLE IF NOT EXISTS configuration (
-  last_parsed_datetime VARCHAR(30)
+  -- guarantee that configuration table is a single record table. It has to be unique and can have only one value.
+  lock INTEGER PRIMARY KEY DEFAULT 1,
+  last_parsed_datetime VARCHAR(30),
+  CHECK (lock = 1)
 );
 INSERT INTO configuration (last_parsed_datetime) VALUES (null);
 

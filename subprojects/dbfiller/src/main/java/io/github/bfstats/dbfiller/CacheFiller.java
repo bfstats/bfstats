@@ -3,7 +3,6 @@ package io.github.bfstats.dbfiller;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,7 +13,7 @@ import static io.github.bfstats.game.jooq.Tables.*;
 import static org.jooq.impl.DSL.sum;
 
 public class CacheFiller {
-  public static void main(String[] args) throws JAXBException, IOException, SQLException {
+  public static void main(String[] args) throws IOException, SQLException {
     Properties props = DbFiller.loadDbConfigProperties();
     String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:database.db");
     fillCacheTables(dbUrl);

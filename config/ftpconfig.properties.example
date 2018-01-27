@@ -3,3 +3,4 @@ userId=
 password=
 remoteDirectory=
 localDirectory=/home/bfstats/bflogs
+download=true
