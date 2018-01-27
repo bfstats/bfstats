@@ -192,7 +192,7 @@ public class BfRound {
   }
 
   public boolean isHitIndicationEnabled() {
-    return getBooleanSettingValue("hit_indication");
+    return getBooleanSettingValue("hitindication");
   }
 
   /**
@@ -259,5 +259,14 @@ public class BfRound {
   <bf:setting name="hitindication">1</bf:setting>
   <bf:setting name="tkpunish">0</bf:setting>
   <bf:setting name="sv_punkbuster">0</bf:setting>
+
+
+
+  bf1942 also has these:
+  <bf:setting name="dedicated">1</bf:setting>
+  <bf:setting name="crosshairpoint">1</bf:setting>
+  <bf:setting name="deathcamtype">0</bf:setting>
+  <bf:setting name="contentcheck">0</bf:setting>
+
    */
 }

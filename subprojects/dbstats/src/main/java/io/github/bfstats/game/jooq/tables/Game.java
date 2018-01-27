@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Game extends TableImpl<GameRecord> {
 
-    private static final long serialVersionUID = -1322485831;
+    private static final long serialVersionUID = 1379315668;
 
     /**
      * The reference instance of <code>game</code>
@@ -142,9 +142,29 @@ public class Game extends TableImpl<GameRecord> {
     public final TableField<GameRecord, Integer> SOLDIER_FF = createField("soldier_ff", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
+     * The column <code>game.soldier_ff_on_splash</code>.
+     */
+    public final TableField<GameRecord, Integer> SOLDIER_FF_ON_SPLASH = createField("soldier_ff_on_splash", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
      * The column <code>game.vehicle_ff</code>.
      */
     public final TableField<GameRecord, Integer> VEHICLE_FF = createField("vehicle_ff", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.vehicle_ff_on_splash</code>.
+     */
+    public final TableField<GameRecord, Integer> VEHICLE_FF_ON_SPLASH = createField("vehicle_ff_on_splash", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.ff_kickback</code>.
+     */
+    public final TableField<GameRecord, Integer> FF_KICKBACK = createField("ff_kickback", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.ff_kickback_on_splash</code>.
+     */
+    public final TableField<GameRecord, Integer> FF_KICKBACK_ON_SPLASH = createField("ff_kickback_on_splash", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>game.ticket_ratio</code>.
@@ -160,6 +180,66 @@ public class Game extends TableImpl<GameRecord> {
      * The column <code>game.punkbuster_enabled</code>.
      */
     public final TableField<GameRecord, Integer> PUNKBUSTER_ENABLED = createField("punkbuster_enabled", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.auto_balance_enabled</code>.
+     */
+    public final TableField<GameRecord, Integer> AUTO_BALANCE_ENABLED = createField("auto_balance_enabled", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.tag_distance</code>.
+     */
+    public final TableField<GameRecord, Integer> TAG_DISTANCE = createField("tag_distance", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.tag_distance_scope</code>.
+     */
+    public final TableField<GameRecord, Integer> TAG_DISTANCE_SCOPE = createField("tag_distance_scope", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.nose_camera_allowed</code>.
+     */
+    public final TableField<GameRecord, Integer> NOSE_CAMERA_ALLOWED = createField("nose_camera_allowed", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.free_camera_allowed</code>.
+     */
+    public final TableField<GameRecord, Integer> FREE_CAMERA_ALLOWED = createField("free_camera_allowed", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.external_views_allowed</code>.
+     */
+    public final TableField<GameRecord, Integer> EXTERNAL_VIEWS_ALLOWED = createField("external_views_allowed", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.hit_indication_enabled</code>.
+     */
+    public final TableField<GameRecord, Integer> HIT_INDICATION_ENABLED = createField("hit_indication_enabled", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.internet</code>.
+     */
+    public final TableField<GameRecord, Integer> INTERNET = createField("internet", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.coop_cpu</code>.
+     */
+    public final TableField<GameRecord, Integer> COOP_CPU = createField("coop_cpu", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.coop_skill</code>.
+     */
+    public final TableField<GameRecord, Integer> COOP_SKILL = createField("coop_skill", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.allied_player_count_ratio</code>.
+     */
+    public final TableField<GameRecord, Integer> ALLIED_PLAYER_COUNT_RATIO = createField("allied_player_count_ratio", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>game.axis_player_count_ratio</code>.
+     */
+    public final TableField<GameRecord, Integer> AXIS_PLAYER_COUNT_RATIO = createField("axis_player_count_ratio", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>game</code> table reference

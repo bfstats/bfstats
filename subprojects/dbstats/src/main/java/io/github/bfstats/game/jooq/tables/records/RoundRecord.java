@@ -27,7 +27,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundRecord extends UpdatableRecordImpl<RoundRecord> {
 
-    private static final long serialVersionUID = -1995389160;
+    private static final long serialVersionUID = -1826484383;
 
     /**
      * Setter for <code>round.id</code>.
@@ -296,59 +296,283 @@ public class RoundRecord extends UpdatableRecordImpl<RoundRecord> {
     }
 
     /**
+     * Setter for <code>round.soldier_ff_on_splash</code>.
+     */
+    public void setSoldierFfOnSplash(Integer value) {
+        set(19, value);
+    }
+
+    /**
+     * Getter for <code>round.soldier_ff_on_splash</code>.
+     */
+    public Integer getSoldierFfOnSplash() {
+        return (Integer) get(19);
+    }
+
+    /**
      * Setter for <code>round.vehicle_ff</code>.
      */
     public void setVehicleFf(Integer value) {
-        set(19, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>round.vehicle_ff</code>.
      */
     public Integer getVehicleFf() {
-        return (Integer) get(19);
+        return (Integer) get(20);
+    }
+
+    /**
+     * Setter for <code>round.vehicle_ff_on_splash</code>.
+     */
+    public void setVehicleFfOnSplash(Integer value) {
+        set(21, value);
+    }
+
+    /**
+     * Getter for <code>round.vehicle_ff_on_splash</code>.
+     */
+    public Integer getVehicleFfOnSplash() {
+        return (Integer) get(21);
+    }
+
+    /**
+     * Setter for <code>round.ff_kickback</code>.
+     */
+    public void setFfKickback(Integer value) {
+        set(22, value);
+    }
+
+    /**
+     * Getter for <code>round.ff_kickback</code>.
+     */
+    public Integer getFfKickback() {
+        return (Integer) get(22);
+    }
+
+    /**
+     * Setter for <code>round.ff_kickback_on_splash</code>.
+     */
+    public void setFfKickbackOnSplash(Integer value) {
+        set(23, value);
+    }
+
+    /**
+     * Getter for <code>round.ff_kickback_on_splash</code>.
+     */
+    public Integer getFfKickbackOnSplash() {
+        return (Integer) get(23);
     }
 
     /**
      * Setter for <code>round.ticket_ratio</code>.
      */
     public void setTicketRatio(Integer value) {
-        set(20, value);
+        set(24, value);
     }
 
     /**
      * Getter for <code>round.ticket_ratio</code>.
      */
     public Integer getTicketRatio() {
-        return (Integer) get(20);
+        return (Integer) get(24);
     }
 
     /**
      * Setter for <code>round.team_kill_punish</code>.
      */
     public void setTeamKillPunish(Integer value) {
-        set(21, value);
+        set(25, value);
     }
 
     /**
      * Getter for <code>round.team_kill_punish</code>.
      */
     public Integer getTeamKillPunish() {
-        return (Integer) get(21);
+        return (Integer) get(25);
     }
 
     /**
      * Setter for <code>round.punkbuster_enabled</code>.
      */
     public void setPunkbusterEnabled(Integer value) {
-        set(22, value);
+        set(26, value);
     }
 
     /**
      * Getter for <code>round.punkbuster_enabled</code>.
      */
     public Integer getPunkbusterEnabled() {
-        return (Integer) get(22);
+        return (Integer) get(26);
+    }
+
+    /**
+     * Setter for <code>round.auto_balance_enabled</code>.
+     */
+    public void setAutoBalanceEnabled(Integer value) {
+        set(27, value);
+    }
+
+    /**
+     * Getter for <code>round.auto_balance_enabled</code>.
+     */
+    public Integer getAutoBalanceEnabled() {
+        return (Integer) get(27);
+    }
+
+    /**
+     * Setter for <code>round.tag_distance</code>.
+     */
+    public void setTagDistance(Integer value) {
+        set(28, value);
+    }
+
+    /**
+     * Getter for <code>round.tag_distance</code>.
+     */
+    public Integer getTagDistance() {
+        return (Integer) get(28);
+    }
+
+    /**
+     * Setter for <code>round.tag_distance_scope</code>.
+     */
+    public void setTagDistanceScope(Integer value) {
+        set(29, value);
+    }
+
+    /**
+     * Getter for <code>round.tag_distance_scope</code>.
+     */
+    public Integer getTagDistanceScope() {
+        return (Integer) get(29);
+    }
+
+    /**
+     * Setter for <code>round.nose_camera_allowed</code>.
+     */
+    public void setNoseCameraAllowed(Integer value) {
+        set(30, value);
+    }
+
+    /**
+     * Getter for <code>round.nose_camera_allowed</code>.
+     */
+    public Integer getNoseCameraAllowed() {
+        return (Integer) get(30);
+    }
+
+    /**
+     * Setter for <code>round.free_camera_allowed</code>.
+     */
+    public void setFreeCameraAllowed(Integer value) {
+        set(31, value);
+    }
+
+    /**
+     * Getter for <code>round.free_camera_allowed</code>.
+     */
+    public Integer getFreeCameraAllowed() {
+        return (Integer) get(31);
+    }
+
+    /**
+     * Setter for <code>round.external_views_allowed</code>.
+     */
+    public void setExternalViewsAllowed(Integer value) {
+        set(32, value);
+    }
+
+    /**
+     * Getter for <code>round.external_views_allowed</code>.
+     */
+    public Integer getExternalViewsAllowed() {
+        return (Integer) get(32);
+    }
+
+    /**
+     * Setter for <code>round.hit_indication_enabled</code>.
+     */
+    public void setHitIndicationEnabled(Integer value) {
+        set(33, value);
+    }
+
+    /**
+     * Getter for <code>round.hit_indication_enabled</code>.
+     */
+    public Integer getHitIndicationEnabled() {
+        return (Integer) get(33);
+    }
+
+    /**
+     * Setter for <code>round.internet</code>.
+     */
+    public void setInternet(Integer value) {
+        set(34, value);
+    }
+
+    /**
+     * Getter for <code>round.internet</code>.
+     */
+    public Integer getInternet() {
+        return (Integer) get(34);
+    }
+
+    /**
+     * Setter for <code>round.coop_cpu</code>.
+     */
+    public void setCoopCpu(Integer value) {
+        set(35, value);
+    }
+
+    /**
+     * Getter for <code>round.coop_cpu</code>.
+     */
+    public Integer getCoopCpu() {
+        return (Integer) get(35);
+    }
+
+    /**
+     * Setter for <code>round.coop_skill</code>.
+     */
+    public void setCoopSkill(Integer value) {
+        set(36, value);
+    }
+
+    /**
+     * Getter for <code>round.coop_skill</code>.
+     */
+    public Integer getCoopSkill() {
+        return (Integer) get(36);
+    }
+
+    /**
+     * Setter for <code>round.allied_player_count_ratio</code>.
+     */
+    public void setAlliedPlayerCountRatio(Integer value) {
+        set(37, value);
+    }
+
+    /**
+     * Getter for <code>round.allied_player_count_ratio</code>.
+     */
+    public Integer getAlliedPlayerCountRatio() {
+        return (Integer) get(37);
+    }
+
+    /**
+     * Setter for <code>round.axis_player_count_ratio</code>.
+     */
+    public void setAxisPlayerCountRatio(Integer value) {
+        set(38, value);
+    }
+
+    /**
+     * Getter for <code>round.axis_player_count_ratio</code>.
+     */
+    public Integer getAxisPlayerCountRatio() {
+        return (Integer) get(38);
     }
 
     // -------------------------------------------------------------------------
@@ -377,7 +601,7 @@ public class RoundRecord extends UpdatableRecordImpl<RoundRecord> {
     /**
      * Create a detached, initialised RoundRecord
      */
-    public RoundRecord(Integer id, Integer gameId, Timestamp startTime, Integer startTicketsTeam_1, Integer startTicketsTeam_2, String serverName, Integer serverPort, String modId, String mapCode, String gameMode, Integer maxGameTime, Integer maxPlayers, Integer scoreLimit, Integer noOfRounds, Integer spawnTime, Integer spawnDelay, Integer gameStartDelay, Integer roundStartDelay, Integer soldierFf, Integer vehicleFf, Integer ticketRatio, Integer teamKillPunish, Integer punkbusterEnabled) {
+    public RoundRecord(Integer id, Integer gameId, Timestamp startTime, Integer startTicketsTeam_1, Integer startTicketsTeam_2, String serverName, Integer serverPort, String modId, String mapCode, String gameMode, Integer maxGameTime, Integer maxPlayers, Integer scoreLimit, Integer noOfRounds, Integer spawnTime, Integer spawnDelay, Integer gameStartDelay, Integer roundStartDelay, Integer soldierFf, Integer soldierFfOnSplash, Integer vehicleFf, Integer vehicleFfOnSplash, Integer ffKickback, Integer ffKickbackOnSplash, Integer ticketRatio, Integer teamKillPunish, Integer punkbusterEnabled, Integer autoBalanceEnabled, Integer tagDistance, Integer tagDistanceScope, Integer noseCameraAllowed, Integer freeCameraAllowed, Integer externalViewsAllowed, Integer hitIndicationEnabled, Integer internet, Integer coopCpu, Integer coopSkill, Integer alliedPlayerCountRatio, Integer axisPlayerCountRatio) {
         super(Round.ROUND);
 
         set(0, id);
@@ -399,9 +623,25 @@ public class RoundRecord extends UpdatableRecordImpl<RoundRecord> {
         set(16, gameStartDelay);
         set(17, roundStartDelay);
         set(18, soldierFf);
-        set(19, vehicleFf);
-        set(20, ticketRatio);
-        set(21, teamKillPunish);
-        set(22, punkbusterEnabled);
+        set(19, soldierFfOnSplash);
+        set(20, vehicleFf);
+        set(21, vehicleFfOnSplash);
+        set(22, ffKickback);
+        set(23, ffKickbackOnSplash);
+        set(24, ticketRatio);
+        set(25, teamKillPunish);
+        set(26, punkbusterEnabled);
+        set(27, autoBalanceEnabled);
+        set(28, tagDistance);
+        set(29, tagDistanceScope);
+        set(30, noseCameraAllowed);
+        set(31, freeCameraAllowed);
+        set(32, externalViewsAllowed);
+        set(33, hitIndicationEnabled);
+        set(34, internet);
+        set(35, coopCpu);
+        set(36, coopSkill);
+        set(37, alliedPlayerCountRatio);
+        set(38, axisPlayerCountRatio);
     }
 }

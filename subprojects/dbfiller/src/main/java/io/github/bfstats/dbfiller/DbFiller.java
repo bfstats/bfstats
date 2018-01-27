@@ -287,35 +287,6 @@ public class DbFiller {
     }
   }
 
-  private GameRecord createGameRecord(int serverId, BfRound firstRound) {
-    GameRecord gameRecord = transaction().newRecord(GAME);
-
-    gameRecord.setServerId(serverId);
-    gameRecord.setStartTime(Timestamp.valueOf(logStartTime));
-
-    gameRecord.setServerName(firstRound.getServerName());
-    gameRecord.setServerPort(firstRound.getPort());
-    gameRecord.setModId(firstRound.getModId());
-    gameRecord.setMapCode(firstRound.getMap());
-    gameRecord.setGameMode(firstRound.getGameMode());
-    gameRecord.setMaxGameTime(firstRound.getMaxGameTime());
-    gameRecord.setMaxPlayers(firstRound.getMaxPlayers());
-    gameRecord.setScoreLimit(firstRound.getScoreLimit());
-    gameRecord.setNoOfRounds(firstRound.getNumberOfRoundsPerMap());
-    gameRecord.setSpawnTime(firstRound.getSpawnTime());
-    gameRecord.setSpawnDelay(firstRound.getSpawnDelay());
-    gameRecord.setGameStartDelay(firstRound.getGameStartDelay());
-    gameRecord.setRoundStartDelay(firstRound.getRoundStartDelay());
-    gameRecord.setSoldierFf(firstRound.getSoldierFriendlyFire());
-    gameRecord.setVehicleFf(firstRound.getVehicleFriendlyFire());
-    gameRecord.setTicketRatio(firstRound.getTicketRatio());
-    gameRecord.setTeamKillPunish(firstRound.isTeamKillPunished() ? 1 : 0);
-    gameRecord.setPunkbusterEnabled(firstRound.isPunkBusterEnabled() ? 1 : 0);
-
-    gameRecord.insert();
-    return gameRecord;
-  }
-
   private void parseLog() {
     BfRound firstRound = bfLog.getRootEventsAndRounds().stream()
         .filter(child -> child instanceof BfRound)
@@ -1147,6 +1118,50 @@ else: repair; number of repairs
     return playerNicknameRecord;
   }
 
+  private GameRecord createGameRecord(int serverId, BfRound firstRound) {
+    GameRecord gameRecord = transaction().newRecord(GAME);
+
+    gameRecord.setServerId(serverId);
+    gameRecord.setStartTime(Timestamp.valueOf(logStartTime));
+    gameRecord.setServerName(firstRound.getServerName());
+    gameRecord.setServerPort(firstRound.getPort());
+    gameRecord.setModId(firstRound.getModId());
+    gameRecord.setMapCode(firstRound.getMap());
+    gameRecord.setGameMode(firstRound.getGameMode());
+    gameRecord.setMaxGameTime(firstRound.getMaxGameTime());
+    gameRecord.setMaxPlayers(firstRound.getMaxPlayers());
+    gameRecord.setScoreLimit(firstRound.getScoreLimit());
+    gameRecord.setNoOfRounds(firstRound.getNumberOfRoundsPerMap());
+    gameRecord.setSpawnTime(firstRound.getSpawnTime());
+    gameRecord.setSpawnDelay(firstRound.getSpawnDelay());
+    gameRecord.setGameStartDelay(firstRound.getGameStartDelay());
+    gameRecord.setRoundStartDelay(firstRound.getRoundStartDelay());
+    gameRecord.setSoldierFf(firstRound.getSoldierFriendlyFire());
+    gameRecord.setSoldierFfOnSplash(firstRound.getSoldierFriendlyFireOnSplash());
+    gameRecord.setVehicleFf(firstRound.getVehicleFriendlyFire());
+    gameRecord.setVehicleFfOnSplash(firstRound.getVehicleFriendlyFireOnSplash());
+    gameRecord.setFfKickback(firstRound.getFriendlyFireKickback());
+    gameRecord.setFfKickbackOnSplash(firstRound.getFriendlyFireKickbackOnSplash());
+    gameRecord.setTicketRatio(firstRound.getTicketRatio());
+    gameRecord.setTeamKillPunish(firstRound.isTeamKillPunished() ? 1 : 0);
+    gameRecord.setPunkbusterEnabled(firstRound.isPunkBusterEnabled() ? 1 : 0);
+    gameRecord.setAutoBalanceEnabled(firstRound.isAutoBalanceEnabled() ? 1 : 0);
+    gameRecord.setTagDistance(firstRound.getTagDistance());
+    gameRecord.setTagDistanceScope(firstRound.getTagDistanceScope());
+    gameRecord.setNoseCameraAllowed(firstRound.isNoseCameraAllowed() ? 1 : 0);
+    gameRecord.setFreeCameraAllowed(firstRound.isFreeCameraAllowed() ? 1 : 0);
+    gameRecord.setExternalViewsAllowed(firstRound.isExternalViewsAllowed() ? 1 : 0);
+    gameRecord.setHitIndicationEnabled(firstRound.isHitIndicationEnabled() ? 1 : 0);
+    gameRecord.setInternet(firstRound.isInternet() ? 1 : 0);
+    gameRecord.setCoopCpu(firstRound.getCoopCpu());
+    gameRecord.setCoopSkill(firstRound.getCoopSkill());
+    gameRecord.setAlliedPlayerCountRatio(firstRound.getAlliedPlayerCountRatio());
+    gameRecord.setAxisPlayerCountRatio(firstRound.getAxisPlayerCountRatio());
+
+    gameRecord.insert();
+    return gameRecord;
+  }
+
   private RoundRecord addRound(BfRound bfRound, int gameId) {
     BfEvent roundInitEvent = bfRound.getEvents().stream()
         .filter(e -> e.getEventName() == EventName.roundInit)
@@ -1172,7 +1187,7 @@ else: repair; number of repairs
       roundStartSinceLogStart = roundInitEvent.getDurationSinceLogStart();
     }
 
-    // Create a new record
+    // Create a new record (TODO: remove attributes from round that are already present in game record?)
     RoundRecord round = transaction().newRecord(ROUND);
     round.setGameId(gameId);
     round.setStartTime(Timestamp.valueOf(logStartTime.plus(roundStartSinceLogStart)));
@@ -1192,10 +1207,26 @@ else: repair; number of repairs
     round.setGameStartDelay(bfRound.getGameStartDelay());
     round.setRoundStartDelay(bfRound.getRoundStartDelay());
     round.setSoldierFf(bfRound.getSoldierFriendlyFire());
+    round.setSoldierFfOnSplash(bfRound.getSoldierFriendlyFireOnSplash());
     round.setVehicleFf(bfRound.getVehicleFriendlyFire());
+    round.setVehicleFfOnSplash(bfRound.getVehicleFriendlyFireOnSplash());
+    round.setFfKickback(bfRound.getFriendlyFireKickback());
+    round.setFfKickbackOnSplash(bfRound.getFriendlyFireKickbackOnSplash());
     round.setTicketRatio(bfRound.getTicketRatio());
     round.setTeamKillPunish(bfRound.isTeamKillPunished() ? 1 : 0);
     round.setPunkbusterEnabled(bfRound.isPunkBusterEnabled() ? 1 : 0);
+    round.setAutoBalanceEnabled(bfRound.isAutoBalanceEnabled() ? 1 : 0);
+    round.setTagDistance(bfRound.getTagDistance());
+    round.setTagDistanceScope(bfRound.getTagDistanceScope());
+    round.setNoseCameraAllowed(bfRound.isNoseCameraAllowed() ? 1 : 0);
+    round.setFreeCameraAllowed(bfRound.isFreeCameraAllowed() ? 1 : 0);
+    round.setExternalViewsAllowed(bfRound.isExternalViewsAllowed() ? 1 : 0);
+    round.setHitIndicationEnabled(bfRound.isHitIndicationEnabled() ? 1 : 0);
+    round.setInternet(bfRound.isInternet() ? 1 : 0);
+    round.setCoopCpu(bfRound.getCoopCpu());
+    round.setCoopSkill(bfRound.getCoopSkill());
+    round.setAlliedPlayerCountRatio(bfRound.getAlliedPlayerCountRatio());
+    round.setAxisPlayerCountRatio(bfRound.getAxisPlayerCountRatio());
 
     round.insert();
     return round;
