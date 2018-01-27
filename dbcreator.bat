@@ -1,7 +1,6 @@
-set projectName=webapp
+set projectName=dbcreator
 set projectPath="subprojects/%projectName%"
-
-set mainClass=io.github.bfstats.Launcher
+set mainClass=io.github.bfstats.dbcreator.DBCreator
 
 call gradlew.bat :%projectName%:build :%projectName%:copyToLib
 
