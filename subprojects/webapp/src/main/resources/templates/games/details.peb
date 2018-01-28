@@ -1,0 +1,9 @@
+{% extends "layout" %}
+{% block title %}Game {{ game.mapName }} at {{ game.startTime | dt("dd-MM-yyyy HH:mm") }}{% endblock %}
+
+{% block content %}
+<h3>{{ game.mapName }} {{ game.startTime | dt("HH:mm") }}</h3>
+
+{% include "rounds/serversettings" with {"serverSettings":game.serverSettings} %}
+
+{% endblock %}

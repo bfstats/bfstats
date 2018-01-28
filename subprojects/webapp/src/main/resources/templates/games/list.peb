@@ -1,0 +1,24 @@
+{% extends "layout" %}
+{% block title %} Games List {% endblock %}
+
+{% block content %}
+{% if games is empty %}
+There are no games.
+{% else %}
+{% for entry in games %}
+<strong>{{ entry.key | dt("dd-MM-yyyy") }}</strong>
+<ul>
+  {% for game in entry.value %}
+  <li>
+    {{ game.startTime | dt("HH:mm") }}
+    <a href="{{appPath}}/games/{{ game.id }}">{{ game.id }} {{ game.mapName }}</a> {{ game.modeName }}
+  </li>
+  {% endfor %}
+</ul>
+{% endfor %}
+
+{% import "fragments/pagination" %}
+{{ pagination(totalGamesCount, 50, page, currentPage)}}
+{% endif %}
+
+{% endblock %}

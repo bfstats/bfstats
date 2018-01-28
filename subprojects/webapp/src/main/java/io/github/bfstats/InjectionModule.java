@@ -10,6 +10,7 @@ public class InjectionModule extends AbstractModule {
   protected void configure() {
     bind(BasicApplication.class).in(Scopes.SINGLETON);
     bind(ChatService.class).in(Scopes.SINGLETON);
+    bind(GameService.class).in(Scopes.SINGLETON);
     bind(KitService.class).in(Scopes.SINGLETON);
     bind(MapService.class).in(Scopes.SINGLETON);
     bind(PlayerService.class).in(Scopes.SINGLETON);
