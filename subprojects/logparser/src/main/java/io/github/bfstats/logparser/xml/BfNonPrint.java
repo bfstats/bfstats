@@ -6,12 +6,15 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @XmlRootElement(name = "nonprint")
 @Getter
 public class BfNonPrint {
+  private static final Charset CHARSET_CYRILLIC = Charset.forName("windows-1251");
+
   @XmlValue
   int value;
 
@@ -28,8 +31,9 @@ public class BfNonPrint {
     if (value == 128) {
       return " ";
     }
-    char charValue = (char) this.value;
-    return Character.toString(charValue);
+
+    byte charCode = (byte) (this.value & 0xFF);
+    return new String(new byte[]{charCode}, CHARSET_CYRILLIC);
   }
 
   public String toString() {
