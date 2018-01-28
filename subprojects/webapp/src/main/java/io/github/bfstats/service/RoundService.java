@@ -59,6 +59,9 @@ public class RoundService {
 
   public Round getRound(int roundId) {
     Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStats(roundId, 1);
+    if (roundWithStats.isEmpty()) {
+      throw new IllegalArgumentException("round with id " + roundId + " not found");
+    }
     Map.Entry<RoundRecord, RoundEndStatsRecord> onlyEntry = roundWithStats.entrySet().iterator().next();
     RoundRecord roundRecord = onlyEntry.getKey();
     Round round = toRound(roundRecord, onlyEntry.getValue());
