@@ -58,6 +58,7 @@ public class DbFiller {
 
   private final BfLog bfLog;
   private final LocalDateTime logStartTime;
+  private final String engine;
 
   // actually not per round, but per log file
   private Map<Integer, RoundPlayer> activePlayersByRoundPlayerId = new HashMap<>();
@@ -70,6 +71,7 @@ public class DbFiller {
   public DbFiller(BfLog bfLog) {
     this.bfLog = bfLog;
     this.logStartTime = bfLog.getTimestampAsDate();
+    this.engine = bfLog.getEngine();
   }
 
   private DSLContext transaction() {
@@ -1123,6 +1125,7 @@ else: repair; number of repairs
 
     gameRecord.setServerId(serverId);
     gameRecord.setStartTime(Timestamp.valueOf(logStartTime));
+    gameRecord.setGamename(engine.startsWith("BFVietnam") ? "bfvietnam" : "bf1942");
     gameRecord.setServerName(firstRound.getServerName());
     gameRecord.setServerPort(firstRound.getPort());
     gameRecord.setModId(firstRound.getModId());
