@@ -36,6 +36,13 @@ public class BfLog {
   public String getEngine() {
     return engine;
   }
+
+  public BfRound getFirstRound() {
+    return getRootEventsAndRounds().stream()
+        .filter(child -> child instanceof BfRound)
+        .map(child -> (BfRound) child)
+        .findFirst().orElseThrow(() -> new IllegalStateException("log file does not contain any rounds " + getTimestampAsDate()));
+  }
 }
 
 

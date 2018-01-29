@@ -4,3 +4,4 @@ password=
 remoteDirectory=
 localDirectory=/home/bfstats/bflogs
 download=true
+gameServerTimezone=-05:00

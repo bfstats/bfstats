@@ -17,6 +17,7 @@ import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.math.BigDecimal;
@@ -29,6 +30,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -40,6 +43,7 @@ import static io.github.bfstats.dbstats.jooq.Tables.*;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
+@ParametersAreNonnullByDefault
 @Slf4j
 public class DbFiller {
   // English, French, Italian, Spanish, German
@@ -57,7 +61,8 @@ public class DbFiller {
   private DSLContext transactionDslContext;
 
   private final BfLog bfLog;
-  private final LocalDateTime logStartTime;
+  private final ZoneId logFileZoneId;
+  private final LocalDateTime logStartTime; // in UTC
   private final String engine;
 
   // actually not per round, but per log file
@@ -68,9 +73,13 @@ public class DbFiller {
   private Map<Integer, BfEvent> lastBeginRepairByPlayerSlotId = new HashMap<>();
   private Map<Integer, BfEvent> lastBeginMedPackByPlayerSlotId = new HashMap<>();
 
-  public DbFiller(BfLog bfLog) {
+  public DbFiller(BfLog bfLog, ZoneId logFileZoneId) {
     this.bfLog = bfLog;
-    this.logStartTime = bfLog.getTimestampAsDate();
+    this.logFileZoneId = logFileZoneId;
+    LocalDateTime logStartTimeInServerTimezone = bfLog.getTimestampAsDate();
+    this.logStartTime = logStartTimeInServerTimezone.atZone(logFileZoneId)
+        .withZoneSameInstant(ZoneOffset.UTC)
+        .toLocalDateTime();
     this.engine = bfLog.getEngine();
   }
 
@@ -94,7 +103,7 @@ public class DbFiller {
     return props;
   }
 
-  public static void main(String[] args) throws JAXBException, IOException, SQLException {
+  public static void main(String[] args) throws IOException, SQLException {
     System.setProperty("org.jooq.no-logo", "true");
 
     Properties props = loadConfigProperties();
@@ -116,7 +125,10 @@ public class DbFiller {
     CacheFiller.fillCacheTables(dbUrl);
   }
 
-  public static void parseAllInDir(String logDirPath) {
+  public static void parseAllInDir(String logDirPath) throws IOException {
+    Properties props = loadConfigProperties();
+    String timeZone = props.getProperty("gameServerTimezone", "GMT");
+    ZoneId logFileZoneId = ZoneId.of(timeZone);
     File logDir = new File(logDirPath);
     File[] dirFiles = logDir.listFiles((dir, name) -> name.endsWith(".xml") || name.endsWith(".zxml"));
     if (dirFiles == null) {
@@ -157,7 +169,7 @@ public class DbFiller {
       filePath = extractIfNecessary(filePath);
       if (filePath != null) {
         try {
-          addFromXmlFile(filePath, !probablyLiveFile);
+          addFromXmlFile(filePath, !probablyLiveFile, logFileZoneId);
           lastValidDateTimeStr = dateTimeStr;
         } catch (RuntimeException e) {
           log.warn("Could not parse " + filePath, e);
@@ -234,14 +246,14 @@ public class DbFiller {
     }
   }
 
-  private static void addFromXmlFile(String xmlFilePath, boolean tryFixing) {
+  private static void addFromXmlFile(String xmlFilePath, boolean tryFixing, ZoneId logFileZoneId) {
     try {
       log.info("Parsing " + xmlFilePath);
       File file = new File(xmlFilePath);
       BfLog bfLog = XmlParser.parseXmlLogFile(file, tryFixing);
-      DbFiller dbFiller = new DbFiller(bfLog);
+      DbFiller dbFiller = new DbFiller(bfLog, logFileZoneId);
       dbFiller.fillDb();
-    } catch (SQLException | JAXBException | IOException e) {
+    } catch (JAXBException | IOException e) {
       throw new RuntimeException(e);
     }
   }
@@ -267,7 +279,7 @@ public class DbFiller {
     return outputFile.getAbsolutePath();
   }
 
-  private void fillDb() throws SQLException {
+  private void fillDb() {
     dslContext.transaction(configuration -> {
       this.transactionDslContext = DSL.using(configuration);
 
@@ -289,15 +301,15 @@ public class DbFiller {
     }
   }
 
-  private void parseLog() {
-    BfRound firstRound = bfLog.getRootEventsAndRounds().stream()
-        .filter(child -> child instanceof BfRound)
-        .map(child -> (BfRound) child)
-        .findFirst().orElseThrow(() -> new IllegalStateException("log file does not contain any rounds " + logStartTime));
-
-    ServerRecord serverRecord = addOrGetServer(firstRound.getPort(), firstRound.getServerName(), "EST");
+  private int createGame() {
+    BfRound firstRound = bfLog.getFirstRound();
+    ServerRecord serverRecord = addOrGetServer(firstRound.getPort(), firstRound.getServerName());
     GameRecord gameRecord = createGameRecord(serverRecord.getId(), firstRound);
-    int gameRecordId = gameRecord.getId();
+    return gameRecord.getId();
+  }
+
+  private void parseLog() {
+    int gameRecordId = createGame();
 
     // Events can be out-of-round, so mixing out-of-round events and rounds.
     // For chat using the last round id, as chances was that it belongs to that more than to the new round
@@ -331,7 +343,7 @@ public class DbFiller {
     lastEnterVehicleByPlayerSlotId.clear();
   }
 
-  private ServerRecord addOrGetServer(int port, String name, String timezoneName) {
+  private ServerRecord addOrGetServer(int port, String name) {
     // TODO: add ip to server (unfortunately not present in log file)
     ServerRecord server = transaction().selectFrom(SERVER).where(SERVER.PORT.eq(port)).fetchOne();
 
@@ -340,7 +352,7 @@ public class DbFiller {
 
       server.setPort(port);
       server.setName(name);
-      server.setTimezoneName(timezoneName);
+      server.setTimezoneName(logFileZoneId.getId());
 
       server.insert();
     } else {
