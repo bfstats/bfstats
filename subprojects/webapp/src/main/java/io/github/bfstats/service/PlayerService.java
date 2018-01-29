@@ -1,8 +1,8 @@
 package io.github.bfstats.service;
 
-import io.github.bfstats.game.jooq.tables.records.PlayerNicknameRecord;
-import io.github.bfstats.game.jooq.tables.records.PlayerRecord;
-import io.github.bfstats.game.jooq.tables.records.RoundPlayerRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.PlayerNicknameRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.PlayerRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerRecord;
 import io.github.bfstats.model.*;
 import io.github.bfstats.util.TranslationUtil;
 import org.jooq.Record;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.github.bfstats.game.jooq.Tables.*;
+import static io.github.bfstats.dbstats.jooq.Tables.*;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static io.github.bfstats.util.Utils.percentage;
 

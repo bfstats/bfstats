@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.github.bfstats.game.jooq.Tables.*;
+import static io.github.bfstats.dbstats.jooq.Tables.*;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 
 public class ChatService {

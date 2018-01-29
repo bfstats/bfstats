@@ -1,8 +1,8 @@
 package io.github.bfstats.service;
 
-import io.github.bfstats.game.jooq.tables.records.RoundEndStatsPlayerRecord;
-import io.github.bfstats.game.jooq.tables.records.RoundEndStatsRecord;
-import io.github.bfstats.game.jooq.tables.records.RoundRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.RoundEndStatsPlayerRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.RoundEndStatsRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.RoundRecord;
 import io.github.bfstats.model.Round;
 import io.github.bfstats.model.ServerSettings;
 import io.github.bfstats.util.TranslationUtil;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.github.bfstats.game.jooq.Tables.*;
+import static io.github.bfstats.dbstats.jooq.Tables.*;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 
 public class RoundService {

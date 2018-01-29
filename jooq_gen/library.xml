@@ -39,7 +39,7 @@
     <target>
       <encoding>UTF-8</encoding>
       <!-- The destination package of your generated classes (within the destination directory) -->
-      <packageName>io.github.bfstats.game.jooq</packageName>
+      <packageName>io.github.bfstats.dbstats.jooq</packageName>
 
       <!-- The destination directory of your generated classes. Using Maven directory layout here -->
       <directory>D:\Projects\bfstats\subprojects\dbstats\src\main\java</directory>

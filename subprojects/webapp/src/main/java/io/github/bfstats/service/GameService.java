@@ -1,6 +1,6 @@
 package io.github.bfstats.service;
 
-import io.github.bfstats.game.jooq.tables.records.GameRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.GameRecord;
 import io.github.bfstats.model.Game;
 import io.github.bfstats.model.ServerSettings;
 import io.github.bfstats.util.TranslationUtil;
@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static io.github.bfstats.game.jooq.Tables.GAME;
+import static io.github.bfstats.dbstats.jooq.Tables.GAME;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static java.util.stream.Collectors.toList;
 

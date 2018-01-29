@@ -9,8 +9,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import static io.github.bfstats.game.jooq.Tables.PLAYER_RANK;
-import static io.github.bfstats.game.jooq.Tables.ROUND_END_STATS_PLAYER;
+import static io.github.bfstats.dbstats.jooq.Tables.PLAYER_RANK;
+import static io.github.bfstats.dbstats.jooq.Tables.ROUND_END_STATS_PLAYER;
 import static org.jooq.impl.DSL.sum;
 
 public class CacheFiller {

@@ -1,6 +1,6 @@
 package io.github.bfstats.dbfiller;
 
-import io.github.bfstats.game.jooq.tables.records.*;
+import io.github.bfstats.dbstats.jooq.tables.records.*;
 import io.github.bfstats.logparser.XmlParser;
 import io.github.bfstats.logparser.xml.BfEvent;
 import io.github.bfstats.logparser.xml.BfLog;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.InflaterInputStream;
 
-import static io.github.bfstats.game.jooq.Tables.*;
+import static io.github.bfstats.dbstats.jooq.Tables.*;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 

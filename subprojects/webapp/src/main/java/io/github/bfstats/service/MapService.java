@@ -1,6 +1,6 @@
 package io.github.bfstats.service;
 
-import io.github.bfstats.game.jooq.tables.RoundPlayerTeam;
+import io.github.bfstats.dbstats.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.model.*;
 import io.github.bfstats.model.geojson.Feature;
 import io.github.bfstats.model.geojson.FeatureCollection;
@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.github.bfstats.game.jooq.Tables.*;
+import static io.github.bfstats.dbstats.jooq.Tables.*;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static io.github.bfstats.util.Utils.loadPropertiesFileFromResources;
 import static io.github.bfstats.util.Utils.percentage;
@@ -24,7 +24,7 @@ import static java.util.Optional.ofNullable;
 import static org.jooq.impl.DSL.trueCondition;
 
 public class MapService {
-  private static final io.github.bfstats.game.jooq.tables.Player KILLER_PLAYER_TABLE = PLAYER.as("killerPlayer");
+  private static final io.github.bfstats.dbstats.jooq.tables.Player KILLER_PLAYER_TABLE = PLAYER.as("killerPlayer");
   private static final RoundPlayerTeam KILLER_PLAYER_TEAM_TABLE = ROUND_PLAYER_TEAM.as("killerPlayerTeam");
 
   private static Map<String, Integer> mapSizeByMapCode = loadPropertiesFileFromResources("maps/mapsizes.properties")
