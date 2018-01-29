@@ -6,10 +6,7 @@ import io.github.bfstats.service.MapService;
 import io.github.bfstats.service.PlayerService;
 import io.github.bfstats.service.RoundService;
 import io.github.bfstats.util.SortUtils;
-import ro.pippo.controller.Controller;
-import ro.pippo.controller.GET;
-import ro.pippo.controller.Path;
-import ro.pippo.controller.Produces;
+import ro.pippo.controller.*;
 import ro.pippo.controller.extractor.Param;
 
 import javax.inject.Inject;
@@ -70,7 +67,8 @@ public class RoundController extends Controller {
         .render("rounds/list");
   }
 
-  @GET("{id}")
+  @GET("{id: [0-9]+}")
+  @Named("details")
   public void details(@Param("id") int roundId) {
     Round round = roundService.getRound(roundId);
     List<RoundService.RoundPlayerStats> roundPlayerStats = roundService.getRoundPlayerStats(roundId);
@@ -89,7 +87,7 @@ public class RoundController extends Controller {
         .render("rounds/details");
   }
 
-  @GET("json/{id}/events")
+  @GET("json/{id: [0-9]+}/events")
   @Produces(Produces.JSON)
   public void mapEventsJson(@Param("id") int roundId) {
     Round round = roundService.getRound(roundId);
@@ -97,7 +95,7 @@ public class RoundController extends Controller {
     getRouteContext().json().send(mapEvents);
   }
 
-  @GET("{id}/players/{playerId}")
+  @GET("{id: [0-9]+}/players/{playerId: [0-9]+}")
   public void playerDetails(@Param("id") int roundId, @Param("playerId") int playerId) {
     Round round = roundService.getRound(roundId);
     List<RoundService.RoundPlayerStats> roundPlayerStats = roundService.getRoundPlayerStats(roundId);
@@ -116,7 +114,7 @@ public class RoundController extends Controller {
         .render("rounds/player");
   }
 
-  @GET("json/{id}/players/{playerId}/events")
+  @GET("json/{id: [0-9]+}/players/{playerId: [0-9]+}/events")
   @Produces(Produces.JSON)
   public void playerMapEventsJson(@Param("id") int roundId, @Param("playerId") int playerId) {
     Round round = roundService.getRound(roundId);

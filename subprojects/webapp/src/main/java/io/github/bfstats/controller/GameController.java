@@ -47,7 +47,7 @@ public class GameController extends Controller {
         .render("games/list");
   }
 
-  @GET("{id}")
+  @GET("{id: [0-9]+}")
   public void details(@Param("id") int gameId) {
     Game game = gameService.getGame(gameId);
 

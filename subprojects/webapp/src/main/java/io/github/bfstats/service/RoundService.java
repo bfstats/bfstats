@@ -3,6 +3,7 @@ package io.github.bfstats.service;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundEndStatsPlayerRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundEndStatsRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundRecord;
+import io.github.bfstats.exceptions.NotFoundException;
 import io.github.bfstats.model.Round;
 import io.github.bfstats.model.ServerSettings;
 import io.github.bfstats.util.TranslationUtil;
@@ -60,7 +61,7 @@ public class RoundService {
   public Round getRound(int roundId) {
     Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStats(roundId, 1);
     if (roundWithStats.isEmpty()) {
-      throw new IllegalArgumentException("round with id " + roundId + " not found");
+      throw new NotFoundException("round with id " + roundId + " not found");
     }
     Map.Entry<RoundRecord, RoundEndStatsRecord> onlyEntry = roundWithStats.entrySet().iterator().next();
     RoundRecord roundRecord = onlyEntry.getKey();

@@ -7,6 +7,7 @@ import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.DelegatingLoader;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
+import io.github.bfstats.exceptions.NotFoundException;
 import io.github.bfstats.pebble.DurationExtension;
 import io.github.bfstats.pebble.Java8Extension;
 import io.github.bfstats.util.DbUtils;
@@ -70,6 +71,13 @@ public class BasicApplication extends ControllerApplication {
 
     addControllers("io.github.bfstats.controller");
     closeDbConnections();
+
+    // register a custom ExceptionHandler
+    getErrorHandler().setExceptionHandler(NotFoundException.class, (e, routeContext) -> {
+      routeContext.setLocal("message", e.getMessage());
+      // render the template associated with this http status code ("pippo/403forbidden" by default)
+      getErrorHandler().handle(404, routeContext);
+    });
   }
 
   private void closeDbConnections() {

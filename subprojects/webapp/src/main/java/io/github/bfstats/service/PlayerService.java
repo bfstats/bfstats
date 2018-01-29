@@ -3,6 +3,7 @@ package io.github.bfstats.service;
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerRecord;
+import io.github.bfstats.exceptions.NotFoundException;
 import io.github.bfstats.model.*;
 import io.github.bfstats.util.TranslationUtil;
 import org.jooq.Record;
@@ -53,6 +54,11 @@ public class PlayerService {
   public Player getPlayer(int id) {
     PlayerRecord r = getDslContext().selectFrom(PLAYER).
         where(PLAYER.ID.eq(id)).fetchOne();
+
+    if (r == null) {
+      throw new NotFoundException("player with id " + id + " not found");
+    }
+
     return toPlayer(r);
   }
 
