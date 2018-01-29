@@ -317,7 +317,7 @@ CREATE TABLE IF NOT EXISTS configuration (
 INSERT INTO configuration (last_parsed_datetime) VALUES (null);
 
 CREATE TABLE IF NOT EXISTS player_rank (
-  rank INTEGER PRIMARY KEY AUTOINCREMENT,
+  rank INTEGER PRIMARY KEY,
   player_id INTEGER NOT NULL,
   FOREIGN KEY (player_id) REFERENCES player(id)
 );

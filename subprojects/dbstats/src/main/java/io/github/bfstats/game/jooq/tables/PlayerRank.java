@@ -16,7 +16,6 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Schema;
@@ -40,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PlayerRank extends TableImpl<PlayerRankRecord> {
 
-    private static final long serialVersionUID = 1969564494;
+    private static final long serialVersionUID = 862006892;
 
     /**
      * The reference instance of <code>player_rank</code>
@@ -58,7 +57,7 @@ public class PlayerRank extends TableImpl<PlayerRankRecord> {
     /**
      * The column <code>player_rank.rank</code>.
      */
-    public final TableField<PlayerRankRecord, Integer> RANK = createField("rank", org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+    public final TableField<PlayerRankRecord, Integer> RANK = createField("rank", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * The column <code>player_rank.player_id</code>.
@@ -108,14 +107,6 @@ public class PlayerRank extends TableImpl<PlayerRankRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.PLAYER_RANK_PLAYER_ID_IDX);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Identity<PlayerRankRecord, Integer> getIdentity() {
-        return Keys.IDENTITY_PLAYER_RANK;
     }
 
     /**

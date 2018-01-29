@@ -9,7 +9,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import static io.github.bfstats.game.jooq.Tables.*;
+import static io.github.bfstats.game.jooq.Tables.PLAYER_RANK;
+import static io.github.bfstats.game.jooq.Tables.ROUND_END_STATS_PLAYER;
 import static org.jooq.impl.DSL.sum;
 
 public class CacheFiller {
@@ -33,8 +34,12 @@ public class CacheFiller {
     dslContext.transaction(configuration -> {
       DSLContext transactionContext = DSL.using(configuration);
 
-      transactionContext.deleteFrom(PLAYER_RANK).execute();
-      transactionContext.deleteFrom(SQLITE_SEQUENCE).where(SQLITE_SEQUENCE.NAME.eq(PLAYER_RANK.getName())).execute();
+      // In case of SQLITE, jOOQ actually calls DELETE * FROM PLAYER_RANK
+      transactionContext.truncate(PLAYER_RANK).execute();
+      //transactionContext.deleteFrom(PLAYER_RANK).execute();
+
+      // because PLAYER_RANK.RANK column is not using AUTOINCREMENT,
+      // ids will be reused after deleting rows... at least in SQLITE, so no "sequence resetting" needed at the moment
 
       transactionContext.insertInto(PLAYER_RANK, PLAYER_RANK.PLAYER_ID)
           .select(transactionContext.select(ROUND_END_STATS_PLAYER.PLAYER_ID)
