@@ -22,7 +22,6 @@ import io.github.bfstats.game.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfstats.game.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.game.jooq.tables.RoundPlayerVehicle;
 import io.github.bfstats.game.jooq.tables.Server;
-import io.github.bfstats.game.jooq.tables.SqliteSequence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +47,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 2118195224;
+    private static final long serialVersionUID = 53274009;
 
     /**
      * The reference instance of <code></code>
@@ -146,11 +145,6 @@ public class DefaultSchema extends SchemaImpl {
     public final Server SERVER = io.github.bfstats.game.jooq.tables.Server.SERVER;
 
     /**
-     * The table <code>sqlite_sequence</code>.
-     */
-    public final SqliteSequence SQLITE_SEQUENCE = io.github.bfstats.game.jooq.tables.SqliteSequence.SQLITE_SEQUENCE;
-
-    /**
      * No further instances allowed
      */
     private DefaultSchema() {
@@ -192,7 +186,6 @@ public class DefaultSchema extends SchemaImpl {
             RoundPlayerScoreEvent.ROUND_PLAYER_SCORE_EVENT,
             RoundPlayerTeam.ROUND_PLAYER_TEAM,
             RoundPlayerVehicle.ROUND_PLAYER_VEHICLE,
-            Server.SERVER,
-            SqliteSequence.SQLITE_SEQUENCE);
+            Server.SERVER);
     }
 }

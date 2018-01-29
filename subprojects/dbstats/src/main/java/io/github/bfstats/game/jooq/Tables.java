@@ -22,7 +22,6 @@ import io.github.bfstats.game.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfstats.game.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.game.jooq.tables.RoundPlayerVehicle;
 import io.github.bfstats.game.jooq.tables.Server;
-import io.github.bfstats.game.jooq.tables.SqliteSequence;
 
 import javax.annotation.Generated;
 
@@ -129,9 +128,4 @@ public class Tables {
      * The table <code>server</code>.
      */
     public static final Server SERVER = io.github.bfstats.game.jooq.tables.Server.SERVER;
-
-    /**
-     * The table <code>sqlite_sequence</code>.
-     */
-    public static final SqliteSequence SQLITE_SEQUENCE = io.github.bfstats.game.jooq.tables.SqliteSequence.SQLITE_SEQUENCE;
 }
