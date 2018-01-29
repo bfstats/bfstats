@@ -26,6 +26,8 @@ import static org.jooq.impl.DSL.trueCondition;
 public class MapService {
   private static final io.github.bfstats.dbstats.jooq.tables.Player KILLER_PLAYER_TABLE = PLAYER.as("killerPlayer");
   private static final RoundPlayerTeam KILLER_PLAYER_TEAM_TABLE = ROUND_PLAYER_TEAM.as("killerPlayerTeam");
+  public static final String KILL = "Kill";
+  public static final String TK = "TK";
 
   private static Map<String, Integer> mapSizeByMapCode = loadPropertiesFileFromResources("maps/mapsizes.properties")
       .entrySet().stream()
@@ -93,20 +95,32 @@ public class MapService {
 
   private static Integer findPlayerTeam(Record deathRecord) {
     Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
-    if (playerTeam == null && deathRecord.get(PLAYER.NAME) != null && "Kill".equals(deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE))) {
-      Integer killerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
+    if (playerTeam == null && deathRecord.get(PLAYER.NAME) != null) {
+      String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
       // we don't store bot team, so guessing it instead
-      playerTeam = Objects.equals(killerTeam, 1) ? 2 : 1;
+      if (KILL.equals(killType)) {
+        Integer killerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
+        playerTeam = Objects.equals(killerTeam, 1) ? 2 : 1;
+      } else if (TK.equals(killType)) {
+        Integer killerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
+        playerTeam = Objects.equals(killerTeam, 1) ? 1 : 2;
+      }
     }
     return playerTeam;
   }
 
   private static Integer findKillerTeam(Record deathRecord) {
     Integer killerPlayerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
-    if (killerPlayerTeam == null && deathRecord.get(KILLER_PLAYER_TABLE.NAME) != null && "Kill".equals(deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE))) {
-      Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
+    if (killerPlayerTeam == null && deathRecord.get(KILLER_PLAYER_TABLE.NAME) != null) {
+      String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
       // we don't store bot team, so guessing it instead
-      killerPlayerTeam = Objects.equals(playerTeam, 1) ? 2 : 1;
+      if (KILL.equals(killType)) {
+        Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
+        killerPlayerTeam = Objects.equals(playerTeam, 1) ? 2 : 1;
+      } else if (TK.equals(killType)) {
+        Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
+        killerPlayerTeam = Objects.equals(playerTeam, 1) ? 1 : 2;
+      }
     }
     return killerPlayerTeam;
   }
