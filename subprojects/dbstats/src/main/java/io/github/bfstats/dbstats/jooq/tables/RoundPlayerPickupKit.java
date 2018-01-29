@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerPickupKit extends TableImpl<RoundPlayerPickupKitRecord> {
 
-    private static final long serialVersionUID = -653311928;
+    private static final long serialVersionUID = 170298007;
 
     /**
      * The reference instance of <code>round_player_pickup_kit</code>

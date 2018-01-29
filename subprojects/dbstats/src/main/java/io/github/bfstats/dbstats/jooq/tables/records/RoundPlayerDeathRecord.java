@@ -31,7 +31,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerDeathRecord extends UpdatableRecordImpl<RoundPlayerDeathRecord> implements Record13<Integer, Integer, Integer, BigDecimal, BigDecimal, BigDecimal, Timestamp, Integer, BigDecimal, BigDecimal, BigDecimal, String, String> {
 
-    private static final long serialVersionUID = 370369240;
+    private static final long serialVersionUID = -858474954;
 
     /**
      * Setter for <code>round_player_death.id</code>.

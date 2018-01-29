@@ -31,7 +31,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerVehicleRecord extends UpdatableRecordImpl<RoundPlayerVehicleRecord> implements Record10<Integer, Integer, Integer, BigDecimal, BigDecimal, BigDecimal, Timestamp, Timestamp, Integer, String> {
 
-    private static final long serialVersionUID = 1648387732;
+    private static final long serialVersionUID = 783598322;
 
     /**
      * Setter for <code>round_player_vehicle.id</code>.

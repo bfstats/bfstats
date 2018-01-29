@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundEndStats extends TableImpl<RoundEndStatsRecord> {
 
-    private static final long serialVersionUID = -2102199237;
+    private static final long serialVersionUID = 1861514570;
 
     /**
      * The reference instance of <code>round_end_stats</code>

@@ -31,7 +31,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerPickupKitRecord extends UpdatableRecordImpl<RoundPlayerPickupKitRecord> implements Record8<Integer, Integer, Integer, BigDecimal, BigDecimal, BigDecimal, String, Timestamp> {
 
-    private static final long serialVersionUID = 857716459;
+    private static final long serialVersionUID = -720578995;
 
     /**
      * Setter for <code>round_player_pickup_kit.id</code>.

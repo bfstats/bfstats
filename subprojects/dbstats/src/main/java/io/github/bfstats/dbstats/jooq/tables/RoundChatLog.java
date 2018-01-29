@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundChatLog extends TableImpl<RoundChatLogRecord> {
 
-    private static final long serialVersionUID = -610597980;
+    private static final long serialVersionUID = 687495605;
 
     /**
      * The reference instance of <code>round_chat_log</code>

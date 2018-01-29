@@ -31,7 +31,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerMedpackRecord extends UpdatableRecordImpl<RoundPlayerMedpackRecord> implements Record15<Integer, Integer, Integer, BigDecimal, BigDecimal, BigDecimal, Timestamp, Timestamp, Integer, Integer, Integer, BigDecimal, BigDecimal, BigDecimal, Integer> {
 
-    private static final long serialVersionUID = -17222444;
+    private static final long serialVersionUID = -247900362;
 
     /**
      * Setter for <code>round_player_medpack.id</code>.

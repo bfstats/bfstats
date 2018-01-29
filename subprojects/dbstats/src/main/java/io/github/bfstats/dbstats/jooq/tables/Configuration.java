@@ -36,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Configuration extends TableImpl<ConfigurationRecord> {
 
-    private static final long serialVersionUID = -371192880;
+    private static final long serialVersionUID = 1551569938;
 
     /**
      * The reference instance of <code>configuration</code>

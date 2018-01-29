@@ -27,7 +27,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundRecord extends UpdatableRecordImpl<RoundRecord> {
 
-    private static final long serialVersionUID = -1826484383;
+    private static final long serialVersionUID = 279627199;
 
     /**
      * Setter for <code>round.id</code>.

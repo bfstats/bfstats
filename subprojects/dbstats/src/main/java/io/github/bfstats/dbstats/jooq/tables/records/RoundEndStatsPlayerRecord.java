@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundEndStatsPlayerRecord extends UpdatableRecordImpl<RoundEndStatsPlayerRecord> implements Record14<Integer, Integer, Integer, String, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> {
 
-    private static final long serialVersionUID = 1578506644;
+    private static final long serialVersionUID = 1227242866;
 
     /**
      * Setter for <code>round_end_stats_player.id</code>.

@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PlayerRankRecord extends UpdatableRecordImpl<PlayerRankRecord> implements Record2<Integer, Integer> {
 
-    private static final long serialVersionUID = 1228603646;
+    private static final long serialVersionUID = 1110074844;
 
     /**
      * Setter for <code>player_rank.rank</code>.

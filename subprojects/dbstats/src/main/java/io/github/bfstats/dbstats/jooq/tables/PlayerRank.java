@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PlayerRank extends TableImpl<PlayerRankRecord> {
 
-    private static final long serialVersionUID = 862006892;
+    private static final long serialVersionUID = -1179583747;
 
     /**
      * The reference instance of <code>player_rank</code>

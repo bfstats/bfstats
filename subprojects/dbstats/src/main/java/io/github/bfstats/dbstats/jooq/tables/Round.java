@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Round extends TableImpl<RoundRecord> {
 
-    private static final long serialVersionUID = -197257274;
+    private static final long serialVersionUID = 1884931991;
 
     /**
      * The reference instance of <code>round</code>

@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayer extends TableImpl<RoundPlayerRecord> {
 
-    private static final long serialVersionUID = -1011495311;
+    private static final long serialVersionUID = 1691971522;
 
     /**
      * The reference instance of <code>round_player</code>

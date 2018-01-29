@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundEndStatsRecord extends UpdatableRecordImpl<RoundEndStatsRecord> implements Record6<Integer, Timestamp, Integer, Integer, Integer, Integer> {
 
-    private static final long serialVersionUID = -982141145;
+    private static final long serialVersionUID = -1722081655;
 
     /**
      * Setter for <code>round_end_stats.round_id</code>.

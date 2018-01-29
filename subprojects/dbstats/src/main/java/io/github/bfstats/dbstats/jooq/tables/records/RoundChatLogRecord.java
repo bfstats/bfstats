@@ -31,7 +31,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundChatLogRecord extends UpdatableRecordImpl<RoundChatLogRecord> implements Record9<Integer, Integer, Integer, BigDecimal, BigDecimal, BigDecimal, Integer, String, Timestamp> {
 
-    private static final long serialVersionUID = -1325654845;
+    private static final long serialVersionUID = 491081505;
 
     /**
      * Setter for <code>round_chat_log.id</code>.

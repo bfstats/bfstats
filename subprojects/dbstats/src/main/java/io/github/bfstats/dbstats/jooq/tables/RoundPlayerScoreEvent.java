@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerScoreEvent extends TableImpl<RoundPlayerScoreEventRecord> {
 
-    private static final long serialVersionUID = 897219353;
+    private static final long serialVersionUID = 1434242474;
 
     /**
      * The reference instance of <code>round_player_score_event</code>

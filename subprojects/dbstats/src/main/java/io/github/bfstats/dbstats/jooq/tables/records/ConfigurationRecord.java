@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ConfigurationRecord extends UpdatableRecordImpl<ConfigurationRecord> implements Record2<Integer, String> {
 
-    private static final long serialVersionUID = 1384924297;
+    private static final long serialVersionUID = 1750799979;
 
     /**
      * Setter for <code>configuration.lock</code>.

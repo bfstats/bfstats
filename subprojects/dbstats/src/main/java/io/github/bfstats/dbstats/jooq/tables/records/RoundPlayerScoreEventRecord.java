@@ -31,7 +31,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerScoreEventRecord extends UpdatableRecordImpl<RoundPlayerScoreEventRecord> implements Record8<Integer, Integer, Integer, BigDecimal, BigDecimal, BigDecimal, Timestamp, String> {
 
-    private static final long serialVersionUID = -158466470;
+    private static final long serialVersionUID = 1780721592;
 
     /**
      * Setter for <code>round_player_score_event.id</code>.

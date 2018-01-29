@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayerMedpack extends TableImpl<RoundPlayerMedpackRecord> {
 
-    private static final long serialVersionUID = -444980754;
+    private static final long serialVersionUID = 1014288957;
 
     /**
      * The reference instance of <code>round_player_medpack</code>
