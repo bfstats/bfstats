@@ -35,8 +35,6 @@ dependencies {
     compile("ro.pippo:pippo-undertow:$pippoVersion")
 
     compile("org.jooq:jooq:$jooqVersion")
-    compile("org.jooq:jooq-meta:$jooqVersion")
-    compile("org.jooq:jooq-codegen:$jooqVersion")
 
     compile("org.xerial:sqlite-jdbc:3.21.0")
 
