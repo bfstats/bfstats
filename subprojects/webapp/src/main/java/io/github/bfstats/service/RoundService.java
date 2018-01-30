@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.github.bfstats.dbstats.jooq.Tables.*;
+import static io.github.bfstats.util.DateTimeUtils.toUserZone;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 
 public class RoundService {
@@ -141,7 +142,7 @@ public class RoundService {
     String mapName = TranslationUtil.getMapName(mapCode);
     String modeName = TranslationUtil.getModeName(roundRecord.getGameMode());
 
-    LocalDateTime startTime = roundRecord.getStartTime().toLocalDateTime();
+    LocalDateTime startTime = toUserZone(roundRecord.getStartTime().toLocalDateTime());
 
     Round round = new Round()
         .setId(roundRecord.getId())
@@ -152,7 +153,7 @@ public class RoundService {
 
     // though roundEndStatsRecord is not null, it might be empty
     if (roundEndStatsRecord.getRoundId() != null) {
-      LocalDateTime endTime = roundEndStatsRecord.getEndTime().toLocalDateTime();
+      LocalDateTime endTime = toUserZone(roundEndStatsRecord.getEndTime().toLocalDateTime());
       long durationMinutes = startTime.until(endTime, ChronoUnit.MINUTES);
 
       round.setEndTime(endTime)

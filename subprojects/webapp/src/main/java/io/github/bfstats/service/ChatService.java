@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.github.bfstats.dbstats.jooq.Tables.*;
+import static io.github.bfstats.util.DateTimeUtils.toUserZone;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 
 public class ChatService {
@@ -56,7 +57,7 @@ public class ChatService {
         .setPlayerName(r.get(PLAYER.NAME, String.class))
         .setLocation(location)
         .setText(r.get(ROUND_CHAT_LOG.MESSAGE, String.class))
-        .setTime(toLocalDateTime(eventTimeDate))
+        .setTime(toUserZone(toLocalDateTime(eventTimeDate)))
         .setToTeam(r.get(ROUND_CHAT_LOG.TO_TEAM))
         .setPlayerTeam(r.get(ROUND_PLAYER_TEAM.TEAM))
         .setRoundId(r.get(ROUND_CHAT_LOG.ROUND_ID));

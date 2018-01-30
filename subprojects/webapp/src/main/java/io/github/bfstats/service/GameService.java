@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static io.github.bfstats.dbstats.jooq.Tables.GAME;
+import static io.github.bfstats.util.DateTimeUtils.toUserZone;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static java.util.stream.Collectors.toList;
 
@@ -52,7 +53,7 @@ public class GameService {
     String mapName = TranslationUtil.getMapName(mapCode);
     String modeName = TranslationUtil.getModeName(gameRecord.getGameMode());
 
-    LocalDateTime startTime = gameRecord.getStartTime().toLocalDateTime();
+    LocalDateTime startTime = toUserZone(gameRecord.getStartTime().toLocalDateTime());
 
     return new Game()
         .setId(gameRecord.getId())

@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.github.bfstats.dbstats.jooq.Tables.*;
+import static io.github.bfstats.util.DateTimeUtils.toUserZone;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static io.github.bfstats.util.Utils.loadPropertiesFileFromResources;
 import static io.github.bfstats.util.Utils.percentage;
@@ -149,7 +150,7 @@ public class MapService {
       Integer playerTeam = findPlayerTeam(deathRecord);
       Integer killerPlayerTeam = findKillerTeam(deathRecord);
 
-      LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
+      LocalDateTime deathTime = toUserZone(deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime());
 
       Weapon killWeapon = ofNullable(killWeaponCode)
           .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
@@ -199,7 +200,7 @@ public class MapService {
           new Location(killerX.floatValue(), killerY.floatValue(), killerZ.floatValue()) :
           null;
 
-      LocalDateTime deathTime = deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime();
+      LocalDateTime deathTime = toUserZone(deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime());
 
       Weapon killWeapon = ofNullable(killWeaponCode)
           .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))

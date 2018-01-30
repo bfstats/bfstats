@@ -36,7 +36,7 @@ public class GameController extends Controller {
     List<Game> games = gameService.getGames(page);
 
     Map<LocalDate, List<Game>> gamesByDay = games.stream()
-        .collect(Collectors.groupingBy(r -> r.getStartTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
+        .collect(Collectors.groupingBy(g -> g.getStartTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
 
     int totalGamesCount = gameService.getTotalGamesCount();
 

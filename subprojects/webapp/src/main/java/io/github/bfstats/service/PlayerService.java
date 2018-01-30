@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.github.bfstats.dbstats.jooq.Tables.*;
+import static io.github.bfstats.util.DateTimeUtils.toUserZone;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static io.github.bfstats.util.Utils.percentage;
 
@@ -126,7 +127,7 @@ public class PlayerService {
 
   public PlayerDetails getPlayerDetails(int playerId) {
     Long totalTimeInSeconds = fetchPlayerTotalTime(playerId);
-    LocalDateTime lastSeen = getPlayerLastSeen(playerId);
+    LocalDateTime lastSeen = toUserZone(getPlayerLastSeen(playerId));
 
     return new PlayerDetails()
         .setTotalTimeInSeconds(totalTimeInSeconds)
