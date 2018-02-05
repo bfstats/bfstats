@@ -14,9 +14,14 @@ import io.github.bfstats.util.DbUtils;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.core.Application;
 import ro.pippo.core.PippoConstants;
+import ro.pippo.core.RequestResponseFactory;
 import ro.pippo.guice.GuiceControllerFactory;
 import ro.pippo.pebble.PebbleTemplateEngine;
+import ro.pippo.session.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +83,39 @@ public class BfStatsApplication extends ControllerApplication {
       // render the template associated with this http status code ("pippo/403forbidden" by default)
       getErrorHandler().handle(404, routeContext);
     });
+  }
+
+  @Override
+  protected RequestResponseFactory createRequestResponseFactory() {
+    CookieSessionStrategy cookieSessionStrategy1 = new CookieSessionStrategy() {
+      @Override
+      public void onNewSession(HttpServletRequest request, HttpServletResponse response, SessionData sessionData) {
+        String sessionId = sessionData.getId();
+        Cookie cookie = createSessionIdCookie(request, sessionId);
+        response.addCookie(cookie);
+      }
+
+      @Override
+      public void onInvalidatedSession(HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = createSessionIdCookie(request, "");
+        response.addCookie(cookie);
+      }
+
+      private Cookie createSessionIdCookie(HttpServletRequest request, String sessionId) {
+        Cookie cookie = new Cookie("SESSIONID", sessionId);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(request.isSecure());
+        cookie.setPath(request.getContextPath() + "/");
+        cookie.setMaxAge(3600 * 24 * 30);
+
+        return cookie;
+      }
+
+    };
+
+    MemorySessionDataStorage memorySessionDataStorage = new MemorySessionDataStorage();
+    SessionManager sessionManager = new SessionManager(memorySessionDataStorage, cookieSessionStrategy1);
+    return new SessionRequestResponseFactory(this, sessionManager);
   }
 
   private void closeDbConnections() {

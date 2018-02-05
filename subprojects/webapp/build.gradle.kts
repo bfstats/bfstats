@@ -32,6 +32,7 @@ dependencies {
     compile("ro.pippo:pippo-jackson:$pippoVersion")
     compile("ro.pippo:pippo-jaxb:$pippoVersion")
     compile("ro.pippo:pippo-pebble:$pippoVersion")
+    compile("ro.pippo:pippo-session:$pippoVersion")
     compile("ro.pippo:pippo-undertow:$pippoVersion")
 
     compile("org.jooq:jooq:$jooqVersion")
