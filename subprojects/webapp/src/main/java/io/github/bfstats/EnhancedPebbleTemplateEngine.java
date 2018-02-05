@@ -21,27 +21,31 @@ public class EnhancedPebbleTemplateEngine extends PebbleTemplateEngine {
     builder.extension(new Java8Extension());
     builder.extension(new DurationExtension());
 
+    if (application.getPippoSettings().isDev()) {
+      builder.loader(createLoader());
+    }
+  }
+
+  private static Loader<?> createLoader() {
+    List<Loader<?>> loaders = new ArrayList<>();
+
     FileLoader fileLoader = new FileLoader();
     fileLoader.setCharset(PippoConstants.UTF8);
 
-    if (application.getPippoSettings().isDev()) {
-      List<Loader<?>> loaders = new ArrayList<>();
+    String templatesAbsolutePath = Paths.get(".").toAbsolutePath().normalize()
+        .resolve("src\\main\\resources\\templates")
+        .normalize()
+        .toString();
+    fileLoader.setPrefix(templatesAbsolutePath);
+    fileLoader.setSuffix("." + "peb");
+    loaders.add(fileLoader);
 
-      String templatesAbsolutePath = Paths.get(".").toAbsolutePath().normalize()
-          .resolve("src\\main\\resources\\templates")
-          .normalize()
-          .toString();
-      fileLoader.setPrefix(templatesAbsolutePath);
-      fileLoader.setSuffix("." + "peb");
-      loaders.add(fileLoader);
+    ClasspathLoader classpathLoader = new ClasspathLoader();
+    classpathLoader.setCharset(PippoConstants.UTF8);
+    classpathLoader.setPrefix("templates/");
+    classpathLoader.setSuffix(".peb");
+    loaders.add(classpathLoader);
 
-      ClasspathLoader classpathLoader = new ClasspathLoader();
-      classpathLoader.setCharset(PippoConstants.UTF8);
-      classpathLoader.setPrefix("templates/");
-      classpathLoader.setSuffix(".peb");
-      loaders.add(classpathLoader);
-
-      builder.loader(new DelegatingLoader(loaders));
-    }
+    return new DelegatingLoader(loaders);
   }
 }
