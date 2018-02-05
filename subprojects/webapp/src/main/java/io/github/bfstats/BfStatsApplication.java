@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BasicApplication extends ControllerApplication {
+public class BfStatsApplication extends ControllerApplication {
 
   public static class EnhancedPebbleTemplateEngine extends PebbleTemplateEngine {
     @Override

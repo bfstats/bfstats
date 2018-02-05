@@ -14,7 +14,7 @@ import static org.junit.Assert.assertThat;
 public class AppTest extends PippoTest {
 
   @Rule
-  public PippoRule pippoRule = new PippoRule(new BasicApplication());
+  public PippoRule pippoRule = new PippoRule(new BfStatsApplication());
 
   @Ignore
   @Test

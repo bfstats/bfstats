@@ -8,7 +8,6 @@ public class InjectionModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    bind(BasicApplication.class).in(Scopes.SINGLETON);
     bind(ChatService.class).in(Scopes.SINGLETON);
     bind(GameService.class).in(Scopes.SINGLETON);
     bind(KitService.class).in(Scopes.SINGLETON);
