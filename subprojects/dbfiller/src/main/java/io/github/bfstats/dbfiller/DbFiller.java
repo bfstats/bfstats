@@ -494,7 +494,7 @@ public class DbFiller {
       case spawnEvent:
         if (!isSlotIdBot(e.getPlayerSlotId())) {
           RoundPlayer roundPlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
-          Integer spawnTeam = e.getIntegerParamValueByName("team");
+          Integer spawnTeam = e.getIntegerParamValueByName(SpawnEventParams.team.name());
           if (!roundPlayer.getTeam().equals(spawnTeam)) {
             addRoundPlayerTeamUsage(roundId, roundPlayer, e.getDurationSinceLogStart());
             roundPlayer.setTeam(spawnTeam);
@@ -786,7 +786,7 @@ else: repair; number of repairs
   }
 
   private void setLastKillEvent(BfEvent e) {
-    Integer victimId = e.getIntegerParamValueByName("victim_id");
+    Integer victimId = e.getIntegerParamValueByName(ScoreEventParams.victim_id.name());
 
     if (lastKillEventByVictimId.containsKey(victimId)) {
       Integer oldKillerId = lastKillEventByVictimId.get(victimId).getPlayerSlotId();
@@ -862,7 +862,7 @@ else: repair; number of repairs
 
   private void parseEventChangePlayerName(BfEvent e) {
     int playerId = getPlayerIdFromSlotId(e.getPlayerSlotId());
-    String newPlayerName = e.getStringParamValueByName("name");
+    String newPlayerName = e.getStringParamValueByName(ChangePlayerNameParams.name.name());
     addNickname(playerId, newPlayerName);
   }
 

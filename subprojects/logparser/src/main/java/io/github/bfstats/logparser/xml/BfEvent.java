@@ -1,6 +1,7 @@
 package io.github.bfstats.logparser.xml;
 
 import io.github.bfstats.logparser.xml.enums.EventName;
+import io.github.bfstats.logparser.xml.enums.event.CommonEventParams;
 import lombok.Getter;
 
 import javax.xml.bind.Unmarshaller;
@@ -77,11 +78,11 @@ public class BfEvent {
 
   // nullable
   public Integer getPlayerSlotId() {
-    return getIntegerParamValueByName("player_id");
+    return getIntegerParamValueByName(CommonEventParams.player_id.name());
   }
 
   // nullable
   public String[] getPlayerLocation() {
-    return getVector3ParamValueByName("player_location");
+    return getVector3ParamValueByName(CommonEventParams.player_location.name());
   }
 }
