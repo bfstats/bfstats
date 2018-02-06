@@ -33,7 +33,7 @@ function initMap(mapEvents) {
   var bounds = [[0, 0], [mapEvents.mapSize, mapEvents.mapSize]];
   var radarImagePath = '{{publicAt('img/maps/radar/' + map.mapFileName + '.png')}}';
   var radarLayer = L.imageOverlay(radarImagePath, bounds);
-  var lightmapImagePath = '{{publicAt('img/maps/lightmap/' + map.mapFileName + '.png')}}';
+  var lightmapImagePath = '{{publicAt('img/maps/lightmap/' + map.mapFileName + '.jpg')}}';
   var lightmapLayer = L.imageOverlay(lightmapImagePath, bounds);
 
   var leafletMap = L.map('map', {
