@@ -9,8 +9,8 @@
     <th><div><span class="label">K</span></div></th>
     <th><div><span class="label">D</span></div></th>
     <th><div><span class="label">TKs</span></div></th>
-    <th title="Captured flags"><div><span class="label">Captures</span></div></th>
-    <th title="Neutralized flags"><div><span class="label">Defences</span></div></th>
+    <th title="Captured control points"><div><span class="label">Captures</span></div></th>
+    <th title="Neutralized control points"><div><span class="label">Neutralized</span></div></th>
   </tr>
   </thead>
   <tbody>

@@ -19,7 +19,7 @@
 </head>
 <body>
 
-<div id="navigation">
+<nav id="navigation">
   <a href="{{appPath}}/ranking">Ranks</a>
   <a href="{{appPath}}/rounds">Rounds</a>
   <a href="{{appPath}}/rounds/active">Active Rounds</a>
@@ -29,7 +29,7 @@
   <form action="{{appPath}}/players">
     <input type="text" id="menu_query" name="query" placeholder="Search player" value="{{query}}"/>
   </form>
-</div>
+</nav>
 
 <div id="content">
   <h1>{% block title %}Statistics{% endblock %}</h1>

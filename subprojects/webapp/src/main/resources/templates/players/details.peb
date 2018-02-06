@@ -49,7 +49,7 @@ Nicknames:
 </div>
 
 <div class="detail">
-<span class="label">Flags captured</span>
+<span class="label">Control points captured</span>
 <span class="value">{{ playerStats.captures }}</span>
 <span class="additional">{{ playerStats.defences }} neutralized</span>
 </div>
