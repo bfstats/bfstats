@@ -96,11 +96,11 @@ body {
 }
 
 body.bg1 {
-  background-image: url('../img/bg/bg.png'), url('../img/bg/khe_sahn.png');
+  background-image: url('../img/bg/bg.png'), url('../img/bg/khe_sahn.jpg');
 }
 
 body.bg2 {
-  background-image: url('../img/bg/bg.png'), url('../img/bg/hue_alt.png');
+  background-image: url('../img/bg/bg.png'), url('../img/bg/hue_alt.jpg');
 }
 
 a {
