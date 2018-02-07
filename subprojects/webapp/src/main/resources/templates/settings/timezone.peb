@@ -1,0 +1,21 @@
+{% extends "layout" %}
+
+{% block title %}Settings for Timezone{% endblock %}
+
+{% block content %}
+<h3>Settings for timezone</h3>
+
+{% macro option(value, label, selectedValue) %}
+<option value="{{value}}" {{ value== selectedValue ? "selected" : "" }} >{{label}}</option>
+{% endmacro %}
+
+<form>
+  <select name="zone" onchange="this.form.submit()">
+  {% for zoneId in timezones %}
+    {{option(zoneId.value, zoneId.label, session.all.timezone)}}
+  {% endfor %}
+  </select>
+</form>
+
+
+{% endblock %}

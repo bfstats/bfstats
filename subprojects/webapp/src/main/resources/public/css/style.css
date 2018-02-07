@@ -152,7 +152,7 @@ th {
   background-color: rgba(50,50,10,0.6);
 }
 
-#navigation input {
+#navigation input, #navigation select {
   width: 100%;
   font-size: 0.9em;
   padding: 5px;

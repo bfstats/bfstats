@@ -2,17 +2,12 @@ package io.github.bfstats.controller;
 
 import io.github.bfstats.service.PlayerService;
 import io.github.bfstats.service.RankingService;
-import io.github.bfstats.util.DateTimeUtils;
 import ro.pippo.controller.Controller;
 import ro.pippo.controller.GET;
-import ro.pippo.controller.POST;
 import ro.pippo.controller.Path;
-import ro.pippo.controller.extractor.Param;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -54,18 +49,6 @@ public class SandboxController extends Controller {
     getResponse()
         .bind("playersOnline", playersOnlineForHighCharts)
         .render("sandbox/sandbox");
-  }
-
-
-  @GET("/timezone")
-  @POST("/timezone")
-  public void updateTimezone(@Nullable @Param("zone") String zone) {
-    if (zone != null) {
-      ZoneId zoneId = ZoneId.of(zone);
-      DateTimeUtils.setUserZone(zoneId);
-    }
-
-    sandbox();
   }
 
 }

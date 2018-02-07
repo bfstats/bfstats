@@ -3,7 +3,10 @@ package io.github.bfstats;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.github.bfstats.exceptions.NotFoundException;
+import io.github.bfstats.util.DateTimeUtils;
 import io.github.bfstats.util.DbUtils;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.core.RequestResponseFactory;
 import ro.pippo.guice.GuiceControllerFactory;
@@ -12,6 +15,12 @@ import ro.pippo.session.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class BfStatsApplication extends ControllerApplication {
 
@@ -29,15 +38,36 @@ public class BfStatsApplication extends ControllerApplication {
 
     //addWebjarsResourceRoute();
 
+    List<ZoneId> timezones = DateTimeUtils.getTimezones();
+    Instant instant = Instant.now();
+    List<SelectOption> timezoneOptions = timezones.stream()
+        .map(zoneId -> {
+          ZoneOffset zoneOffset = zoneId.getRules().getStandardOffset(instant);
+          String offset = zoneOffset.getTotalSeconds() == 0 ? " 00:00" : zoneOffset.getId();
+          return new SelectOption(zoneId.getId(), "(" + offset + ") " + zoneId.getId());
+        })
+        .collect(toList());
+
+    getRoutePreDispatchListeners().add((request, response) ->
+        response.getLocals().put("timezones", timezoneOptions)
+    );
+
     addControllers("io.github.bfstats.controller");
     closeDbConnections();
 
     // register a custom ExceptionHandler
     getErrorHandler().setExceptionHandler(NotFoundException.class, (e, routeContext) -> {
       routeContext.setLocal("message", e.getMessage());
-      // render the template associated with this http status code ("pippo/403forbidden" by default)
+      // render the template associated with this http status code
       getErrorHandler().handle(404, routeContext);
     });
+  }
+
+  @Data
+  @AllArgsConstructor
+  public static class SelectOption {
+    private String value;
+    private String label;
   }
 
   @Override

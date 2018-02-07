@@ -19,6 +19,10 @@
 </head>
 <body>
 
+{% macro option(value, label, selectedValue) %}
+<option value="{{value}}" {{ value == selectedValue ? "selected" : "" }} >{{label}}</option>
+{% endmacro %}
+
 <nav id="navigation">
   <a href="{{appPath}}/ranking">Ranks</a>
   <a href="{{appPath}}/rounds">Rounds</a>
@@ -28,6 +32,14 @@
 
   <form action="{{appPath}}/players">
     <input type="text" id="menu_query" name="query" placeholder="Search player" value="{{query}}"/>
+  </form>
+
+  <form action="{{appPath}}/settings/timezone">
+    <select id="menu_timezone" name="zone" onchange="this.form.submit()">
+    {% for zoneId in timezones %}
+      {{option(zoneId.value, zoneId.label, session.all.timezone)}}
+    {% endfor %}
+    </select>
   </form>
 </nav>
 
