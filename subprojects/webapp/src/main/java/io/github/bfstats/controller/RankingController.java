@@ -26,7 +26,7 @@ public class RankingController extends Controller {
     this.playerService = playerService;
   }
 
-  @GET("/?")
+  @GET("/")
   public void ranking() {
     Sort sort = getSortColumnAndOrderFromRequest(getRequest());
     if (sort == null) {
