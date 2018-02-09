@@ -179,6 +179,19 @@ th {
     line-height: 2.5em;
   }
 
+  #navigation form {
+    margin: 0;
+  }
+
+  #navigation input, #navigation select {
+    float: left;
+    width: 40%;
+  }
+
+  #menu_timezone {
+    margin-left: 5px;
+  }
+
   #content {
     margin-left: 0;
   }
