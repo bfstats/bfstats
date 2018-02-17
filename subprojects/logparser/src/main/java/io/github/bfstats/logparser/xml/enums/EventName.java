@@ -4,13 +4,13 @@ public enum EventName {
   UNKNOWN_EVENT, // easier usage, to avoid null
   changePlayerName,
   chat,
-  connectPlayer, // we use playerKeyHash instead
+  connectPlayer, // IMO never logged; we use playerKeyHash instead
   createPlayer,
   createVehicle, // no playerId; not useful
   destroyPlayer,
   destroyVehicle, // sometimes no playerId
-  disconnectPlayer, // we use destroyPlayer instead
-  endGame, // we use round end stats instead (but could use this to reset team maybe until spawnEvent?)
+  disconnectPlayer, // logged, but we use destroyPlayer instead
+  endGame, // playerId not always present; we use round end stats instead (but could use this to reset team maybe until spawnEvent?)
   enterVehicle,
   exitVehicle,
   pickupKit,

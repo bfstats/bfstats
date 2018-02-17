@@ -504,6 +504,27 @@ public class DbFiller {
       case pickupKit:
         parsePickupKit(roundId, e);
         break;
+      case deployObject:
+        parseDeployObject(roundId, e);
+        break;
+      case restartMap:
+        parseRestartMap(roundId, e);
+        break;
+      case endGame:
+        parseEndGameEvent(roundId, e);
+        break;
+      case radioMessage:
+        parseRadioMessage(roundId, e);
+        break;
+      case sayAll:
+        String msg = e.getStringParamValueByName(SayAllParams.text.name());
+        break;
+      case gamePaused:
+        parseGamePaused(roundId, e);
+        break;
+      case gameUnpaused:
+        parseGameUnpaused(roundId, e);
+        break;
     }
   }
 
@@ -858,6 +879,44 @@ else: repair; number of repairs
     }
 
     addPickupKit(roundId, e);
+  }
+
+  // not used
+  private void parseDeployObject(int roundId, BfEvent e) {
+    int playerId = getPlayerIdFromSlotId(e.getPlayerSlotId());
+    String type = e.getStringParamValueByName(DeployObjectParams.type.name());
+  }
+
+  // not used
+  private void parseRestartMap(int roundId, BfEvent e) {
+    int ticketsTeam1 = e.getIntegerParamValueByName(RestartMapParams.tickets_team1.name());
+    int ticketsTeam2 = e.getIntegerParamValueByName(RestartMapParams.tickets_team2.name());
+  }
+
+  // not used
+  private void parseEndGameEvent(int roundId, BfEvent e) {
+    // reason is "timeLimit" or "tickets"
+    String reason = e.getStringParamValueByName(EndGameParams.reason.name());
+    Integer winner = e.getIntegerParamValueByName(EndGameParams.winner.name());
+    int winnerScore = e.getIntegerParamValueByName(EndGameParams.winnerScore.name());
+    int loserScore = e.getIntegerParamValueByName(EndGameParams.loserScore.name());
+  }
+
+  // not used
+  private void parseRadioMessage(int roundId, BfEvent e) {
+    int playerId = getPlayerIdFromSlotId(e.getPlayerSlotId());
+    int messageId = e.getIntegerParamValueByName(RadioMessageParams.message.name());
+    int broadcast = e.getIntegerParamValueByName(RadioMessageParams.broadcast.name());
+  }
+
+  // not used
+  private void parseGamePaused(int roundId, BfEvent e) {
+    LocalDateTime eventTime = logStartTime.plus(e.getDurationSinceLogStart());
+  }
+
+  // not used
+  private void parseGameUnpaused(int roundId, BfEvent e) {
+    LocalDateTime eventTime = logStartTime.plus(e.getDurationSinceLogStart());
   }
 
   private void parseEventChangePlayerName(BfEvent e) {
