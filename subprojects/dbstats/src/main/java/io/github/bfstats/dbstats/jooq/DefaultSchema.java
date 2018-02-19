@@ -15,6 +15,7 @@ import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStatsPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeath;
+import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeployObject;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerMedpack;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerPickupKit;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerRepair;
@@ -47,7 +48,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -413685126;
+    private static final long serialVersionUID = 54384709;
 
     /**
      * The reference instance of <code></code>
@@ -108,6 +109,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>round_player_death</code>.
      */
     public final RoundPlayerDeath ROUND_PLAYER_DEATH = io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeath.ROUND_PLAYER_DEATH;
+
+    /**
+     * The table <code>round_player_deploy_object</code>.
+     */
+    public final RoundPlayerDeployObject ROUND_PLAYER_DEPLOY_OBJECT = io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT;
 
     /**
      * The table <code>round_player_medpack</code>.
@@ -180,6 +186,7 @@ public class DefaultSchema extends SchemaImpl {
             RoundEndStatsPlayer.ROUND_END_STATS_PLAYER,
             RoundPlayer.ROUND_PLAYER,
             RoundPlayerDeath.ROUND_PLAYER_DEATH,
+            RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT,
             RoundPlayerMedpack.ROUND_PLAYER_MEDPACK,
             RoundPlayerPickupKit.ROUND_PLAYER_PICKUP_KIT,
             RoundPlayerRepair.ROUND_PLAYER_REPAIR,

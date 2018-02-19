@@ -13,6 +13,7 @@ import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStatsPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeath;
+import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeployObject;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerMedpack;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerPickupKit;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerRepair;
@@ -59,6 +60,8 @@ public class Indexes {
     public static final Index ROUND_PLAYER_DEATH_PLAYER_ID_IDX = Indexes0.ROUND_PLAYER_DEATH_PLAYER_ID_IDX;
     public static final Index ROUND_PLAYER_DEATH_ROUND_ID_IDX = Indexes0.ROUND_PLAYER_DEATH_ROUND_ID_IDX;
     public static final Index ROUND_PLAYER_KILLER_PLAYER_ID_IDX = Indexes0.ROUND_PLAYER_KILLER_PLAYER_ID_IDX;
+    public static final Index ROUND_PLAYER_DEPLOY_OBJECT_PLAYER_ID_IDX = Indexes0.ROUND_PLAYER_DEPLOY_OBJECT_PLAYER_ID_IDX;
+    public static final Index ROUND_PLAYER_DEPLOY_OBJECT_ROUND_ID_IDX = Indexes0.ROUND_PLAYER_DEPLOY_OBJECT_ROUND_ID_IDX;
     public static final Index ROUND_PLAYER_MEDPACK_PLAYER_ID_IDX = Indexes0.ROUND_PLAYER_MEDPACK_PLAYER_ID_IDX;
     public static final Index ROUND_PLAYER_MEDPACK_ROUND_ID_IDX = Indexes0.ROUND_PLAYER_MEDPACK_ROUND_ID_IDX;
     public static final Index ROUND_PLAYER_MEDPACK_VEHICLE_HEALED_PLAYER_ID_IDX = Indexes0.ROUND_PLAYER_MEDPACK_VEHICLE_HEALED_PLAYER_ID_IDX;
@@ -95,6 +98,8 @@ public class Indexes {
         public static Index ROUND_PLAYER_DEATH_PLAYER_ID_IDX = createIndex("round_player_death_player_id_idx", RoundPlayerDeath.ROUND_PLAYER_DEATH, new OrderField[] { RoundPlayerDeath.ROUND_PLAYER_DEATH.PLAYER_ID }, false);
         public static Index ROUND_PLAYER_DEATH_ROUND_ID_IDX = createIndex("round_player_death_round_id_idx", RoundPlayerDeath.ROUND_PLAYER_DEATH, new OrderField[] { RoundPlayerDeath.ROUND_PLAYER_DEATH.ROUND_ID }, false);
         public static Index ROUND_PLAYER_KILLER_PLAYER_ID_IDX = createIndex("round_player_killer_player_id_idx", RoundPlayerDeath.ROUND_PLAYER_DEATH, new OrderField[] { RoundPlayerDeath.ROUND_PLAYER_DEATH.KILLER_PLAYER_ID }, false);
+        public static Index ROUND_PLAYER_DEPLOY_OBJECT_PLAYER_ID_IDX = createIndex("round_player_deploy_object_player_id_idx", RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT, new OrderField[] { RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT.PLAYER_ID }, false);
+        public static Index ROUND_PLAYER_DEPLOY_OBJECT_ROUND_ID_IDX = createIndex("round_player_deploy_object_round_id_idx", RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT, new OrderField[] { RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT.ROUND_ID }, false);
         public static Index ROUND_PLAYER_MEDPACK_PLAYER_ID_IDX = createIndex("round_player_medpack_player_id_idx", RoundPlayerMedpack.ROUND_PLAYER_MEDPACK, new OrderField[] { RoundPlayerMedpack.ROUND_PLAYER_MEDPACK.PLAYER_ID }, false);
         public static Index ROUND_PLAYER_MEDPACK_ROUND_ID_IDX = createIndex("round_player_medpack_round_id_idx", RoundPlayerMedpack.ROUND_PLAYER_MEDPACK, new OrderField[] { RoundPlayerMedpack.ROUND_PLAYER_MEDPACK.ROUND_ID }, false);
         public static Index ROUND_PLAYER_MEDPACK_VEHICLE_HEALED_PLAYER_ID_IDX = createIndex("round_player_medpack_vehicle_healed_player_id_idx", RoundPlayerMedpack.ROUND_PLAYER_MEDPACK, new OrderField[] { RoundPlayerMedpack.ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID }, false);

@@ -15,6 +15,7 @@ import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStatsPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeath;
+import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeployObject;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerMedpack;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerPickupKit;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerRepair;
@@ -31,6 +32,7 @@ import io.github.bfstats.dbstats.jooq.tables.records.RoundChatLogRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundEndStatsPlayerRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundEndStatsRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerDeathRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerDeployObjectRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerMedpackRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerPickupKitRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerRecord;
@@ -75,6 +77,7 @@ public class Keys {
     public static final Identity<RoundEndStatsPlayerRecord, Integer> IDENTITY_ROUND_END_STATS_PLAYER = Identities0.IDENTITY_ROUND_END_STATS_PLAYER;
     public static final Identity<RoundPlayerRecord, Integer> IDENTITY_ROUND_PLAYER = Identities0.IDENTITY_ROUND_PLAYER;
     public static final Identity<RoundPlayerDeathRecord, Integer> IDENTITY_ROUND_PLAYER_DEATH = Identities0.IDENTITY_ROUND_PLAYER_DEATH;
+    public static final Identity<RoundPlayerDeployObjectRecord, Integer> IDENTITY_ROUND_PLAYER_DEPLOY_OBJECT = Identities0.IDENTITY_ROUND_PLAYER_DEPLOY_OBJECT;
     public static final Identity<RoundPlayerMedpackRecord, Integer> IDENTITY_ROUND_PLAYER_MEDPACK = Identities0.IDENTITY_ROUND_PLAYER_MEDPACK;
     public static final Identity<RoundPlayerPickupKitRecord, Integer> IDENTITY_ROUND_PLAYER_PICKUP_KIT = Identities0.IDENTITY_ROUND_PLAYER_PICKUP_KIT;
     public static final Identity<RoundPlayerRepairRecord, Integer> IDENTITY_ROUND_PLAYER_REPAIR = Identities0.IDENTITY_ROUND_PLAYER_REPAIR;
@@ -98,6 +101,7 @@ public class Keys {
     public static final UniqueKey<RoundEndStatsPlayerRecord> PK_ROUND_END_STATS_PLAYER = UniqueKeys0.PK_ROUND_END_STATS_PLAYER;
     public static final UniqueKey<RoundPlayerRecord> PK_ROUND_PLAYER = UniqueKeys0.PK_ROUND_PLAYER;
     public static final UniqueKey<RoundPlayerDeathRecord> PK_ROUND_PLAYER_DEATH = UniqueKeys0.PK_ROUND_PLAYER_DEATH;
+    public static final UniqueKey<RoundPlayerDeployObjectRecord> PK_ROUND_PLAYER_DEPLOY_OBJECT = UniqueKeys0.PK_ROUND_PLAYER_DEPLOY_OBJECT;
     public static final UniqueKey<RoundPlayerMedpackRecord> PK_ROUND_PLAYER_MEDPACK = UniqueKeys0.PK_ROUND_PLAYER_MEDPACK;
     public static final UniqueKey<RoundPlayerPickupKitRecord> PK_ROUND_PLAYER_PICKUP_KIT = UniqueKeys0.PK_ROUND_PLAYER_PICKUP_KIT;
     public static final UniqueKey<RoundPlayerRepairRecord> PK_ROUND_PLAYER_REPAIR = UniqueKeys0.PK_ROUND_PLAYER_REPAIR;
@@ -125,6 +129,8 @@ public class Keys {
     public static final ForeignKey<RoundPlayerDeathRecord, RoundRecord> FK_ROUND_PLAYER_DEATH_ROUND_1 = ForeignKeys0.FK_ROUND_PLAYER_DEATH_ROUND_1;
     public static final ForeignKey<RoundPlayerDeathRecord, PlayerRecord> FK_ROUND_PLAYER_DEATH_PLAYER_2 = ForeignKeys0.FK_ROUND_PLAYER_DEATH_PLAYER_2;
     public static final ForeignKey<RoundPlayerDeathRecord, PlayerRecord> FK_ROUND_PLAYER_DEATH_PLAYER_1 = ForeignKeys0.FK_ROUND_PLAYER_DEATH_PLAYER_1;
+    public static final ForeignKey<RoundPlayerDeployObjectRecord, RoundRecord> FK_ROUND_PLAYER_DEPLOY_OBJECT_ROUND_1 = ForeignKeys0.FK_ROUND_PLAYER_DEPLOY_OBJECT_ROUND_1;
+    public static final ForeignKey<RoundPlayerDeployObjectRecord, PlayerRecord> FK_ROUND_PLAYER_DEPLOY_OBJECT_PLAYER_1 = ForeignKeys0.FK_ROUND_PLAYER_DEPLOY_OBJECT_PLAYER_1;
     public static final ForeignKey<RoundPlayerMedpackRecord, RoundRecord> FK_ROUND_PLAYER_MEDPACK_ROUND_1 = ForeignKeys0.FK_ROUND_PLAYER_MEDPACK_ROUND_1;
     public static final ForeignKey<RoundPlayerMedpackRecord, PlayerRecord> FK_ROUND_PLAYER_MEDPACK_PLAYER_2 = ForeignKeys0.FK_ROUND_PLAYER_MEDPACK_PLAYER_2;
     public static final ForeignKey<RoundPlayerMedpackRecord, PlayerRecord> FK_ROUND_PLAYER_MEDPACK_PLAYER_1 = ForeignKeys0.FK_ROUND_PLAYER_MEDPACK_PLAYER_1;
@@ -153,6 +159,7 @@ public class Keys {
         public static Identity<RoundEndStatsPlayerRecord, Integer> IDENTITY_ROUND_END_STATS_PLAYER = createIdentity(RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.ID);
         public static Identity<RoundPlayerRecord, Integer> IDENTITY_ROUND_PLAYER = createIdentity(RoundPlayer.ROUND_PLAYER, RoundPlayer.ROUND_PLAYER.ID);
         public static Identity<RoundPlayerDeathRecord, Integer> IDENTITY_ROUND_PLAYER_DEATH = createIdentity(RoundPlayerDeath.ROUND_PLAYER_DEATH, RoundPlayerDeath.ROUND_PLAYER_DEATH.ID);
+        public static Identity<RoundPlayerDeployObjectRecord, Integer> IDENTITY_ROUND_PLAYER_DEPLOY_OBJECT = createIdentity(RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT, RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT.ID);
         public static Identity<RoundPlayerMedpackRecord, Integer> IDENTITY_ROUND_PLAYER_MEDPACK = createIdentity(RoundPlayerMedpack.ROUND_PLAYER_MEDPACK, RoundPlayerMedpack.ROUND_PLAYER_MEDPACK.ID);
         public static Identity<RoundPlayerPickupKitRecord, Integer> IDENTITY_ROUND_PLAYER_PICKUP_KIT = createIdentity(RoundPlayerPickupKit.ROUND_PLAYER_PICKUP_KIT, RoundPlayerPickupKit.ROUND_PLAYER_PICKUP_KIT.ID);
         public static Identity<RoundPlayerRepairRecord, Integer> IDENTITY_ROUND_PLAYER_REPAIR = createIdentity(RoundPlayerRepair.ROUND_PLAYER_REPAIR, RoundPlayerRepair.ROUND_PLAYER_REPAIR.ID);
@@ -174,6 +181,7 @@ public class Keys {
         public static final UniqueKey<RoundEndStatsPlayerRecord> PK_ROUND_END_STATS_PLAYER = createUniqueKey(RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, "pk_round_end_stats_player", RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.ID);
         public static final UniqueKey<RoundPlayerRecord> PK_ROUND_PLAYER = createUniqueKey(RoundPlayer.ROUND_PLAYER, "pk_round_player", RoundPlayer.ROUND_PLAYER.ID);
         public static final UniqueKey<RoundPlayerDeathRecord> PK_ROUND_PLAYER_DEATH = createUniqueKey(RoundPlayerDeath.ROUND_PLAYER_DEATH, "pk_round_player_death", RoundPlayerDeath.ROUND_PLAYER_DEATH.ID);
+        public static final UniqueKey<RoundPlayerDeployObjectRecord> PK_ROUND_PLAYER_DEPLOY_OBJECT = createUniqueKey(RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT, "pk_round_player_deploy_object", RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT.ID);
         public static final UniqueKey<RoundPlayerMedpackRecord> PK_ROUND_PLAYER_MEDPACK = createUniqueKey(RoundPlayerMedpack.ROUND_PLAYER_MEDPACK, "pk_round_player_medpack", RoundPlayerMedpack.ROUND_PLAYER_MEDPACK.ID);
         public static final UniqueKey<RoundPlayerPickupKitRecord> PK_ROUND_PLAYER_PICKUP_KIT = createUniqueKey(RoundPlayerPickupKit.ROUND_PLAYER_PICKUP_KIT, "pk_round_player_pickup_kit", RoundPlayerPickupKit.ROUND_PLAYER_PICKUP_KIT.ID);
         public static final UniqueKey<RoundPlayerRepairRecord> PK_ROUND_PLAYER_REPAIR = createUniqueKey(RoundPlayerRepair.ROUND_PLAYER_REPAIR, "pk_round_player_repair", RoundPlayerRepair.ROUND_PLAYER_REPAIR.ID);
@@ -199,6 +207,8 @@ public class Keys {
         public static final ForeignKey<RoundPlayerDeathRecord, RoundRecord> FK_ROUND_PLAYER_DEATH_ROUND_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundPlayerDeath.ROUND_PLAYER_DEATH, "fk_round_player_death_round_1", RoundPlayerDeath.ROUND_PLAYER_DEATH.ROUND_ID);
         public static final ForeignKey<RoundPlayerDeathRecord, PlayerRecord> FK_ROUND_PLAYER_DEATH_PLAYER_2 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundPlayerDeath.ROUND_PLAYER_DEATH, "fk_round_player_death_player_2", RoundPlayerDeath.ROUND_PLAYER_DEATH.PLAYER_ID);
         public static final ForeignKey<RoundPlayerDeathRecord, PlayerRecord> FK_ROUND_PLAYER_DEATH_PLAYER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundPlayerDeath.ROUND_PLAYER_DEATH, "fk_round_player_death_player_1", RoundPlayerDeath.ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
+        public static final ForeignKey<RoundPlayerDeployObjectRecord, RoundRecord> FK_ROUND_PLAYER_DEPLOY_OBJECT_ROUND_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT, "fk_round_player_deploy_object_round_1", RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT.ROUND_ID);
+        public static final ForeignKey<RoundPlayerDeployObjectRecord, PlayerRecord> FK_ROUND_PLAYER_DEPLOY_OBJECT_PLAYER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT, "fk_round_player_deploy_object_player_1", RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT.PLAYER_ID);
         public static final ForeignKey<RoundPlayerMedpackRecord, RoundRecord> FK_ROUND_PLAYER_MEDPACK_ROUND_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundPlayerMedpack.ROUND_PLAYER_MEDPACK, "fk_round_player_medpack_round_1", RoundPlayerMedpack.ROUND_PLAYER_MEDPACK.ROUND_ID);
         public static final ForeignKey<RoundPlayerMedpackRecord, PlayerRecord> FK_ROUND_PLAYER_MEDPACK_PLAYER_2 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundPlayerMedpack.ROUND_PLAYER_MEDPACK, "fk_round_player_medpack_player_2", RoundPlayerMedpack.ROUND_PLAYER_MEDPACK.PLAYER_ID);
         public static final ForeignKey<RoundPlayerMedpackRecord, PlayerRecord> FK_ROUND_PLAYER_MEDPACK_PLAYER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundPlayerMedpack.ROUND_PLAYER_MEDPACK, "fk_round_player_medpack_player_1", RoundPlayerMedpack.ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID);

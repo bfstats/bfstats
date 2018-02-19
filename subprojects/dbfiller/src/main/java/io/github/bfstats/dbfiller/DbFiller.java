@@ -881,10 +881,8 @@ else: repair; number of repairs
     addPickupKit(roundId, e);
   }
 
-  // not used
   private void parseDeployObject(int roundId, BfEvent e) {
-    int playerId = getPlayerIdFromSlotId(e.getPlayerSlotId());
-    String type = e.getStringParamValueByName(DeployObjectParams.type.name());
+    addDeployObject(roundId, e);
   }
 
   // not used
@@ -1119,6 +1117,27 @@ else: repair; number of repairs
 
     roundPlayerPickupKitRecord.insert();
     return roundPlayerPickupKitRecord;
+  }
+
+  private RoundPlayerDeployObjectRecord addDeployObject(int roundId, BfEvent bfEvent) {
+    int playerId = getPlayerIdFromSlotId(bfEvent.getPlayerSlotId());
+    LocalDateTime eventTime = logStartTime.plus(bfEvent.getDurationSinceLogStart());
+    String objectType = bfEvent.getStringParamValueByName(DeployObjectParams.type.name());
+
+    RoundPlayerDeployObjectRecord roundPlayerDeployObjectRecord = transaction().newRecord(ROUND_PLAYER_DEPLOY_OBJECT);
+    roundPlayerDeployObjectRecord.setRoundId(roundId);
+    roundPlayerDeployObjectRecord.setPlayerId(playerId);
+    if (bfEvent.getPlayerLocation() != null) {
+      String[] playerLocation = bfEvent.getPlayerLocation();
+      roundPlayerDeployObjectRecord.setPlayerLocationX(new BigDecimal(playerLocation[0]));
+      roundPlayerDeployObjectRecord.setPlayerLocationY(new BigDecimal(playerLocation[1]));
+      roundPlayerDeployObjectRecord.setPlayerLocationZ(new BigDecimal(playerLocation[2]));
+    }
+    roundPlayerDeployObjectRecord.setEventTime(Timestamp.valueOf(eventTime));
+    roundPlayerDeployObjectRecord.setObject(objectType);
+
+    roundPlayerDeployObjectRecord.insert();
+    return roundPlayerDeployObjectRecord;
   }
 
   private RoundChatLogRecord addChatMessage(Integer roundId, BfEvent bfEvent) {

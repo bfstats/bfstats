@@ -15,6 +15,7 @@ import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStatsPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeath;
+import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeployObject;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerMedpack;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerPickupKit;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerRepair;
@@ -93,6 +94,11 @@ public class Tables {
      * The table <code>round_player_death</code>.
      */
     public static final RoundPlayerDeath ROUND_PLAYER_DEATH = io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeath.ROUND_PLAYER_DEATH;
+
+    /**
+     * The table <code>round_player_deploy_object</code>.
+     */
+    public static final RoundPlayerDeployObject ROUND_PLAYER_DEPLOY_OBJECT = io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT;
 
     /**
      * The table <code>round_player_medpack</code>.

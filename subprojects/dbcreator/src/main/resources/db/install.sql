@@ -308,6 +308,21 @@ CREATE TABLE IF NOT EXISTS round_player_pickup_kit (
 CREATE INDEX IF NOT EXISTS round_player_pickup_kit_round_id_idx ON round_player_pickup_kit(round_id);
 CREATE INDEX IF NOT EXISTS round_player_pickup_kit_player_id_idx ON round_player_pickup_kit(player_id);
 
+CREATE TABLE IF NOT EXISTS round_player_deploy_object (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  round_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  player_location_x DECIMAL(4,4) NOT NULL,
+  player_location_y DECIMAL(4,4) NOT NULL,
+  player_location_z DECIMAL(4,4) NOT NULL,
+  object VARCHAR(50) NOT NULL,
+  event_time DATETIME NOT NULL,
+  FOREIGN KEY (round_id) REFERENCES round(id),
+  FOREIGN KEY (player_id) REFERENCES player(id)
+);
+CREATE INDEX IF NOT EXISTS round_player_deploy_object_round_id_idx ON round_player_deploy_object(round_id);
+CREATE INDEX IF NOT EXISTS round_player_deploy_object_player_id_idx ON round_player_deploy_object(player_id);
+
 CREATE TABLE IF NOT EXISTS configuration (
   -- guarantee that configuration table is a single record table. It has to be unique and can have only one value.
   lock INTEGER PRIMARY KEY DEFAULT 1,
