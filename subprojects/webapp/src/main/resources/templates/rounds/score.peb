@@ -1,32 +1,13 @@
 {% if playerStats is not empty %}
-<table class="styled_table">
-  <thead>
-  <tr>
-    <th><div><span class="label">Rank</span></div></th>
-    <th><div><span class="label">Player</span></div></th>
-    <th><div><span class="label">Team</span></div></th>
-    <th><div><span class="label">Score</span></div></th>
-    <th><div><span class="label">K</span></div></th>
-    <th><div><span class="label">D</span></div></th>
-    <th><div><span class="label">TKs</span></div></th>
-    <th title="Captured control points"><div><span class="label">Captures</span></div></th>
-    <th title="Neutralized control points"><div><span class="label">Neutralized</span></div></th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for playerStat in playerStats %}
-  <tr>
-    <td>{{ playerStat.rank }}</td>
-    <td><a href="{{appPath}}/rounds/{{round.id}}/players/{{ playerStat.playerId }}">{{ playerStat.playerName }}</a></td>
-    <td class="center"><span class="name team-{{ playerStat.team }}"></span></td>
-    <td>{{ playerStat.score }}</td>
-    <td>{{ playerStat.kills }}</td>
-    <td>{{ playerStat.deaths }}</td>
-    <td>{{ playerStat.tks }}</td>
-    <td>{{ playerStat.captures }}</td>
-    <td>{{ playerStat.defences }}</td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
+<div class="clear">
+
+  <div class="score-team score-team-left">
+  {% include "rounds/score_team" with {"team":1} %}
+  </div>
+
+  <div class="score-team score-team-right">
+  {% include "rounds/score_team" with {"team":2} %}
+  </div>
+
+</div>
 {% endif %}

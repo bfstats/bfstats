@@ -1,0 +1,37 @@
+{% if team == 1 %}
+NVA
+{% endif %}
+
+{% if team == 2 %}
+USA
+{% endif %}
+<table class="styled_table">
+  <thead>
+  <tr>
+    <th><div><span class="label">Rank</span></div></th>
+    <th><div><span class="label">Player</span></div></th>
+    <th><div><span class="label">Score</span></div></th>
+    <th><div><span class="label">K</span></div></th>
+    <th><div><span class="label">D</span></div></th>
+    <th><div><span class="label">TKs</span></div></th>
+    <th title="Captured control points"><div><span class="label">C</span></div></th>
+    <th title="Neutralized control points"><div><span class="label">N</span></div></th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for playerStat in playerStats %}
+  {% if playerStat.team == team %}
+  <tr class="team-{{playerStat.team}}">
+    <td>{{ playerStat.rank }}</td>
+    <td><a href="{{appPath}}/rounds/{{round.id}}/players/{{ playerStat.playerId }}" class="inherit">{{ playerStat.playerName }}</a></td>
+    <td>{{ playerStat.score }}</td>
+    <td>{{ playerStat.kills }}</td>
+    <td>{{ playerStat.deaths }}</td>
+    <td>{{ playerStat.tks }}</td>
+    <td>{{ playerStat.captures }}</td>
+    <td>{{ playerStat.defences }}</td>
+  </tr>
+  {% endif %}
+  {% endfor %}
+  </tbody>
+</table>

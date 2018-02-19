@@ -107,6 +107,10 @@ a {
   color: #f0f0f0;
 }
 
+a.inherit {
+  color: inherit;
+}
+
 .clear {
   overflow: auto;
 }
@@ -523,8 +527,12 @@ tr.team-3 .name, .name.team-3 {
 
 
 
-
-
+.score-team-left {
+  float: left;
+}
+.score-team-right {
+  float: left;
+}
 
 /* map */
 
