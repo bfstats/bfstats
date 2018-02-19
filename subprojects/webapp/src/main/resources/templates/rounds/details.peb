@@ -6,7 +6,7 @@
 
 <div class="clear">
   <div style="float:left;">
-    {% include "fragments/map" %}
+    {% include "fragments/map" with {"mapEventsUrlPath" : round.mapEventsUrlPath} %}
   </div>
 
   <div style="float:left;overflow-y: auto; max-height: 400px;">

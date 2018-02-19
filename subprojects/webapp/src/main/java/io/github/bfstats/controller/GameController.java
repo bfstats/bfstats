@@ -2,8 +2,10 @@ package io.github.bfstats.controller;
 
 import io.github.bfstats.model.BasicMapInfo;
 import io.github.bfstats.model.Game;
+import io.github.bfstats.model.Round;
 import io.github.bfstats.service.GameService;
 import io.github.bfstats.service.MapService;
+import io.github.bfstats.service.RoundService;
 import io.github.bfstats.util.SortUtils;
 import ro.pippo.controller.Controller;
 import ro.pippo.controller.GET;
@@ -22,11 +24,13 @@ public class GameController extends Controller {
 
   private final GameService gameService;
   private final MapService mapService;
+  private final RoundService roundService;
 
   @Inject
-  public GameController(GameService gameService, MapService mapService) {
+  public GameController(GameService gameService, MapService mapService, RoundService roundService) {
     this.gameService = gameService;
     this.mapService = mapService;
+    this.roundService = roundService;
   }
 
   @GET("/?")
@@ -53,8 +57,11 @@ public class GameController extends Controller {
 
     BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(game.getMapCode());
 
+    List<Round> rounds = roundService.getRoundsByGameId(gameId);
+
     getResponse()
         .bind("game", game)
+        .bind("rounds", rounds)
         .bind("map", basicMapInfo)
         .render("games/details");
   }

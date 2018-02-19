@@ -1,6 +1,7 @@
-<div id="map" style="height: 512px; min-width: 525px; max-width:645px;"></div>
+<div id="map-{{uniqueId}}" style="height: 512px; min-width: 525px; max-width:645px;"></div>
 
 <script>
+(function() {
 var geoJsonProps = {
     onEachFeature: function (feature, layer) {
       // does this feature have a property named popupContent?
@@ -26,7 +27,7 @@ var geoJsonProps = {
     }
 };
 
-function initMap(mapEvents) {
+function initMap(containerId, mapEvents) {
   var killsGroup = L.geoJson(mapEvents.killFeatureCollection, geoJsonProps);
   var deathsGroup = L.geoJson(mapEvents.deathFeatureCollection, geoJsonProps);
 
@@ -36,7 +37,7 @@ function initMap(mapEvents) {
   var lightmapImagePath = '{{publicAt('img/maps/lightmap/' + map.mapFileName + '.jpg')}}';
   var lightmapLayer = L.imageOverlay(lightmapImagePath, bounds);
 
-  var leafletMap = L.map('map', {
+  var leafletMap = L.map(containerId, {
     crs: L.CRS.Simple,
     dragging: !L.Browser.mobile,
     tap: false,
@@ -78,11 +79,11 @@ function initMap(mapEvents) {
 }
 
 $.ajax({
-    url: "{{appPath}}/{{mapEventsUrlPath}}",
-    dataType: 'json',
-    success: function (response) {
-      initMap(response);
-    }
+  url: "{{appPath}}/{{mapEventsUrlPath}}",
+  dataType: 'json',
+  success: function (response) {
+    initMap('map-{{uniqueId}}', response);
+  }
 });
-
+})();
 </script>

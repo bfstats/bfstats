@@ -51,6 +51,28 @@ public class RoundService {
         );
   }
 
+  public List<Round> getRoundsByGameId(int gameId) {
+    Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStatsByGameId(gameId);
+
+    return roundWithStats.entrySet().stream()
+        .map(e -> toRound(e.getKey(), e.getValue()))
+        .collect(Collectors.toList());
+  }
+
+  private static Map<RoundRecord, RoundEndStatsRecord> getRoundRecordsWithStatsByGameId(int gameId) {
+    return getDslContext()
+        .select(ROUND.fields())
+        .select(ROUND_END_STATS.fields())
+        .from(ROUND)
+        .leftJoin(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID))
+        .where(ROUND.GAME_ID.eq(gameId))
+        .orderBy(ROUND.START_TIME.desc())
+        .fetchMap(
+            r -> r.into(ROUND),
+            r -> r.into(ROUND_END_STATS)
+        );
+  }
+
   public List<Round> getRounds(int page) {
     Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getRoundRecordsWithStats(null, page);
 
@@ -163,6 +185,8 @@ public class RoundService {
           .setEndTicketsTeam1(roundEndStatsRecord.getEndTicketsTeam_1())
           .setEndTicketsTeam2(roundEndStatsRecord.getEndTicketsTeam_2());
     }
+
+    round.setMapEventsUrlPath("rounds/json/" + round.getId() + "/events");
 
     return round;
   }

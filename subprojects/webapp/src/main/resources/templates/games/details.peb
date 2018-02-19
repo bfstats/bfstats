@@ -4,6 +4,30 @@
 {% block content %}
 <h3>{{ game.mapName }} {{ game.startTime | dt("HH:mm") }}</h3>
 
+{% for round in rounds %}
+<h3>Round #{{ loop.index + 1}} {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)</h3>
+
+<div class="clear">
+  <div style="float:left;">
+    {% include "fragments/map" with {"uniqueId":round.id, "mapEventsUrlPath" : round.mapEventsUrlPath} %}
+  </div>
+
+  <div style="float:left;overflow-y: auto; max-height: 400px;">
+    {% include "fragments/chat" %}
+  </div>
+</div>
+
+<p>
+  {% if round.winningTeam == 1 %}<strong>{%endif%}NVA {{ round.endTicketsTeam1 }} {% if round.winningTeam == 1 %}</strong>{%endif%}
+  :
+  {% if round.winningTeam == 2 %}<strong>{%endif%}{{ round.endTicketsTeam2 }}  USA {% if round.winningTeam == 2 %}</strong>{%endif%}
+</p>
+<!--<li>Victory type: {{ round.victoryType }}</li>-->
+
+{% include "rounds/score" %}
+
+{% endfor %}
+
 {% include "rounds/serversettings" with {"serverSettings":game.serverSettings} %}
 
 {% endblock %}

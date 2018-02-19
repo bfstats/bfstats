@@ -84,7 +84,6 @@ public class RoundController extends Controller {
         .bind("round", round)
         .bind("playerStats", roundPlayerStats)
         .bind("map", basicMapInfo)
-        .bind("mapEventsUrlPath", "rounds/json/" + round.getId() + "/events")
         .bind("chatMessages", messagesByDay)
         .render("rounds/details");
   }

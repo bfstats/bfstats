@@ -25,4 +25,7 @@ public class Round {
 
   @Nullable
   private ServerSettings serverSettings;
+
+  @Nullable
+  private String mapEventsUrlPath;
 }
