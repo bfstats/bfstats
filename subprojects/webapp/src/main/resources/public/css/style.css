@@ -250,7 +250,7 @@ th .sorted {
   margin-right: 2%;
 }
 
-.styled_table {
+.styled_table.sortable {
   margin-top: 30px;
 }
 
