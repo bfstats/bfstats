@@ -14,14 +14,14 @@ Nicknames:
 
 {% block content %}
 
-<h3 title="{{ nicknamesTitle(nicknames) }}">{{ player.name }} (#{{ playerStats.partialKeyHash }})</h3>
+<h3>{{ player.name }} <span class="less-important">(#{{ playerStats.partialKeyHash }})</span></h3>
 
 <div>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</div>
 
 <div class="player-overwiew">
 
 <div class="detail">
-<span class="label">Rank {{ playerStats.rank }}</span>
+<span class="label">Rank <strong>{{ playerStats.rank }}</strong></span>
 <span class="value">Score {{ playerStats.score }}</span>
 <span class="additional">~{{ playerStats.averageScore }} per round</span>
 </div>
@@ -33,7 +33,7 @@ Nicknames:
 </div>
 
 <div class="detail">
-<span class="label">K/D ratio</span>
+<span class="label" title="Kill/death ratio">K/D ratio</span>
 <span class="value">{{ playerStats.killDeathRatio | numberformat("0.00")}}</span>
 <span class="additional">{{ playerStats.kills }} ({{ playerStats.teamKills }} TK) / {{ playerStats.deaths }}</span>
 </div>
@@ -49,7 +49,7 @@ Nicknames:
 </div>
 
 <div class="detail">
-<span class="label">Control points captured</span>
+<span class="label" title="Control points captured">Captured</span>
 <span class="value">{{ playerStats.captures }}</span>
 <span class="additional">{{ playerStats.defences }} neutralized</span>
 </div>
@@ -65,6 +65,10 @@ Nicknames:
 {% include "players/vehicles" %}
 {% include "players/maps" %}
 {% include "players/rounds" %}
+</div>
+
+<div class="clear">
+ {{ nicknamesTitle(nicknames) }}
 </div>
 
 {% endblock %}

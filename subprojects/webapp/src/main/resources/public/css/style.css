@@ -124,7 +124,11 @@ th {
   padding: 3px 5px;
 }
 
-
+h3 .less-important {
+  font-weight: normal;
+  color: #b9b9b9;
+  text-transform: uppercase;
+}
 
 #navigation {
   position: fixed;
