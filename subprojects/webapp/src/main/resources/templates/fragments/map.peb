@@ -38,6 +38,8 @@ function initMap(mapEvents) {
 
   var leafletMap = L.map('map', {
     crs: L.CRS.Simple,
+    dragging: !L.Browser.mobile,
+    tap: false,
     minZoom: -2,
     maxZoom: 8,
     layers: [radarLayer, killsGroup, deathsGroup] // default active layers
