@@ -1,6 +1,6 @@
 
 {% macro pagination(totalCount, countPerPage, page, currentPage, urlPrefix='?') %}
-{% if totalCount > 0 %}
+{% if totalCount > countPerPage %}
 <div class="pagination">
   <p>
     {% if currentPage > 1 %}
