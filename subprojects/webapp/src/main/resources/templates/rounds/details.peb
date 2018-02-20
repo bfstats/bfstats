@@ -9,7 +9,7 @@
     {% include "fragments/map" with {"mapEventsUrlPath" : round.mapEventsUrlPath} %}
   </div>
 
-  <div style="float:right;overflow-y: auto; max-height: 400px;">
+  <div style="overflow-y: auto; max-height: 400px;">
     {% include "fragments/chat" %}
   </div>
 </div>
