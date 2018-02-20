@@ -25,4 +25,5 @@
 
 {% include "rounds/serversettings" with {"serverSettings":round.serverSettings} %}
 
+Game <a href="{{appPath}}/games/{{ round.gameId }}">{{ round.gameId }}</a>
 {% endblock %}

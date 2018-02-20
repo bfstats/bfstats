@@ -9,11 +9,13 @@ import java.time.LocalDateTime;
 @Data
 @Accessors(chain = true)
 public class Round {
-  private Integer id;
+  private int id;
   private String mapCode;
   private String mapName;
   private String modeName;
   private LocalDateTime startTime;
+
+  private int gameId;
 
   // end stats
   private LocalDateTime endTime;

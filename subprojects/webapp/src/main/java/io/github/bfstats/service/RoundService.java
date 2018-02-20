@@ -171,7 +171,8 @@ public class RoundService {
         .setMapCode(mapCode)
         .setMapName(mapName)
         .setModeName(modeName)
-        .setStartTime(startTime);
+        .setStartTime(startTime)
+        .setGameId(roundRecord.getGameId());
 
     // though roundEndStatsRecord is not null, it might be empty
     if (roundEndStatsRecord.getRoundId() != null) {
