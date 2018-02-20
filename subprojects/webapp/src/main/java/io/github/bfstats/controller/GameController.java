@@ -1,8 +1,10 @@
 package io.github.bfstats.controller;
 
 import io.github.bfstats.model.BasicMapInfo;
+import io.github.bfstats.model.ChatMessage;
 import io.github.bfstats.model.Game;
 import io.github.bfstats.model.Round;
+import io.github.bfstats.service.ChatService;
 import io.github.bfstats.service.GameService;
 import io.github.bfstats.service.MapService;
 import io.github.bfstats.service.RoundService;
@@ -28,12 +30,14 @@ public class GameController extends Controller {
   private final GameService gameService;
   private final MapService mapService;
   private final RoundService roundService;
+  private final ChatService chatService;
 
   @Inject
-  public GameController(GameService gameService, MapService mapService, RoundService roundService) {
+  public GameController(GameService gameService, MapService mapService, RoundService roundService, ChatService chatService) {
     this.gameService = gameService;
     this.mapService = mapService;
     this.roundService = roundService;
+    this.chatService = chatService;
   }
 
   @GET("/?")
@@ -65,10 +69,18 @@ public class GameController extends Controller {
     Map<Integer, List<RoundService.RoundPlayerStats>> statsPerRound = rounds.stream()
         .collect(toMap(Round::getId, r -> roundService.getRoundPlayerStats(r.getId())));
 
+    Map<Integer, Map<LocalDate, List<ChatMessage>>> messagesByDayPerRound = rounds.stream()
+        .collect(toMap(Round::getId, round -> {
+          List<ChatMessage> chatMessages = chatService.getChatMessages(round.getId(), 1);
+          return chatMessages.stream()
+              .collect(Collectors.groupingBy(r -> r.getTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
+        }));
+
     getResponse()
         .bind("game", game)
         .bind("rounds", rounds)
         .bind("statsPerRound", statsPerRound)
+        .bind("messagesByDayPerRound", messagesByDayPerRound)
         .bind("map", basicMapInfo)
         .render("games/details");
   }

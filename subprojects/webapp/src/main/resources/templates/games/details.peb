@@ -13,7 +13,7 @@
   </div>
 
   <div style="overflow-y: auto; max-height: 400px;">
-    {% include "fragments/chat" %}
+    {% include "fragments/chat" with {"chatMessages":messagesByDayPerRound[round.id]}%}
   </div>
 </div>
 
