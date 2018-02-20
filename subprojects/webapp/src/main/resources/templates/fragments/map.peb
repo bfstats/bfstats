@@ -1,4 +1,4 @@
-<div id="map-{{uniqueId}}" style="height: 512px; min-width: 525px; max-width:645px;"></div>
+<div id="map-{{uniqueId}}" style="height: 512px; min-width: 100px; max-width:645px;"></div>
 
 <script>
 (function() {
@@ -11,7 +11,7 @@ var geoJsonProps = {
     },
     pointToLayer: function (feature, latlng) {
       return L.circleMarker(latlng, {
-        radius: 4,
+        radius: 5,
         fillColor: "#ff7800",
         color: "#000",
         weight: 1,

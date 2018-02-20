@@ -5,11 +5,11 @@
 <h3>{{ round.mapName }} {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)</h3>
 
 <div class="clear">
-  <div style="float:left;">
+  <div>
     {% include "fragments/map" with {"mapEventsUrlPath" : round.mapEventsUrlPath} %}
   </div>
 
-  <div style="float:left;overflow-y: auto; max-height: 400px;">
+  <div style="float:right;overflow-y: auto; max-height: 400px;">
     {% include "fragments/chat" %}
   </div>
 </div>

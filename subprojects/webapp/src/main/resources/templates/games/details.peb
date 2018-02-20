@@ -8,7 +8,7 @@
 <h3>Round #{{ loop.index + 1}} {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)</h3>
 
 <div class="clear">
-  <div style="float:left;">
+  <div>
     {% include "fragments/map" with {"uniqueId":round.id, "mapEventsUrlPath" : round.mapEventsUrlPath} %}
   </div>
 
