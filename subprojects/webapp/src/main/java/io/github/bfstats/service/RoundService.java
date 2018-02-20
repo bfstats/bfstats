@@ -66,7 +66,7 @@ public class RoundService {
         .from(ROUND)
         .leftJoin(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID))
         .where(ROUND.GAME_ID.eq(gameId))
-        .orderBy(ROUND.START_TIME.desc())
+        .orderBy(ROUND.START_TIME.asc())
         .fetchMap(
             r -> r.into(ROUND),
             r -> r.into(ROUND_END_STATS)
