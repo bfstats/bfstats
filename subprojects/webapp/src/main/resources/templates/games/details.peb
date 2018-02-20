@@ -24,7 +24,7 @@
 </p>
 <!--<li>Victory type: {{ round.victoryType }}</li>-->
 
-{% include "rounds/score" %}
+{% include "rounds/score" with {"playerStats": statsPerRound[round.id]}%}
 
 {% endfor %}
 

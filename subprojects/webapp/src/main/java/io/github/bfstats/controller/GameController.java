@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 @Path("/games")
 public class GameController extends Controller {
 
@@ -40,7 +43,7 @@ public class GameController extends Controller {
     List<Game> games = gameService.getGames(page);
 
     Map<LocalDate, List<Game>> gamesByDay = games.stream()
-        .collect(Collectors.groupingBy(g -> g.getStartTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
+        .collect(Collectors.groupingBy(g -> g.getStartTime().toLocalDate(), LinkedHashMap::new, toList()));
 
     int totalGamesCount = gameService.getTotalGamesCount();
 
@@ -59,9 +62,13 @@ public class GameController extends Controller {
 
     List<Round> rounds = roundService.getRoundsByGameId(gameId);
 
+    Map<Integer, List<RoundService.RoundPlayerStats>> statsPerRound = rounds.stream()
+        .collect(toMap(Round::getId, r -> roundService.getRoundPlayerStats(r.getId())));
+
     getResponse()
         .bind("game", game)
         .bind("rounds", rounds)
+        .bind("statsPerRound", statsPerRound)
         .bind("map", basicMapInfo)
         .render("games/details");
   }
