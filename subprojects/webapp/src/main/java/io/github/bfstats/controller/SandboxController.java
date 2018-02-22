@@ -23,7 +23,8 @@ public class SandboxController extends Controller {
 
   @GET("/?")
   public void sandbox() {
-    Map<LocalDateTime, Integer> playersOnline = playerService.fetchPlayersOnlineTimes();
+    LocalDateTime lastMonth = LocalDateTime.now().minusMonths(1);
+    Map<LocalDateTime, Integer> playersOnline = playerService.fetchPlayersOnlineTimes(lastMonth);
 
     //DateTimeFormatter jsDateUtcParamsFormatter = DateTimeFormatter.ofPattern("yyyy,MM,dd,HH,mm");
 

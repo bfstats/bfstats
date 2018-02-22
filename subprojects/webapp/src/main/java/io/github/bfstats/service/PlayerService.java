@@ -13,6 +13,7 @@ import org.jooq.Result;
 import org.jooq.impl.DSL;
 import ro.pippo.core.util.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -85,11 +86,13 @@ public class PlayerService {
     return totalTimeInSeconds.longValue();
   }
 
-  public Map<LocalDateTime, Integer> fetchPlayersOnlineTimes() {
+  public Map<LocalDateTime, Integer> fetchPlayersOnlineTimes(@Nonnull LocalDateTime since) {
+    Timestamp sinceTimestamp = Timestamp.valueOf(since);
+
     Result<Record> records = getDslContext()
         .select()
-        .select(ROUND_PLAYER.START_TIME.as("time"), DSL.inline("start").as("start_or_end")).from(ROUND_PLAYER)
-        .unionAll(getDslContext().select(ROUND_PLAYER.END_TIME.as("time"), DSL.inline("end").as("start_or_end")).from(ROUND_PLAYER))
+        .select(ROUND_PLAYER.START_TIME.as("time"), DSL.inline("start").as("start_or_end")).from(ROUND_PLAYER).where(ROUND_PLAYER.START_TIME.greaterThan(sinceTimestamp))
+        .unionAll(getDslContext().select(ROUND_PLAYER.END_TIME.as("time"), DSL.inline("end").as("start_or_end")).from(ROUND_PLAYER).where(ROUND_PLAYER.START_TIME.greaterThan(sinceTimestamp)))
         .orderBy(DSL.field("time"))
         .fetch();
 
