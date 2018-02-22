@@ -14,7 +14,7 @@ Nicknames:
 
 {% block content %}
 
-<h3>{{ player.name }} <span class="less-important">(#{{ playerStats.partialKeyHash }})</span></h3>
+<h3>{{ player.name }} <span class="less-important">(#{{ player.partialKeyHash }})</span></h3>
 
 <div>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</div>
 
