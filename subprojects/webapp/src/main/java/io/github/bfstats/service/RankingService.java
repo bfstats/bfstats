@@ -30,26 +30,35 @@ public class RankingService {
     int numberOfRows = 50;
     int firstRowIndex = (page - 1) * numberOfRows;
 
+    Field<Integer> heals_all_count = count(ROUND_PLAYER_MEDPACK.ID).as("heals_all_count");
+    Field<BigDecimal> heals_self_count = sum(when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.eq(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
+        .as("heals_self_count");
+    Field<BigDecimal> heals_others_count = sum(when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.notEqual(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
+        .as("heals_others_count");
+
     Table<Record4<Integer, Integer, BigDecimal, BigDecimal>> nestedHeals = getDslContext().select(
         ROUND_PLAYER_MEDPACK.PLAYER_ID,
-        count(ROUND_PLAYER_MEDPACK.ID).as("heals_all_count"),
-        sum(when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.eq(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
-            .as("heals_self_count"),
-        sum(when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.notEqual(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
-            .as("heals_others_count")
+        heals_all_count,
+        heals_self_count,
+        heals_others_count
     ).from(ROUND_PLAYER_MEDPACK)
         .groupBy(ROUND_PLAYER_MEDPACK.PLAYER_ID)
         .asTable().as("table_heals");
 
+    Field<Integer> repairs_all_count = count(ROUND_PLAYER_REPAIR.ID).as("repairs_all_count");
+    Field<BigDecimal> repairs_self_count = sum(when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.eq(ROUND_PLAYER_REPAIR.PLAYER_ID), 1).otherwise(0))
+        .as("repairs_self_count");
+    Field<BigDecimal> repairs_others_count = sum(when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNotNull().and(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.notEqual(ROUND_PLAYER_REPAIR.PLAYER_ID)), 1).otherwise(0))
+        .as("repairs_others_count");
+    Field<BigDecimal> repairs_unmanned_count = sum(when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNull(), 1).otherwise(0))
+        .as("repairs_unmanned_count");
+
     Table<Record5<Integer, Integer, BigDecimal, BigDecimal, BigDecimal>> nestedRepairs = getDslContext().select(
         ROUND_PLAYER_REPAIR.PLAYER_ID,
-        count(ROUND_PLAYER_REPAIR.ID).as("repairs_all_count"),
-        sum(when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.eq(ROUND_PLAYER_REPAIR.PLAYER_ID), 1).otherwise(0))
-            .as("repairs_self_count"),
-        sum(when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNotNull().and(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.notEqual(ROUND_PLAYER_REPAIR.PLAYER_ID)), 1).otherwise(0))
-            .as("repairs_others_count"),
-        sum(when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNull(), 1).otherwise(0))
-            .as("repairs_unmanned_count")
+        repairs_all_count,
+        repairs_self_count,
+        repairs_others_count,
+        repairs_unmanned_count
     ).from(ROUND_PLAYER_REPAIR)
         .groupBy(ROUND_PLAYER_REPAIR.PLAYER_ID)
         .asTable().as("table_repairs");
@@ -60,6 +69,7 @@ public class RankingService {
         PLAYER.KEYHASH.as("keyhash"),
         PLAYER_RANK.RANK.as("player_rank"),
         ROUND_END_STATS_PLAYER.PLAYER_ID.as("player_id"),
+        sum(ROUND_END_STATS_PLAYER.SCORE).as("points"), // this will be configurable (as SQL, because has to be sortable by it)
         sum(ROUND_END_STATS_PLAYER.SCORE).as("score"),
         sum(ROUND_END_STATS_PLAYER.SCORE).div(count()).as("average_score"),
         sum(ROUND_END_STATS_PLAYER.KILLS).as("kills"),
@@ -74,14 +84,14 @@ public class RankingService {
         sum(when(ROUND_END_STATS_PLAYER.RANK.eq(3), 1).otherwise(0)).as("bronze_count"),
 
 
-        nvl(nestedHeals.field("heals_all_count"), 0).as("heals_all_count"),
-        nvl(nestedHeals.field("heals_self_count"), 0).as("heals_self_count"),
-        nvl(nestedHeals.field("heals_others_count"), 0).as("heals_others_count"),
+        nvl(nestedHeals.field(heals_all_count), 0).as("heals_all_count"),
+        nvl(nestedHeals.field(heals_self_count), 0).as("heals_self_count"),
+        nvl(nestedHeals.field(heals_others_count), 0).as("heals_others_count"),
 
-        nvl(nestedRepairs.field("repairs_all_count"), 0).as("repairs_all_count"),
-        nvl(nestedRepairs.field("repairs_self_count"), 0).as("repairs_self_count"),
-        nvl(nestedRepairs.field("repairs_others_count"), 0).as("repairs_others_count"),
-        nvl(nestedRepairs.field("repairs_unmanned_count"), 0).as("repairs_unmanned_count")
+        nvl(nestedRepairs.field(repairs_all_count), 0).as("repairs_all_count"),
+        nvl(nestedRepairs.field(repairs_self_count), 0).as("repairs_self_count"),
+        nvl(nestedRepairs.field(repairs_others_count), 0).as("repairs_others_count"),
+        nvl(nestedRepairs.field(repairs_unmanned_count), 0).as("repairs_unmanned_count")
     )
         .from(ROUND_END_STATS_PLAYER)
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
@@ -115,7 +125,7 @@ public class RankingService {
         .setName(r.get("player_name", String.class))
         .setPartialKeyHash(partialKeyHash)
         .setRank(r.get("player_rank", Integer.class))
-        .setPoints(1)
+        .setPoints(r.get("points", Integer.class))
         .setScore(r.get("score", Integer.class))
         .setAverageScore(r.get("average_score", Integer.class))
         .setKills(r.get("kills", Integer.class))
