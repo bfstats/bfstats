@@ -9,7 +9,6 @@ public class PlayerStats {
   int playerId;
   int rank;
   String name;
-  String partialKeyHash;
   int points;
   int averageScore;
   int score;

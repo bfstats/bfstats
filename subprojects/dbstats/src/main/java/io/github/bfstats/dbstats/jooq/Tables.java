@@ -8,7 +8,10 @@ import io.github.bfstats.dbstats.jooq.tables.Configuration;
 import io.github.bfstats.dbstats.jooq.tables.Game;
 import io.github.bfstats.dbstats.jooq.tables.Player;
 import io.github.bfstats.dbstats.jooq.tables.PlayerNickname;
+import io.github.bfstats.dbstats.jooq.tables.PlayerPoints;
 import io.github.bfstats.dbstats.jooq.tables.PlayerRank;
+import io.github.bfstats.dbstats.jooq.tables.PlayerSummary;
+import io.github.bfstats.dbstats.jooq.tables.PlayerSummaryNoRank;
 import io.github.bfstats.dbstats.jooq.tables.Round;
 import io.github.bfstats.dbstats.jooq.tables.RoundChatLog;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
@@ -61,9 +64,24 @@ public class Tables {
     public static final PlayerNickname PLAYER_NICKNAME = io.github.bfstats.dbstats.jooq.tables.PlayerNickname.PLAYER_NICKNAME;
 
     /**
+     * The table <code>player_points</code>.
+     */
+    public static final PlayerPoints PLAYER_POINTS = io.github.bfstats.dbstats.jooq.tables.PlayerPoints.PLAYER_POINTS;
+
+    /**
      * The table <code>player_rank</code>.
      */
     public static final PlayerRank PLAYER_RANK = io.github.bfstats.dbstats.jooq.tables.PlayerRank.PLAYER_RANK;
+
+    /**
+     * The table <code>player_summary</code>.
+     */
+    public static final PlayerSummary PLAYER_SUMMARY = io.github.bfstats.dbstats.jooq.tables.PlayerSummary.PLAYER_SUMMARY;
+
+    /**
+     * The table <code>player_summary_no_rank</code>.
+     */
+    public static final PlayerSummaryNoRank PLAYER_SUMMARY_NO_RANK = io.github.bfstats.dbstats.jooq.tables.PlayerSummaryNoRank.PLAYER_SUMMARY_NO_RANK;
 
     /**
      * The table <code>round</code>.

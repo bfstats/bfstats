@@ -1,27 +1,27 @@
 package io.github.bfstats.service;
 
+import io.github.bfstats.dbstats.jooq.tables.records.PlayerSummaryRecord;
 import io.github.bfstats.model.PlayerStats;
 import io.github.bfstats.util.Sort;
-import org.jooq.*;
+import org.jooq.Field;
+import org.jooq.Result;
 import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.github.bfstats.dbstats.jooq.Tables.*;
+import static io.github.bfstats.dbstats.jooq.Tables.PLAYER_SUMMARY;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static io.github.bfstats.util.SortUtils.getJooqSortOrder;
 import static io.github.bfstats.util.SortUtils.getSortableField;
-import static org.jooq.impl.DSL.*;
 
 public class RankingService {
 
   public int getTotalPlayerCount() {
-    int totalNumberOfRows = getDslContext().selectCount().from(PLAYER_RANK).fetchOne(0, int.class);
+    int totalNumberOfRows = getDslContext().selectCount().from(PLAYER_SUMMARY).fetchOne(0, int.class);
     return totalNumberOfRows;
   }
 
@@ -31,119 +31,24 @@ public class RankingService {
     int numberOfRows = 50;
     int firstRowIndex = (page - 1) * numberOfRows;
 
-    Field<Integer> heals_all_count = count(ROUND_PLAYER_MEDPACK.ID).as("heals_all_count");
-    Field<BigDecimal> heals_self_count = sum(when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.eq(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
-        .as("heals_self_count");
-    Field<BigDecimal> heals_others_count = sum(when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.isNotNull().and(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.notEqual(ROUND_PLAYER_MEDPACK.PLAYER_ID)), 1).otherwise(0))
-        .as("heals_others_count");
-
-    Table<Record4<Integer, Integer, BigDecimal, BigDecimal>> nestedHeals = getDslContext().select(
-        ROUND_PLAYER_MEDPACK.PLAYER_ID,
-        heals_all_count,
-        heals_self_count,
-        heals_others_count
-    ).from(ROUND_PLAYER_MEDPACK)
-        .groupBy(ROUND_PLAYER_MEDPACK.PLAYER_ID)
-        .asTable().as("table_heals");
-
-    Field<Integer> repairs_all_count = count(ROUND_PLAYER_REPAIR.ID).as("repairs_all_count");
-    Field<BigDecimal> repairs_self_count = sum(when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.eq(ROUND_PLAYER_REPAIR.PLAYER_ID), 1).otherwise(0))
-        .as("repairs_self_count");
-    Field<BigDecimal> repairs_others_count = sum(when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNotNull().and(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.notEqual(ROUND_PLAYER_REPAIR.PLAYER_ID)), 1).otherwise(0))
-        .as("repairs_others_count");
-    Field<BigDecimal> repairs_unmanned_count = sum(when(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID.isNull(), 1).otherwise(0))
-        .as("repairs_unmanned_count");
-
-    Table<Record5<Integer, Integer, BigDecimal, BigDecimal, BigDecimal>> nestedRepairs = getDslContext().select(
-        ROUND_PLAYER_REPAIR.PLAYER_ID,
-        repairs_all_count,
-        repairs_self_count,
-        repairs_others_count,
-        repairs_unmanned_count
-    ).from(ROUND_PLAYER_REPAIR)
-        .groupBy(ROUND_PLAYER_REPAIR.PLAYER_ID)
-        .asTable().as("table_repairs");
-
-    AggregateFunction<Integer> totalRoundsPlayed = count();
-    AggregateFunction<BigDecimal> totalScore = sum(ROUND_END_STATS_PLAYER.SCORE);
-    AggregateFunction<BigDecimal> totalKills = sum(ROUND_END_STATS_PLAYER.KILLS);
-    AggregateFunction<BigDecimal> totalDeaths = sum(ROUND_END_STATS_PLAYER.DEATHS);
-    Field<Float> totalKillDeathRate = totalKills.cast(Float.class).div(totalDeaths);
-    AggregateFunction<BigDecimal> totalTeamkills = sum(ROUND_END_STATS_PLAYER.TKS);
-    AggregateFunction<BigDecimal> totalCaptures = sum(ROUND_END_STATS_PLAYER.CAPTURES);
-    AggregateFunction<BigDecimal> totalAttacks = sum(ROUND_END_STATS_PLAYER.ATTACKS);
-    AggregateFunction<BigDecimal> totalDefences = sum(ROUND_END_STATS_PLAYER.DEFENCES);
-    AggregateFunction<BigDecimal> totalGoldCount = sum(when(ROUND_END_STATS_PLAYER.RANK.eq(1), 1).otherwise(0));
-    AggregateFunction<BigDecimal> totalSilverCount = sum(when(ROUND_END_STATS_PLAYER.RANK.eq(2), 1).otherwise(0));
-    AggregateFunction<BigDecimal> totalBronzeCount = sum(when(ROUND_END_STATS_PLAYER.RANK.eq(3), 1).otherwise(0));
-    Field<Integer> totalAllHealsCount = nvl(nestedHeals.field(heals_all_count), 0);
-    Field<Serializable> totalSelfHealsCount = nvl(nestedHeals.field(heals_self_count), 0);
-    Field<Serializable> totalOthersHealsCount = nvl(nestedHeals.field(heals_others_count), 0);
-    Field<Integer> totalAllRepairsCount = nvl(nestedRepairs.field(repairs_all_count), 0);
-    Field<Serializable> totalSelfRepairsCount = nvl(nestedRepairs.field(repairs_self_count), 0);
-    Field<Serializable> totalOthersRepairsCount = nvl(nestedRepairs.field(repairs_others_count), 0);
-    Field<Serializable> totalUnmannedRepairsCount = nvl(nestedRepairs.field(repairs_unmanned_count), 0);
-
-    return getDslContext().select(
-        totalRoundsPlayed.as("rounds_played"),
-        PLAYER.NAME.as("player_name"),
-        PLAYER.KEYHASH.as("keyhash"),
-        PLAYER_RANK.RANK.as("player_rank"),
-        ROUND_END_STATS_PLAYER.PLAYER_ID.as("player_id"),
-        ((totalCaptures.minus(totalTeamkills).plus(totalAllHealsCount.div(10)).plus(totalOthersRepairsCount.div(100))).div(totalRoundsPlayed).plus(totalKillDeathRate)).as("points"),
-        totalScore.as("score"),
-        totalScore.div(totalRoundsPlayed).as("average_score"),
-        totalKills.as("kills"),
-        totalDeaths.as("deaths"),
-        totalKillDeathRate.as("kdrate"), // kill/death rate
-        totalTeamkills.as("tks"),
-        totalCaptures.as("captures"),
-        totalAttacks.as("attacks"),
-        totalDefences.as("defences"),
-        totalGoldCount.as("gold_count"),
-        totalSilverCount.as("silver_count"),
-        totalBronzeCount.as("bronze_count"),
-
-        totalAllHealsCount.as("heals_all_count"),
-        totalSelfHealsCount.as("heals_self_count"),
-        totalOthersHealsCount.as("heals_others_count"),
-
-        totalAllRepairsCount.as("repairs_all_count"),
-        totalSelfRepairsCount.as("repairs_self_count"),
-        totalOthersRepairsCount.as("repairs_others_count"),
-        totalUnmannedRepairsCount.as("repairs_unmanned_count")
-    )
-        .from(ROUND_END_STATS_PLAYER)
-        .join(PLAYER).on(PLAYER.ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
-        .join(PLAYER_RANK).on(PLAYER_RANK.PLAYER_ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
-
-        .leftJoin(nestedHeals)
-        .on(nestedHeals.field(ROUND_PLAYER_MEDPACK.PLAYER_ID).eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
-
-        .leftJoin(nestedRepairs)
-        .on(nestedRepairs.field(ROUND_PLAYER_REPAIR.PLAYER_ID).eq(ROUND_END_STATS_PLAYER.PLAYER_ID))
-
-        .where(playerId == null ? DSL.trueCondition() : ROUND_END_STATS_PLAYER.PLAYER_ID.eq(playerId))
-        .groupBy(ROUND_END_STATS_PLAYER.PLAYER_ID)
+    Result<PlayerSummaryRecord> playerSummaryRecords = getDslContext().selectFrom(PLAYER_SUMMARY)
+        .where(playerId == null ? DSL.trueCondition() : PLAYER_SUMMARY.PLAYER_ID.eq(playerId))
         .orderBy(sortableField.sort(getJooqSortOrder(sort.getOrder())))
         .limit(firstRowIndex, numberOfRows)
-        .fetch()
-        .stream()
-        .map(this::toPlayerStats)
+        .fetch();
+
+    return playerSummaryRecords.stream()
+        .map(RankingService::toPlayerStats)
         .collect(Collectors.toList());
   }
 
-  private PlayerStats toPlayerStats(Record r) {
+  private static PlayerStats toPlayerStats(PlayerSummaryRecord r) {
     BigDecimal kdRateBigDec = r.get("kdrate", BigDecimal.class);
     Double kdRate = kdRateBigDec == null ? 0.0 : kdRateBigDec.doubleValue();
-
-    String keyhash = r.get("keyhash", String.class);
-    String partialKeyHash = keyhash.substring(25);
 
     return new PlayerStats()
         .setPlayerId(r.get("player_id", Integer.class))
         .setName(r.get("player_name", String.class))
-        .setPartialKeyHash(partialKeyHash)
         .setRank(r.get("player_rank", Integer.class))
         .setPoints(r.get("points", Integer.class))
         .setScore(r.get("score", Integer.class))

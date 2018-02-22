@@ -121,8 +121,6 @@ public class DbFiller {
     } finally {
       closeConnection();
     }
-
-    CacheFiller.fillCacheTables(dbUrl);
   }
 
   public static void parseAllInDir(String logDirPath) throws IOException {

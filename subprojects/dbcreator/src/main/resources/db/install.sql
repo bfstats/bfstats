@@ -329,11 +329,74 @@ CREATE TABLE IF NOT EXISTS configuration (
   last_parsed_datetime VARCHAR(30),
   CHECK (lock = 1)
 );
-INSERT INTO configuration (last_parsed_datetime) VALUES (null);
+-- add row (if none exist) with null as last_parsed_datetime
+INSERT INTO configuration(last_parsed_datetime)
+SELECT null WHERE NOT EXISTS(SELECT 1 FROM configuration WHERE lock =1);
 
-CREATE TABLE IF NOT EXISTS player_rank (
-  rank INTEGER PRIMARY KEY,
-  player_id INTEGER NOT NULL,
-  FOREIGN KEY (player_id) REFERENCES player(id)
-);
-CREATE INDEX IF NOT EXISTS player_rank_player_id_idx ON player_rank(player_id);
+-- views
+CREATE VIEW IF NOT EXISTS player_summary_no_rank AS
+SELECT
+  count( * ) rounds_played,
+  player.name player_name,
+  round_end_stats_player.player_id player_id,
+  sum(round_end_stats_player.score) score,
+  (sum(round_end_stats_player.score) / count( * ) ) average_score,
+  sum(round_end_stats_player.kills) kills,
+  sum(round_end_stats_player.deaths) deaths,
+  (CAST (sum(round_end_stats_player.kills) AS REAL) / sum(round_end_stats_player.deaths) ) kdrate,
+  sum(round_end_stats_player.tks) tks,
+  sum(round_end_stats_player.captures) captures,
+  sum(round_end_stats_player.attacks) attacks,
+  sum(round_end_stats_player.defences) defences,
+  sum(CASE WHEN round_end_stats_player.rank = 1 THEN 1 ELSE 0 END) gold_count,
+  sum(CASE WHEN round_end_stats_player.rank = 2 THEN 1 ELSE 0 END) silver_count,
+  sum(CASE WHEN round_end_stats_player.rank = 3 THEN 1 ELSE 0 END) bronze_count,
+  coalesce(table_heals.heals_all_count, 0) heals_all_count,
+  coalesce(table_heals.heals_self_count, 0) heals_self_count,
+  coalesce(table_heals.heals_others_count, 0) heals_others_count,
+  coalesce(table_repairs.repairs_all_count, 0) repairs_all_count,
+  coalesce(table_repairs.repairs_self_count, 0) repairs_self_count,
+  coalesce(table_repairs.repairs_others_count, 0) repairs_others_count,
+  coalesce(table_repairs.repairs_unmanned_count, 0) repairs_unmanned_count
+FROM round_end_stats_player
+INNER JOIN player ON player.id = round_end_stats_player.player_id
+LEFT JOIN (
+  SELECT
+    round_player_medpack.player_id,
+    count(round_player_medpack.id) heals_all_count,
+    sum(CASE WHEN round_player_medpack.healed_player_id = round_player_medpack.player_id THEN 1 ELSE 0 END) heals_self_count,
+    sum(CASE WHEN round_player_medpack.healed_player_id IS NOT NULL AND
+                  round_player_medpack.healed_player_id != round_player_medpack.player_id THEN 1 ELSE 0 END) heals_others_count
+  FROM round_player_medpack
+  GROUP BY round_player_medpack.player_id
+) table_heals ON table_heals.player_id = round_end_stats_player.player_id
+LEFT JOIN (
+  SELECT
+    round_player_repair.player_id,
+    count(round_player_repair.id) repairs_all_count,
+    sum(CASE WHEN round_player_repair.vehicle_player_id = round_player_repair.player_id THEN 1 ELSE 0 END) repairs_self_count,
+    sum(CASE WHEN (round_player_repair.vehicle_player_id IS NOT NULL AND
+                   round_player_repair.vehicle_player_id != round_player_repair.player_id) THEN 1 ELSE 0 END) repairs_others_count,
+    sum(CASE WHEN round_player_repair.vehicle_player_id IS NULL THEN 1 ELSE 0 END) repairs_unmanned_count
+  FROM round_player_repair
+  GROUP BY round_player_repair.player_id
+) table_repairs ON table_repairs.player_id = round_end_stats_player.player_id
+GROUP BY round_end_stats_player.player_id;
+
+CREATE VIEW IF NOT EXISTS player_points AS
+SELECT player_id,
+(
+defences*15 + captures*15 + kills*2 - deaths*2 + gold_count*10 + silver_count*6 + bronze_count*3 + repairs_all_count*10 - tks*10 + average_score
+) AS points
+FROM player_summary_no_rank;
+
+CREATE VIEW IF NOT EXISTS player_rank AS
+SELECT pp.player_id player_id, pp.points points, COUNT (*) player_rank
+FROM player_points pp
+INNER JOIN player_points pp2 ON pp2.player_id = pp.player_id OR pp2.points > pp.points
+GROUP BY pp.player_id, pp.points
+ORDER BY pp.points DESC;
+
+CREATE VIEW IF NOT EXISTS player_summary AS
+SELECT pr.player_rank, pr.points, ps.* FROM player_summary_no_rank ps
+INNER JOIN player_rank pr ON pr.player_id = ps.player_id;

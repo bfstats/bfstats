@@ -8,7 +8,10 @@ import io.github.bfstats.dbstats.jooq.tables.Configuration;
 import io.github.bfstats.dbstats.jooq.tables.Game;
 import io.github.bfstats.dbstats.jooq.tables.Player;
 import io.github.bfstats.dbstats.jooq.tables.PlayerNickname;
+import io.github.bfstats.dbstats.jooq.tables.PlayerPoints;
 import io.github.bfstats.dbstats.jooq.tables.PlayerRank;
+import io.github.bfstats.dbstats.jooq.tables.PlayerSummary;
+import io.github.bfstats.dbstats.jooq.tables.PlayerSummaryNoRank;
 import io.github.bfstats.dbstats.jooq.tables.Round;
 import io.github.bfstats.dbstats.jooq.tables.RoundChatLog;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
@@ -48,7 +51,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 54384709;
+    private static final long serialVersionUID = -1674419886;
 
     /**
      * The reference instance of <code></code>
@@ -76,9 +79,24 @@ public class DefaultSchema extends SchemaImpl {
     public final PlayerNickname PLAYER_NICKNAME = io.github.bfstats.dbstats.jooq.tables.PlayerNickname.PLAYER_NICKNAME;
 
     /**
+     * The table <code>player_points</code>.
+     */
+    public final PlayerPoints PLAYER_POINTS = io.github.bfstats.dbstats.jooq.tables.PlayerPoints.PLAYER_POINTS;
+
+    /**
      * The table <code>player_rank</code>.
      */
     public final PlayerRank PLAYER_RANK = io.github.bfstats.dbstats.jooq.tables.PlayerRank.PLAYER_RANK;
+
+    /**
+     * The table <code>player_summary</code>.
+     */
+    public final PlayerSummary PLAYER_SUMMARY = io.github.bfstats.dbstats.jooq.tables.PlayerSummary.PLAYER_SUMMARY;
+
+    /**
+     * The table <code>player_summary_no_rank</code>.
+     */
+    public final PlayerSummaryNoRank PLAYER_SUMMARY_NO_RANK = io.github.bfstats.dbstats.jooq.tables.PlayerSummaryNoRank.PLAYER_SUMMARY_NO_RANK;
 
     /**
      * The table <code>round</code>.
@@ -179,7 +197,10 @@ public class DefaultSchema extends SchemaImpl {
             Game.GAME,
             Player.PLAYER,
             PlayerNickname.PLAYER_NICKNAME,
+            PlayerPoints.PLAYER_POINTS,
             PlayerRank.PLAYER_RANK,
+            PlayerSummary.PLAYER_SUMMARY,
+            PlayerSummaryNoRank.PLAYER_SUMMARY_NO_RANK,
             Round.ROUND,
             RoundChatLog.ROUND_CHAT_LOG,
             RoundEndStats.ROUND_END_STATS,

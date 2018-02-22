@@ -5,23 +5,15 @@ package io.github.bfstats.dbstats.jooq.tables;
 
 
 import io.github.bfstats.dbstats.jooq.DefaultSchema;
-import io.github.bfstats.dbstats.jooq.Indexes;
-import io.github.bfstats.dbstats.jooq.Keys;
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerRankRecord;
-
-import java.util.Arrays;
-import java.util.List;
 
 import javax.annotation.Generated;
 
 import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 
@@ -39,7 +31,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PlayerRank extends TableImpl<PlayerRankRecord> {
 
-    private static final long serialVersionUID = -1179583747;
+    private static final long serialVersionUID = -1908935906;
 
     /**
      * The reference instance of <code>player_rank</code>
@@ -55,14 +47,21 @@ public class PlayerRank extends TableImpl<PlayerRankRecord> {
     }
 
     /**
-     * The column <code>player_rank.rank</code>.
-     */
-    public final TableField<PlayerRankRecord, Integer> RANK = createField("rank", org.jooq.impl.SQLDataType.INTEGER, this, "");
-
-    /**
      * The column <code>player_rank.player_id</code>.
      */
-    public final TableField<PlayerRankRecord, Integer> PLAYER_ID = createField("player_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<PlayerRankRecord, Integer> PLAYER_ID = createField("player_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+
+    /**
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     */
+    @java.lang.Deprecated
+    public final TableField<PlayerRankRecord, Object> POINTS = createField("points", org.jooq.impl.DefaultDataType.getDefaultDataType(""), this, "");
+
+    /**
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     */
+    @java.lang.Deprecated
+    public final TableField<PlayerRankRecord, Object> PLAYER_RANK_ = createField("player_rank", org.jooq.impl.DefaultDataType.getDefaultDataType(""), this, "");
 
     /**
      * Create a <code>player_rank</code> table reference
@@ -99,38 +98,6 @@ public class PlayerRank extends TableImpl<PlayerRankRecord> {
     @Override
     public Schema getSchema() {
         return DefaultSchema.DEFAULT_SCHEMA;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.PLAYER_RANK_PLAYER_ID_IDX);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public UniqueKey<PlayerRankRecord> getPrimaryKey() {
-        return Keys.PK_PLAYER_RANK;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<UniqueKey<PlayerRankRecord>> getKeys() {
-        return Arrays.<UniqueKey<PlayerRankRecord>>asList(Keys.PK_PLAYER_RANK);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<ForeignKey<PlayerRankRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<PlayerRankRecord, ?>>asList(Keys.FK_PLAYER_RANK_PLAYER_1);
     }
 
     /**
