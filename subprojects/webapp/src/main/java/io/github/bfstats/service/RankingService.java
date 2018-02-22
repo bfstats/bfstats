@@ -7,6 +7,7 @@ import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class RankingService {
     Field<Integer> heals_all_count = count(ROUND_PLAYER_MEDPACK.ID).as("heals_all_count");
     Field<BigDecimal> heals_self_count = sum(when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.eq(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
         .as("heals_self_count");
-    Field<BigDecimal> heals_others_count = sum(when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.notEqual(ROUND_PLAYER_MEDPACK.PLAYER_ID), 1).otherwise(0))
+    Field<BigDecimal> heals_others_count = sum(when(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.isNotNull().and(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID.notEqual(ROUND_PLAYER_MEDPACK.PLAYER_ID)), 1).otherwise(0))
         .as("heals_others_count");
 
     Table<Record4<Integer, Integer, BigDecimal, BigDecimal>> nestedHeals = getDslContext().select(
@@ -63,35 +64,54 @@ public class RankingService {
         .groupBy(ROUND_PLAYER_REPAIR.PLAYER_ID)
         .asTable().as("table_repairs");
 
+    AggregateFunction<Integer> totalRoundsPlayed = count();
+    AggregateFunction<BigDecimal> totalScore = sum(ROUND_END_STATS_PLAYER.SCORE);
+    AggregateFunction<BigDecimal> totalKills = sum(ROUND_END_STATS_PLAYER.KILLS);
+    AggregateFunction<BigDecimal> totalDeaths = sum(ROUND_END_STATS_PLAYER.DEATHS);
+    Field<Float> totalKillDeathRate = totalKills.cast(Float.class).div(totalDeaths);
+    AggregateFunction<BigDecimal> totalTeamkills = sum(ROUND_END_STATS_PLAYER.TKS);
+    AggregateFunction<BigDecimal> totalCaptures = sum(ROUND_END_STATS_PLAYER.CAPTURES);
+    AggregateFunction<BigDecimal> totalAttacks = sum(ROUND_END_STATS_PLAYER.ATTACKS);
+    AggregateFunction<BigDecimal> totalDefences = sum(ROUND_END_STATS_PLAYER.DEFENCES);
+    AggregateFunction<BigDecimal> totalGoldCount = sum(when(ROUND_END_STATS_PLAYER.RANK.eq(1), 1).otherwise(0));
+    AggregateFunction<BigDecimal> totalSilverCount = sum(when(ROUND_END_STATS_PLAYER.RANK.eq(2), 1).otherwise(0));
+    AggregateFunction<BigDecimal> totalBronzeCount = sum(when(ROUND_END_STATS_PLAYER.RANK.eq(3), 1).otherwise(0));
+    Field<Integer> totalAllHealsCount = nvl(nestedHeals.field(heals_all_count), 0);
+    Field<Serializable> totalSelfHealsCount = nvl(nestedHeals.field(heals_self_count), 0);
+    Field<Serializable> totalOthersHealsCount = nvl(nestedHeals.field(heals_others_count), 0);
+    Field<Integer> totalAllRepairsCount = nvl(nestedRepairs.field(repairs_all_count), 0);
+    Field<Serializable> totalSelfRepairsCount = nvl(nestedRepairs.field(repairs_self_count), 0);
+    Field<Serializable> totalOthersRepairsCount = nvl(nestedRepairs.field(repairs_others_count), 0);
+    Field<Serializable> totalUnmannedRepairsCount = nvl(nestedRepairs.field(repairs_unmanned_count), 0);
+
     return getDslContext().select(
-        count().as("rounds_played"),
+        totalRoundsPlayed.as("rounds_played"),
         PLAYER.NAME.as("player_name"),
         PLAYER.KEYHASH.as("keyhash"),
         PLAYER_RANK.RANK.as("player_rank"),
         ROUND_END_STATS_PLAYER.PLAYER_ID.as("player_id"),
-        sum(ROUND_END_STATS_PLAYER.SCORE).as("points"), // this will be configurable (as SQL, because has to be sortable by it)
-        sum(ROUND_END_STATS_PLAYER.SCORE).as("score"),
-        sum(ROUND_END_STATS_PLAYER.SCORE).div(count()).as("average_score"),
-        sum(ROUND_END_STATS_PLAYER.KILLS).as("kills"),
-        sum(ROUND_END_STATS_PLAYER.DEATHS).as("deaths"),
-        sum(ROUND_END_STATS_PLAYER.KILLS).cast(Float.class).div(sum(ROUND_END_STATS_PLAYER.DEATHS)).as("kdrate"), // kill/death rate
-        sum(ROUND_END_STATS_PLAYER.TKS).as("tks"),
-        sum(ROUND_END_STATS_PLAYER.CAPTURES).as("captures"),
-        sum(ROUND_END_STATS_PLAYER.ATTACKS).as("attacks"),
-        sum(ROUND_END_STATS_PLAYER.DEFENCES).as("defences"),
-        sum(when(ROUND_END_STATS_PLAYER.RANK.eq(1), 1).otherwise(0)).as("gold_count"),
-        sum(when(ROUND_END_STATS_PLAYER.RANK.eq(2), 1).otherwise(0)).as("silver_count"),
-        sum(when(ROUND_END_STATS_PLAYER.RANK.eq(3), 1).otherwise(0)).as("bronze_count"),
+        ((totalCaptures.minus(totalTeamkills).plus(totalAllHealsCount.div(10)).plus(totalOthersRepairsCount.div(100))).div(totalRoundsPlayed).plus(totalKillDeathRate)).as("points"),
+        totalScore.as("score"),
+        totalScore.div(totalRoundsPlayed).as("average_score"),
+        totalKills.as("kills"),
+        totalDeaths.as("deaths"),
+        totalKillDeathRate.as("kdrate"), // kill/death rate
+        totalTeamkills.as("tks"),
+        totalCaptures.as("captures"),
+        totalAttacks.as("attacks"),
+        totalDefences.as("defences"),
+        totalGoldCount.as("gold_count"),
+        totalSilverCount.as("silver_count"),
+        totalBronzeCount.as("bronze_count"),
 
+        totalAllHealsCount.as("heals_all_count"),
+        totalSelfHealsCount.as("heals_self_count"),
+        totalOthersHealsCount.as("heals_others_count"),
 
-        nvl(nestedHeals.field(heals_all_count), 0).as("heals_all_count"),
-        nvl(nestedHeals.field(heals_self_count), 0).as("heals_self_count"),
-        nvl(nestedHeals.field(heals_others_count), 0).as("heals_others_count"),
-
-        nvl(nestedRepairs.field(repairs_all_count), 0).as("repairs_all_count"),
-        nvl(nestedRepairs.field(repairs_self_count), 0).as("repairs_self_count"),
-        nvl(nestedRepairs.field(repairs_others_count), 0).as("repairs_others_count"),
-        nvl(nestedRepairs.field(repairs_unmanned_count), 0).as("repairs_unmanned_count")
+        totalAllRepairsCount.as("repairs_all_count"),
+        totalSelfRepairsCount.as("repairs_self_count"),
+        totalOthersRepairsCount.as("repairs_others_count"),
+        totalUnmannedRepairsCount.as("repairs_unmanned_count")
     )
         .from(ROUND_END_STATS_PLAYER)
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_END_STATS_PLAYER.PLAYER_ID))

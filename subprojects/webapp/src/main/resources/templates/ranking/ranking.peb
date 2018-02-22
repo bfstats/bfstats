@@ -36,6 +36,7 @@ There are no players.
   <tr>
     <th>{{sortableLink('Rank','player_rank',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Player','player_name',sortingColumn,sortingOrder)}}</th>
+    <th>{{sortableLink('Points','points',sortingColumn,sortingOrder)}}</th>
     <th title="Average score per round">{{sortableLink('S/R','average_score',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Score','score',sortingColumn,sortingOrder)}}</th>
     <th title="Kills">{{sortableLink('K','kills',sortingColumn,sortingOrder)}}</th>
@@ -56,6 +57,7 @@ There are no players.
   <tr>
     <td>{{ player.rank }}</td>
     <td class="left" style="width: 180px"><a href="{{appPath}}/players/{{ player.playerId }}">{{ player.name }}</a></td>
+    <td>{{ player.points }}</td>
     <td>{{ player.averageScore }}</td>
     <td>{{ player.score }}</td>
     <td style="width: 4em">{{ player.kills }}</td>
