@@ -6,10 +6,7 @@ import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerRecord;
 import io.github.bfstats.exceptions.NotFoundException;
 import io.github.bfstats.model.*;
 import io.github.bfstats.util.TranslationUtil;
-import org.jooq.Record;
-import org.jooq.Record2;
-import org.jooq.Record3;
-import org.jooq.Result;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import ro.pippo.core.util.StringUtils;
 
@@ -17,19 +14,22 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static io.github.bfstats.dbstats.jooq.Tables.*;
 import static io.github.bfstats.util.DateTimeUtils.toUserZone;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static io.github.bfstats.util.Utils.percentage;
+import static java.util.stream.Collectors.toList;
 
 public class PlayerService {
 
@@ -39,7 +39,7 @@ public class PlayerService {
 
   public List<Player> getPlayers() {
     Result<PlayerRecord> records = getDslContext().selectFrom(PLAYER).fetch();
-    return records.stream().map(PlayerService::toPlayer).collect(Collectors.toList());
+    return records.stream().map(PlayerService::toPlayer).collect(toList());
   }
 
   public List<Player> findPlayers(String partialName) {
@@ -50,7 +50,7 @@ public class PlayerService {
         .where(PLAYER_NICKNAME.NICKNAME.likeIgnoreCase("%" + partialName + "%"))
         .fetchInto(PLAYER);
 
-    return records.stream().map(PlayerService::toPlayer).collect(Collectors.toList());
+    return records.stream().map(PlayerService::toPlayer).collect(toList());
   }
 
   public Player getPlayer(int id) {
@@ -119,6 +119,56 @@ public class PlayerService {
     return usersAt;
   }
 
+  // returns times in UTC
+  public Map<LocalDate, Integer> fetchUniquePlayerCountPerDay(@Nonnull LocalDateTime since) {
+    Timestamp sinceTimestamp = Timestamp.valueOf(since);
+
+    Table<Record2<Date, Integer>> playersPerDay = DSL.select(DSL.date(ROUND_PLAYER.START_TIME).as("day"), ROUND_PLAYER.PLAYER_ID)
+        .from(ROUND_PLAYER)
+        .where(ROUND_PLAYER.START_TIME.greaterThan(sinceTimestamp))
+        .groupBy(DSL.date(ROUND_PLAYER.START_TIME), ROUND_PLAYER.PLAYER_ID)
+        .asTable("a");
+
+    Result<Record2<Object, Integer>> records = getDslContext()
+        .select(DSL.field("day"), DSL.count().as("count"))
+        .from(playersPerDay)
+        .groupBy(playersPerDay.field("day"))
+        .orderBy(DSL.field("day").asc())
+        .fetch();
+
+    Map<LocalDate, Integer> m = new HashMap<>();
+    for (int i = 0; i < records.size(); i++) {
+      Record2<Object, Integer> record = records.get(i);
+      LocalDate date = record.get("day", Date.class).toLocalDate();
+      Integer count = record.get("count", Integer.class);
+      m.put(date, count);
+
+      // if not first element
+      if (i != 0) {
+        Record2<Object, Integer> prevRecord = records.get(i - 1);
+        LocalDate prevDate = prevRecord.get("day", Date.class).toLocalDate();
+        LocalDate prevDay = date.minusDays(1);
+        // if prev date is not the prev day, then it means prev day had 0 players, so insert such point in graph
+        if (!prevDate.equals(prevDay)) {
+          m.put(prevDay, 0);
+        }
+      }
+
+      // if not last element
+      if (i + 1 < records.size()) {
+        Record2<Object, Integer> nextRecord = records.get(i + 1);
+        LocalDate nextDate = nextRecord.get("day", Date.class).toLocalDate();
+        LocalDate nextDay = date.plusDays(1);
+        // if next date is not the next day, then it means next day had 0 players, so insert such point in graph
+        if (!nextDate.equals(nextDay)) {
+          m.put(nextDay, 0);
+        }
+      }
+    }
+
+    return m;
+  }
+
   public LocalDateTime getPlayerLastSeen(int playerId) {
     RoundPlayerRecord roundPlayerRecord = getDslContext().selectFrom(ROUND_PLAYER)
         .where(ROUND_PLAYER.PLAYER_ID.eq(playerId))
@@ -146,7 +196,7 @@ public class PlayerService {
     Result<PlayerNicknameRecord> records = getDslContext().selectFrom(PLAYER_NICKNAME)
         .where(PLAYER_NICKNAME.PLAYER_ID.eq(playerId))
         .fetch();
-    return records.stream().map(PlayerService::toNicknameUsage).collect(Collectors.toList());
+    return records.stream().map(PlayerService::toNicknameUsage).collect(toList());
   }
 
   private static NicknameUsage toNicknameUsage(PlayerNicknameRecord r) {
@@ -178,7 +228,7 @@ public class PlayerService {
           .setPlayerName(r.get(PLAYER.NAME))
           .setTotal(killCount)
           .setPercentage(percentage(killCount, totalKillCount));
-    }).collect(Collectors.toList());
+    }).collect(toList());
   }
 
   public List<PlayerAndTotal> getDeathsByKillers(@Nullable Integer playerId) {
@@ -206,7 +256,7 @@ public class PlayerService {
               .setTotal(deathCount)
               .setPercentage(percentage(deathCount, totalDeathCount));
         }
-    ).collect(Collectors.toList());
+    ).collect(toList());
   }
 
   public List<WeaponUsage> getWeaponUsages(int playerId) {
@@ -225,7 +275,7 @@ public class PlayerService {
 
     return records.stream()
         .map(r -> toWeaponUsage(r, totalTimesUsed))
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
 
@@ -255,7 +305,7 @@ public class PlayerService {
 
     return records.stream()
         .map(r -> toKitUsage(r, totalTimesUsed))
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   private static KitUsage toKitUsage(Record r, int totalTimesUsed) {
@@ -287,7 +337,7 @@ public class PlayerService {
         .reduce(0, Integer::sum);
 
     return records.stream().map(r -> toVehicleUsage(r, totalVehiclesDriveTimeInSeconds))
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   private static VehicleUsage toVehicleUsage(Record r, int totalVehiclesDriveTimeInSeconds) {
@@ -346,10 +396,6 @@ public class PlayerService {
     code = StringUtils.removeEnd(code, "_");
 
     return code;
-  }
-
-  private static String convertSecondToHHMMSSString(int nSecondTime) {
-    return convertSecondsToLocalTime(nSecondTime).toString();
   }
 
   private static LocalTime convertSecondsToLocalTime(int nSecondTime) {

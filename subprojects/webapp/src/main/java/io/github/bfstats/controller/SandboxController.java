@@ -13,7 +13,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -31,30 +33,12 @@ public class SandboxController extends Controller {
   public void sandbox() {
     LocalDateTime lastMonth = LocalDateTime.now().minusMonths(1);
     Map<LocalDateTime, Integer> playersOnline = playerService.fetchPlayersOnlineTimes(lastMonth);
-    String playersOnlineForHighCharts = asJson(playersOnline);
+    String playersOnlineForHighCharts = asJsonDateTimes(playersOnline);
 
     getResponse()
         .bind("playersOnline", playersOnlineForHighCharts)
         .bind("playersOnlineUrlPath", "sandbox/json/online")
         .render("sandbox/sandbox");
-  }
-
-  private static String asJson(Map<LocalDateTime, Integer> playersOnline) {
-    return playersOnline.entrySet().stream()
-        .map(localDateTimeIntegerEntry -> {
-          LocalDateTime dateTime = localDateTimeIntegerEntry.getKey();
-          Integer concurrentOnline = localDateTimeIntegerEntry.getValue();
-          String javascriptDate = toJavascriptDate(dateTime);
-          return "[" + javascriptDate + ", " + concurrentOnline + "]";
-        })
-        .collect(Collectors.joining(",", "[", "]"));
-  }
-
-  @Nonnull
-  private static String toJavascriptDate(@Nonnull LocalDateTime dateTime) {
-    Instant instant = DateTimeUtils.toInstantAtUserZone(dateTime);
-    long millisSinceEpoch = instant.toEpochMilli();
-    return String.valueOf(millisSinceEpoch);
   }
 
   private static String toJsDateUtc(LocalDateTime dateTime) {
@@ -75,11 +59,47 @@ public class SandboxController extends Controller {
     if (period != null) {
       // not implemented yet, will default to last month
     }
-    LocalDateTime lastMonth = LocalDateTime.now().minusMonths(1);
-    Map<LocalDateTime, Integer> playersOnline = playerService.fetchPlayersOnlineTimes(lastMonth);
-    String playersOnlineForHighCharts = asJson(playersOnline);
 
-    getRouteContext().json().send(playersOnlineForHighCharts);
+    LocalDateTime lastMonth = LocalDateTime.now().minusMonths(1);
+    Map<LocalDate, Integer> uniquePlayerCountPerDay = playerService.fetchUniquePlayerCountPerDay(lastMonth);
+    String uniquePlayersCountForHighCharts = asJsonDates(uniquePlayerCountPerDay);
+    getRouteContext().json().send(uniquePlayersCountForHighCharts);
   }
 
+  private static String asJsonDateTimes(Map<LocalDateTime, Integer> playersOnline) {
+    return playersOnline.entrySet().stream()
+        .map(localDateTimeIntegerEntry -> {
+          LocalDateTime dateTime = localDateTimeIntegerEntry.getKey();
+          Integer concurrentOnline = localDateTimeIntegerEntry.getValue();
+          String javascriptDate = toJavascriptDate(dateTime);
+          return "[" + javascriptDate + ", " + concurrentOnline + "]";
+        })
+        .collect(Collectors.joining(",", "[", "]"));
+  }
+
+  private static String asJsonDates(Map<LocalDate, Integer> playersOnline) {
+    return playersOnline.entrySet().stream()
+        .sorted(Comparator.comparing(Map.Entry::getKey))
+        .map(localDateTimeIntegerEntry -> {
+          LocalDate date = localDateTimeIntegerEntry.getKey();
+          Integer concurrentOnline = localDateTimeIntegerEntry.getValue();
+          String javascriptDate = toJavascriptDate(date);
+          return "[" + javascriptDate + ", " + concurrentOnline + "]";
+        })
+        .collect(Collectors.joining(",", "[", "]"));
+  }
+
+  @Nonnull
+  private static String toJavascriptDate(@Nonnull LocalDateTime dateTime) {
+    Instant instant = DateTimeUtils.toInstantAtUserZone(dateTime);
+    long millisSinceEpoch = instant.toEpochMilli();
+    return String.valueOf(millisSinceEpoch);
+  }
+
+  @Nonnull
+  private static String toJavascriptDate(@Nonnull LocalDate date) {
+    Instant instant = DateTimeUtils.toInstantAtUserZone(date.atStartOfDay());
+    long millisSinceEpoch = instant.toEpochMilli();
+    return String.valueOf(millisSinceEpoch);
+  }
 }
