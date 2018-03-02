@@ -5,7 +5,6 @@
 {% block content %}
 
 <div id="container" style="margin-top: 60px;width:70%; height:300px;"></div>
-<div id="container2" style="margin-top: 60px;width:70%; height:300px;"></div>
 
 <script>
    Highcharts.chart('container', {
@@ -41,80 +40,6 @@
 
 </script>
 
-<script>
-$.ajax({
-  url: "{{appPath}}/{{playersOnlineUrlPath}}",
-  dataType: 'json',
-  data: {"period":"month"},
-  success: function (data) {
-    var onlinePlayers = data;
-
-    Highcharts.chart('container2', {
-      title: {
-          text: 'Daily unique players'
-      },
-      xAxis: {
-        type: 'datetime',
-        tickInterval: 24 * 3600 * 1000, // one day
-        tickWidth: 1,
-        labels: {
-            align: 'left',
-            x: 3,
-            y: -3
-        }
-      },
-
-      yAxis: [
-        { // left y axis
-          title: {
-            text: null
-          },
-          labels: {
-            align: 'left',
-            x: 3,
-            y: 16,
-            format: '{value:.,0f}'
-          },
-          showFirstLabel: false
-        },
-        { // right y axis
-          linkedTo: 0,
-          gridLineWidth: 0,
-          opposite: true,
-          title: {
-            text: null
-          },
-          labels: {
-            align: 'right',
-            x: -3,
-            y: 16,
-            format: '{value:.,0f}'
-          },
-          showFirstLabel: false
-        }
-      ],
-      legend: {
-        enabled: false
-       },
-      tooltip: {
-        crosshairs: true
-      },
-      series: [
-        {
-          name: 'All visits',
-          lineWidth: 1,
-          marker: {
-            radius: 3
-          },
-          data: onlinePlayers
-        }
-      ]
-    });
-
-  }
-});
-
-</script>
-
+{% include "fragments/graph" with {"playersOnlineUrlPath":playersOnlineUrlPath} %}
 
 {% endblock %}

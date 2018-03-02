@@ -1,0 +1,9 @@
+{% extends "layout" %}
+
+{% block title %} Graphs {% endblock %}
+
+{% block content %}
+
+{% include "fragments/graph" with {"playersOnlineUrlPath":playersOnlineUrlPath} %}
+
+{% endblock %}
