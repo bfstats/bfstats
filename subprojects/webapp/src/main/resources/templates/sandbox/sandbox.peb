@@ -5,6 +5,7 @@
 {% block content %}
 
 <div id="container" style="margin-top: 60px;width:70%; height:300px;"></div>
+<div id="container2" style="margin-top: 60px;width:70%; height:300px;"></div>
 
 <script>
    Highcharts.chart('container', {
@@ -34,9 +35,113 @@
         legend: {enabled: false},
         series: [{
             name: 'online',
-            data: [{{playersOnline}}]
+            data: {{playersOnline | raw}}
         }]
     });
+
+</script>
+
+<script>
+$.ajax({
+  url: "{{appPath}}/{{playersOnlineUrlPath}}",
+  dataType: 'json',
+  data: {"period":"month"},
+  success: function (data) {
+    var onlinePlayers = data;
+
+    Highcharts.chart('container2', {
+      title: {
+          text: 'Daily unique players'
+      },
+      xAxis: {
+        type: 'datetime',
+        tickInterval: 24 * 3600 * 1000, // one day
+        tickWidth: 1,
+        labels: {
+            align: 'left',
+            x: 3,
+            y: -3
+        }
+      },
+
+      yAxis: [
+        { // left y axis
+          title: {
+            text: null
+          },
+          labels: {
+            align: 'left',
+            x: 3,
+            y: 16,
+            format: '{value:.,0f}'
+          },
+          showFirstLabel: false
+        },
+        { // right y axis
+          linkedTo: 0,
+          gridLineWidth: 0,
+          opposite: true,
+          title: {
+            text: null
+          },
+          labels: {
+            align: 'right',
+            x: -3,
+            y: 16,
+            format: '{value:.,0f}'
+          },
+          showFirstLabel: false
+        }
+      ],
+
+      legend: {
+        enabled: false
+       },
+
+
+      tooltip: {
+        shared: true,
+        crosshairs: true
+      },
+
+      plotOptions: {
+        series: {
+          cursor: 'pointer',
+          point: {
+            events: {
+              click: function (e) {
+                hs.htmlExpand(null, {
+                  pageOrigin: {
+                    x: e.pageX || e.clientX,
+                    y: e.pageY || e.clientY
+                  },
+                  headingText: this.series.name,
+                  maincontentText: Highcharts.dateFormat('%A, %b %e, %Y', this.x) + ':<br/> ' + this.y + ' visits',
+                  width: 200
+                });
+              }
+            }
+          },
+          marker: {
+            lineWidth: 1
+          }
+        }
+      },
+
+      series: [
+        {
+          name: 'All visits',
+          lineWidth: 4,
+          marker: {
+            radius: 4
+          },
+          data: onlinePlayers
+        }
+      ]
+    });
+
+  }
+});
 
 </script>
 
