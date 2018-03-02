@@ -72,7 +72,7 @@ public class BfStatsApplication extends ControllerApplication {
 
   @Override
   protected RequestResponseFactory createRequestResponseFactory() {
-    CookieSessionStrategy cookieSessionStrategy1 = new CookieSessionStrategy() {
+    CookieSessionStrategy cookieSessionStrategy = new CookieSessionStrategy() {
       @Override
       public void onNewSession(HttpServletRequest request, HttpServletResponse response, SessionData sessionData) {
         String sessionId = sessionData.getId();
@@ -99,7 +99,7 @@ public class BfStatsApplication extends ControllerApplication {
     };
 
     MemorySessionDataStorage memorySessionDataStorage = new MemorySessionDataStorage();
-    SessionManager sessionManager = new SessionManager(memorySessionDataStorage, cookieSessionStrategy1);
+    SessionManager sessionManager = new SessionManager(memorySessionDataStorage, cookieSessionStrategy);
     return new SessionRequestResponseFactory(this, sessionManager);
   }
 

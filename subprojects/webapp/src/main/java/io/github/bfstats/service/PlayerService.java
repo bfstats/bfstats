@@ -90,6 +90,7 @@ public class PlayerService {
     return totalTimeInSeconds.longValue();
   }
 
+  // returns times in UTC
   public Map<LocalDateTime, Integer> fetchPlayersOnlineTimes(@Nonnull LocalDateTime since) {
     Timestamp sinceTimestamp = Timestamp.valueOf(since);
 

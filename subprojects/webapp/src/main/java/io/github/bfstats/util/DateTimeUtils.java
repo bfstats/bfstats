@@ -5,10 +5,7 @@ import ro.pippo.core.route.RouteContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.Comparator;
 import java.util.List;
 
@@ -56,6 +53,27 @@ public class DateTimeUtils {
     session.put(SESSION_ATTRIBUTE_TIMEZONE, zoneId.getId());
   }
 
+
+  @Nullable
+  public static Instant toInstantAtUserZone(@Nullable LocalDateTime localDateTimeUTC) {
+    ZonedDateTime zonedDateTime = toZonedDateTimeAtUserZone(localDateTimeUTC);
+    if (zonedDateTime == null) {
+      return null;
+    }
+
+    return zonedDateTime.toInstant();
+  }
+
+  @Nullable
+  public static ZonedDateTime toZonedDateTimeAtUserZone(@Nullable LocalDateTime localDateTimeUTC) {
+    if (localDateTimeUTC == null) {
+      return null;
+    }
+
+    return localDateTimeUTC.atZone(DateTimeUtils.getUserZone());
+  }
+
+  @Nullable
   public static LocalDateTime toUserZone(@Nullable LocalDateTime localDateTimeUTC) {
     if (localDateTimeUTC == null) {
       return null;
