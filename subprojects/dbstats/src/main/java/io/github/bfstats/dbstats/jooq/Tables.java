@@ -6,6 +6,7 @@ package io.github.bfstats.dbstats.jooq;
 
 import io.github.bfstats.dbstats.jooq.tables.Configuration;
 import io.github.bfstats.dbstats.jooq.tables.Game;
+import io.github.bfstats.dbstats.jooq.tables.GamePlayer;
 import io.github.bfstats.dbstats.jooq.tables.Player;
 import io.github.bfstats.dbstats.jooq.tables.PlayerNickname;
 import io.github.bfstats.dbstats.jooq.tables.PlayerPoints;
@@ -16,7 +17,6 @@ import io.github.bfstats.dbstats.jooq.tables.Round;
 import io.github.bfstats.dbstats.jooq.tables.RoundChatLog;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStatsPlayer;
-import io.github.bfstats.dbstats.jooq.tables.RoundPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeath;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeployObject;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerMedpack;
@@ -52,6 +52,11 @@ public class Tables {
      * The table <code>game</code>.
      */
     public static final Game GAME = io.github.bfstats.dbstats.jooq.tables.Game.GAME;
+
+    /**
+     * The table <code>game_player</code>.
+     */
+    public static final GamePlayer GAME_PLAYER = io.github.bfstats.dbstats.jooq.tables.GamePlayer.GAME_PLAYER;
 
     /**
      * The table <code>player</code>.
@@ -102,11 +107,6 @@ public class Tables {
      * The table <code>round_end_stats_player</code>.
      */
     public static final RoundEndStatsPlayer ROUND_END_STATS_PLAYER = io.github.bfstats.dbstats.jooq.tables.RoundEndStatsPlayer.ROUND_END_STATS_PLAYER;
-
-    /**
-     * The table <code>round_player</code>.
-     */
-    public static final RoundPlayer ROUND_PLAYER = io.github.bfstats.dbstats.jooq.tables.RoundPlayer.ROUND_PLAYER;
 
     /**
      * The table <code>round_player_death</code>.

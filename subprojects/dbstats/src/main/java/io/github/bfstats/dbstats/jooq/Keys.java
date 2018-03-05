@@ -6,13 +6,13 @@ package io.github.bfstats.dbstats.jooq;
 
 import io.github.bfstats.dbstats.jooq.tables.Configuration;
 import io.github.bfstats.dbstats.jooq.tables.Game;
+import io.github.bfstats.dbstats.jooq.tables.GamePlayer;
 import io.github.bfstats.dbstats.jooq.tables.Player;
 import io.github.bfstats.dbstats.jooq.tables.PlayerNickname;
 import io.github.bfstats.dbstats.jooq.tables.Round;
 import io.github.bfstats.dbstats.jooq.tables.RoundChatLog;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStatsPlayer;
-import io.github.bfstats.dbstats.jooq.tables.RoundPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeath;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeployObject;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerMedpack;
@@ -23,6 +23,7 @@ import io.github.bfstats.dbstats.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerVehicle;
 import io.github.bfstats.dbstats.jooq.tables.Server;
 import io.github.bfstats.dbstats.jooq.tables.records.ConfigurationRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.GamePlayerRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.GameRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerRecord;
@@ -33,7 +34,6 @@ import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerDeathRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerDeployObjectRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerMedpackRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerPickupKitRecord;
-import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerRepairRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerScoreEventRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerTeamRecord;
@@ -68,12 +68,12 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final Identity<GameRecord, Integer> IDENTITY_GAME = Identities0.IDENTITY_GAME;
+    public static final Identity<GamePlayerRecord, Integer> IDENTITY_GAME_PLAYER = Identities0.IDENTITY_GAME_PLAYER;
     public static final Identity<PlayerRecord, Integer> IDENTITY_PLAYER = Identities0.IDENTITY_PLAYER;
     public static final Identity<PlayerNicknameRecord, Integer> IDENTITY_PLAYER_NICKNAME = Identities0.IDENTITY_PLAYER_NICKNAME;
     public static final Identity<RoundRecord, Integer> IDENTITY_ROUND = Identities0.IDENTITY_ROUND;
     public static final Identity<RoundChatLogRecord, Integer> IDENTITY_ROUND_CHAT_LOG = Identities0.IDENTITY_ROUND_CHAT_LOG;
     public static final Identity<RoundEndStatsPlayerRecord, Integer> IDENTITY_ROUND_END_STATS_PLAYER = Identities0.IDENTITY_ROUND_END_STATS_PLAYER;
-    public static final Identity<RoundPlayerRecord, Integer> IDENTITY_ROUND_PLAYER = Identities0.IDENTITY_ROUND_PLAYER;
     public static final Identity<RoundPlayerDeathRecord, Integer> IDENTITY_ROUND_PLAYER_DEATH = Identities0.IDENTITY_ROUND_PLAYER_DEATH;
     public static final Identity<RoundPlayerDeployObjectRecord, Integer> IDENTITY_ROUND_PLAYER_DEPLOY_OBJECT = Identities0.IDENTITY_ROUND_PLAYER_DEPLOY_OBJECT;
     public static final Identity<RoundPlayerMedpackRecord, Integer> IDENTITY_ROUND_PLAYER_MEDPACK = Identities0.IDENTITY_ROUND_PLAYER_MEDPACK;
@@ -90,13 +90,13 @@ public class Keys {
 
     public static final UniqueKey<ConfigurationRecord> PK_CONFIGURATION = UniqueKeys0.PK_CONFIGURATION;
     public static final UniqueKey<GameRecord> PK_GAME = UniqueKeys0.PK_GAME;
+    public static final UniqueKey<GamePlayerRecord> PK_GAME_PLAYER = UniqueKeys0.PK_GAME_PLAYER;
     public static final UniqueKey<PlayerRecord> PK_PLAYER = UniqueKeys0.PK_PLAYER;
     public static final UniqueKey<PlayerNicknameRecord> PK_PLAYER_NICKNAME = UniqueKeys0.PK_PLAYER_NICKNAME;
     public static final UniqueKey<RoundRecord> PK_ROUND = UniqueKeys0.PK_ROUND;
     public static final UniqueKey<RoundChatLogRecord> PK_ROUND_CHAT_LOG = UniqueKeys0.PK_ROUND_CHAT_LOG;
     public static final UniqueKey<RoundEndStatsRecord> PK_ROUND_END_STATS = UniqueKeys0.PK_ROUND_END_STATS;
     public static final UniqueKey<RoundEndStatsPlayerRecord> PK_ROUND_END_STATS_PLAYER = UniqueKeys0.PK_ROUND_END_STATS_PLAYER;
-    public static final UniqueKey<RoundPlayerRecord> PK_ROUND_PLAYER = UniqueKeys0.PK_ROUND_PLAYER;
     public static final UniqueKey<RoundPlayerDeathRecord> PK_ROUND_PLAYER_DEATH = UniqueKeys0.PK_ROUND_PLAYER_DEATH;
     public static final UniqueKey<RoundPlayerDeployObjectRecord> PK_ROUND_PLAYER_DEPLOY_OBJECT = UniqueKeys0.PK_ROUND_PLAYER_DEPLOY_OBJECT;
     public static final UniqueKey<RoundPlayerMedpackRecord> PK_ROUND_PLAYER_MEDPACK = UniqueKeys0.PK_ROUND_PLAYER_MEDPACK;
@@ -112,6 +112,10 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final ForeignKey<GameRecord, ServerRecord> FK_GAME_SERVER_1 = ForeignKeys0.FK_GAME_SERVER_1;
+    public static final ForeignKey<GamePlayerRecord, GameRecord> FK_GAME_PLAYER_GAME_1 = ForeignKeys0.FK_GAME_PLAYER_GAME_1;
+    public static final ForeignKey<GamePlayerRecord, RoundRecord> FK_GAME_PLAYER_ROUND_2 = ForeignKeys0.FK_GAME_PLAYER_ROUND_2;
+    public static final ForeignKey<GamePlayerRecord, RoundRecord> FK_GAME_PLAYER_ROUND_1 = ForeignKeys0.FK_GAME_PLAYER_ROUND_1;
+    public static final ForeignKey<GamePlayerRecord, PlayerRecord> FK_GAME_PLAYER_PLAYER_1 = ForeignKeys0.FK_GAME_PLAYER_PLAYER_1;
     public static final ForeignKey<PlayerNicknameRecord, PlayerRecord> FK_PLAYER_NICKNAME_PLAYER_1 = ForeignKeys0.FK_PLAYER_NICKNAME_PLAYER_1;
     public static final ForeignKey<RoundRecord, GameRecord> FK_ROUND_GAME_1 = ForeignKeys0.FK_ROUND_GAME_1;
     public static final ForeignKey<RoundChatLogRecord, RoundRecord> FK_ROUND_CHAT_LOG_ROUND_1 = ForeignKeys0.FK_ROUND_CHAT_LOG_ROUND_1;
@@ -119,10 +123,6 @@ public class Keys {
     public static final ForeignKey<RoundEndStatsRecord, RoundRecord> FK_ROUND_END_STATS_ROUND_1 = ForeignKeys0.FK_ROUND_END_STATS_ROUND_1;
     public static final ForeignKey<RoundEndStatsPlayerRecord, RoundEndStatsRecord> FK_ROUND_END_STATS_PLAYER_ROUND_END_STATS_1 = ForeignKeys0.FK_ROUND_END_STATS_PLAYER_ROUND_END_STATS_1;
     public static final ForeignKey<RoundEndStatsPlayerRecord, PlayerRecord> FK_ROUND_END_STATS_PLAYER_PLAYER_1 = ForeignKeys0.FK_ROUND_END_STATS_PLAYER_PLAYER_1;
-    public static final ForeignKey<RoundPlayerRecord, GameRecord> FK_ROUND_PLAYER_GAME_1 = ForeignKeys0.FK_ROUND_PLAYER_GAME_1;
-    public static final ForeignKey<RoundPlayerRecord, RoundRecord> FK_ROUND_PLAYER_ROUND_2 = ForeignKeys0.FK_ROUND_PLAYER_ROUND_2;
-    public static final ForeignKey<RoundPlayerRecord, RoundRecord> FK_ROUND_PLAYER_ROUND_1 = ForeignKeys0.FK_ROUND_PLAYER_ROUND_1;
-    public static final ForeignKey<RoundPlayerRecord, PlayerRecord> FK_ROUND_PLAYER_PLAYER_1 = ForeignKeys0.FK_ROUND_PLAYER_PLAYER_1;
     public static final ForeignKey<RoundPlayerDeathRecord, RoundRecord> FK_ROUND_PLAYER_DEATH_ROUND_1 = ForeignKeys0.FK_ROUND_PLAYER_DEATH_ROUND_1;
     public static final ForeignKey<RoundPlayerDeathRecord, PlayerRecord> FK_ROUND_PLAYER_DEATH_PLAYER_2 = ForeignKeys0.FK_ROUND_PLAYER_DEATH_PLAYER_2;
     public static final ForeignKey<RoundPlayerDeathRecord, PlayerRecord> FK_ROUND_PLAYER_DEATH_PLAYER_1 = ForeignKeys0.FK_ROUND_PLAYER_DEATH_PLAYER_1;
@@ -149,12 +149,12 @@ public class Keys {
 
     private static class Identities0 extends AbstractKeys {
         public static Identity<GameRecord, Integer> IDENTITY_GAME = createIdentity(Game.GAME, Game.GAME.ID);
+        public static Identity<GamePlayerRecord, Integer> IDENTITY_GAME_PLAYER = createIdentity(GamePlayer.GAME_PLAYER, GamePlayer.GAME_PLAYER.ID);
         public static Identity<PlayerRecord, Integer> IDENTITY_PLAYER = createIdentity(Player.PLAYER, Player.PLAYER.ID);
         public static Identity<PlayerNicknameRecord, Integer> IDENTITY_PLAYER_NICKNAME = createIdentity(PlayerNickname.PLAYER_NICKNAME, PlayerNickname.PLAYER_NICKNAME.ID);
         public static Identity<RoundRecord, Integer> IDENTITY_ROUND = createIdentity(Round.ROUND, Round.ROUND.ID);
         public static Identity<RoundChatLogRecord, Integer> IDENTITY_ROUND_CHAT_LOG = createIdentity(RoundChatLog.ROUND_CHAT_LOG, RoundChatLog.ROUND_CHAT_LOG.ID);
         public static Identity<RoundEndStatsPlayerRecord, Integer> IDENTITY_ROUND_END_STATS_PLAYER = createIdentity(RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.ID);
-        public static Identity<RoundPlayerRecord, Integer> IDENTITY_ROUND_PLAYER = createIdentity(RoundPlayer.ROUND_PLAYER, RoundPlayer.ROUND_PLAYER.ID);
         public static Identity<RoundPlayerDeathRecord, Integer> IDENTITY_ROUND_PLAYER_DEATH = createIdentity(RoundPlayerDeath.ROUND_PLAYER_DEATH, RoundPlayerDeath.ROUND_PLAYER_DEATH.ID);
         public static Identity<RoundPlayerDeployObjectRecord, Integer> IDENTITY_ROUND_PLAYER_DEPLOY_OBJECT = createIdentity(RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT, RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT.ID);
         public static Identity<RoundPlayerMedpackRecord, Integer> IDENTITY_ROUND_PLAYER_MEDPACK = createIdentity(RoundPlayerMedpack.ROUND_PLAYER_MEDPACK, RoundPlayerMedpack.ROUND_PLAYER_MEDPACK.ID);
@@ -169,13 +169,13 @@ public class Keys {
     private static class UniqueKeys0 extends AbstractKeys {
         public static final UniqueKey<ConfigurationRecord> PK_CONFIGURATION = createUniqueKey(Configuration.CONFIGURATION, "pk_configuration", Configuration.CONFIGURATION.LOCK);
         public static final UniqueKey<GameRecord> PK_GAME = createUniqueKey(Game.GAME, "pk_game", Game.GAME.ID);
+        public static final UniqueKey<GamePlayerRecord> PK_GAME_PLAYER = createUniqueKey(GamePlayer.GAME_PLAYER, "pk_game_player", GamePlayer.GAME_PLAYER.ID);
         public static final UniqueKey<PlayerRecord> PK_PLAYER = createUniqueKey(Player.PLAYER, "pk_player", Player.PLAYER.ID);
         public static final UniqueKey<PlayerNicknameRecord> PK_PLAYER_NICKNAME = createUniqueKey(PlayerNickname.PLAYER_NICKNAME, "pk_player_nickname", PlayerNickname.PLAYER_NICKNAME.ID);
         public static final UniqueKey<RoundRecord> PK_ROUND = createUniqueKey(Round.ROUND, "pk_round", Round.ROUND.ID);
         public static final UniqueKey<RoundChatLogRecord> PK_ROUND_CHAT_LOG = createUniqueKey(RoundChatLog.ROUND_CHAT_LOG, "pk_round_chat_log", RoundChatLog.ROUND_CHAT_LOG.ID);
         public static final UniqueKey<RoundEndStatsRecord> PK_ROUND_END_STATS = createUniqueKey(RoundEndStats.ROUND_END_STATS, "pk_round_end_stats", RoundEndStats.ROUND_END_STATS.ROUND_ID);
         public static final UniqueKey<RoundEndStatsPlayerRecord> PK_ROUND_END_STATS_PLAYER = createUniqueKey(RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, "pk_round_end_stats_player", RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.ID);
-        public static final UniqueKey<RoundPlayerRecord> PK_ROUND_PLAYER = createUniqueKey(RoundPlayer.ROUND_PLAYER, "pk_round_player", RoundPlayer.ROUND_PLAYER.ID);
         public static final UniqueKey<RoundPlayerDeathRecord> PK_ROUND_PLAYER_DEATH = createUniqueKey(RoundPlayerDeath.ROUND_PLAYER_DEATH, "pk_round_player_death", RoundPlayerDeath.ROUND_PLAYER_DEATH.ID);
         public static final UniqueKey<RoundPlayerDeployObjectRecord> PK_ROUND_PLAYER_DEPLOY_OBJECT = createUniqueKey(RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT, "pk_round_player_deploy_object", RoundPlayerDeployObject.ROUND_PLAYER_DEPLOY_OBJECT.ID);
         public static final UniqueKey<RoundPlayerMedpackRecord> PK_ROUND_PLAYER_MEDPACK = createUniqueKey(RoundPlayerMedpack.ROUND_PLAYER_MEDPACK, "pk_round_player_medpack", RoundPlayerMedpack.ROUND_PLAYER_MEDPACK.ID);
@@ -189,6 +189,10 @@ public class Keys {
 
     private static class ForeignKeys0 extends AbstractKeys {
         public static final ForeignKey<GameRecord, ServerRecord> FK_GAME_SERVER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_SERVER, Game.GAME, "fk_game_server_1", Game.GAME.SERVER_ID);
+        public static final ForeignKey<GamePlayerRecord, GameRecord> FK_GAME_PLAYER_GAME_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_GAME, GamePlayer.GAME_PLAYER, "fk_game_player_game_1", GamePlayer.GAME_PLAYER.GAME_ID);
+        public static final ForeignKey<GamePlayerRecord, RoundRecord> FK_GAME_PLAYER_ROUND_2 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, GamePlayer.GAME_PLAYER, "fk_game_player_round_2", GamePlayer.GAME_PLAYER.JOINED_ROUND_ID);
+        public static final ForeignKey<GamePlayerRecord, RoundRecord> FK_GAME_PLAYER_ROUND_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, GamePlayer.GAME_PLAYER, "fk_game_player_round_1", GamePlayer.GAME_PLAYER.END_ROUND_ID);
+        public static final ForeignKey<GamePlayerRecord, PlayerRecord> FK_GAME_PLAYER_PLAYER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, GamePlayer.GAME_PLAYER, "fk_game_player_player_1", GamePlayer.GAME_PLAYER.PLAYER_ID);
         public static final ForeignKey<PlayerNicknameRecord, PlayerRecord> FK_PLAYER_NICKNAME_PLAYER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, PlayerNickname.PLAYER_NICKNAME, "fk_player_nickname_player_1", PlayerNickname.PLAYER_NICKNAME.PLAYER_ID);
         public static final ForeignKey<RoundRecord, GameRecord> FK_ROUND_GAME_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_GAME, Round.ROUND, "fk_round_game_1", Round.ROUND.GAME_ID);
         public static final ForeignKey<RoundChatLogRecord, RoundRecord> FK_ROUND_CHAT_LOG_ROUND_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundChatLog.ROUND_CHAT_LOG, "fk_round_chat_log_round_1", RoundChatLog.ROUND_CHAT_LOG.ROUND_ID);
@@ -196,10 +200,6 @@ public class Keys {
         public static final ForeignKey<RoundEndStatsRecord, RoundRecord> FK_ROUND_END_STATS_ROUND_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundEndStats.ROUND_END_STATS, "fk_round_end_stats_round_1", RoundEndStats.ROUND_END_STATS.ROUND_ID);
         public static final ForeignKey<RoundEndStatsPlayerRecord, RoundEndStatsRecord> FK_ROUND_END_STATS_PLAYER_ROUND_END_STATS_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND_END_STATS, RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, "fk_round_end_stats_player_round_end_stats_1", RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.ROUND_ID);
         public static final ForeignKey<RoundEndStatsPlayerRecord, PlayerRecord> FK_ROUND_END_STATS_PLAYER_PLAYER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, "fk_round_end_stats_player_player_1", RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.PLAYER_ID);
-        public static final ForeignKey<RoundPlayerRecord, GameRecord> FK_ROUND_PLAYER_GAME_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_GAME, RoundPlayer.ROUND_PLAYER, "fk_round_player_game_1", RoundPlayer.ROUND_PLAYER.GAME_ID);
-        public static final ForeignKey<RoundPlayerRecord, RoundRecord> FK_ROUND_PLAYER_ROUND_2 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundPlayer.ROUND_PLAYER, "fk_round_player_round_2", RoundPlayer.ROUND_PLAYER.JOINED_ROUND_ID);
-        public static final ForeignKey<RoundPlayerRecord, RoundRecord> FK_ROUND_PLAYER_ROUND_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundPlayer.ROUND_PLAYER, "fk_round_player_round_1", RoundPlayer.ROUND_PLAYER.END_ROUND_ID);
-        public static final ForeignKey<RoundPlayerRecord, PlayerRecord> FK_ROUND_PLAYER_PLAYER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundPlayer.ROUND_PLAYER, "fk_round_player_player_1", RoundPlayer.ROUND_PLAYER.PLAYER_ID);
         public static final ForeignKey<RoundPlayerDeathRecord, RoundRecord> FK_ROUND_PLAYER_DEATH_ROUND_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundPlayerDeath.ROUND_PLAYER_DEATH, "fk_round_player_death_round_1", RoundPlayerDeath.ROUND_PLAYER_DEATH.ROUND_ID);
         public static final ForeignKey<RoundPlayerDeathRecord, PlayerRecord> FK_ROUND_PLAYER_DEATH_PLAYER_2 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundPlayerDeath.ROUND_PLAYER_DEATH, "fk_round_player_death_player_2", RoundPlayerDeath.ROUND_PLAYER_DEATH.PLAYER_ID);
         public static final ForeignKey<RoundPlayerDeathRecord, PlayerRecord> FK_ROUND_PLAYER_DEATH_PLAYER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundPlayerDeath.ROUND_PLAYER_DEATH, "fk_round_player_death_player_1", RoundPlayerDeath.ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);

@@ -5,12 +5,12 @@ package io.github.bfstats.dbstats.jooq;
 
 
 import io.github.bfstats.dbstats.jooq.tables.Game;
+import io.github.bfstats.dbstats.jooq.tables.GamePlayer;
 import io.github.bfstats.dbstats.jooq.tables.PlayerNickname;
 import io.github.bfstats.dbstats.jooq.tables.Round;
 import io.github.bfstats.dbstats.jooq.tables.RoundChatLog;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStatsPlayer;
-import io.github.bfstats.dbstats.jooq.tables.RoundPlayer;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeath;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerDeployObject;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerMedpack;
@@ -45,6 +45,10 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     public static final Index GAME_SERVER_ID_IDX = Indexes0.GAME_SERVER_ID_IDX;
+    public static final Index GAME_PLAYER_END_ROUND_ID_IDX = Indexes0.GAME_PLAYER_END_ROUND_ID_IDX;
+    public static final Index GAME_PLAYER_GAME_ID_IDX = Indexes0.GAME_PLAYER_GAME_ID_IDX;
+    public static final Index GAME_PLAYER_JOINED_ROUND_ID_IDX = Indexes0.GAME_PLAYER_JOINED_ROUND_ID_IDX;
+    public static final Index GAME_PLAYER_PLAYER_ID_IDX = Indexes0.GAME_PLAYER_PLAYER_ID_IDX;
     public static final Index PLAYER_NICKNAME_PLAYER_ID_IDX = Indexes0.PLAYER_NICKNAME_PLAYER_ID_IDX;
     public static final Index ROUND_GAME_ID_IDX = Indexes0.ROUND_GAME_ID_IDX;
     public static final Index ROUND_CHAT_LOG_PLAYER_ID_IDX = Indexes0.ROUND_CHAT_LOG_PLAYER_ID_IDX;
@@ -52,10 +56,6 @@ public class Indexes {
     public static final Index ROUND_END_STATS_ROUND_ID_IDX = Indexes0.ROUND_END_STATS_ROUND_ID_IDX;
     public static final Index ROUND_END_STATS_PLAYER_PLAYER_ID_IDX = Indexes0.ROUND_END_STATS_PLAYER_PLAYER_ID_IDX;
     public static final Index ROUND_END_STATS_PLAYER_ROUND_ID_IDX = Indexes0.ROUND_END_STATS_PLAYER_ROUND_ID_IDX;
-    public static final Index ROUND_PLAYER_END_ROUND_ID_IDX = Indexes0.ROUND_PLAYER_END_ROUND_ID_IDX;
-    public static final Index ROUND_PLAYER_GAME_ID_IDX = Indexes0.ROUND_PLAYER_GAME_ID_IDX;
-    public static final Index ROUND_PLAYER_JOINED_ROUND_ID_IDX = Indexes0.ROUND_PLAYER_JOINED_ROUND_ID_IDX;
-    public static final Index ROUND_PLAYER_PLAYER_ID_IDX = Indexes0.ROUND_PLAYER_PLAYER_ID_IDX;
     public static final Index ROUND_PLAYER_DEATH_PLAYER_ID_IDX = Indexes0.ROUND_PLAYER_DEATH_PLAYER_ID_IDX;
     public static final Index ROUND_PLAYER_DEATH_ROUND_ID_IDX = Indexes0.ROUND_PLAYER_DEATH_ROUND_ID_IDX;
     public static final Index ROUND_PLAYER_KILLER_PLAYER_ID_IDX = Indexes0.ROUND_PLAYER_KILLER_PLAYER_ID_IDX;
@@ -83,6 +83,10 @@ public class Indexes {
 
     private static class Indexes0 extends AbstractKeys {
         public static Index GAME_SERVER_ID_IDX = createIndex("game_server_id_idx", Game.GAME, new OrderField[] { Game.GAME.SERVER_ID }, false);
+        public static Index GAME_PLAYER_END_ROUND_ID_IDX = createIndex("game_player_end_round_id_idx", GamePlayer.GAME_PLAYER, new OrderField[] { GamePlayer.GAME_PLAYER.END_ROUND_ID }, false);
+        public static Index GAME_PLAYER_GAME_ID_IDX = createIndex("game_player_game_id_idx", GamePlayer.GAME_PLAYER, new OrderField[] { GamePlayer.GAME_PLAYER.GAME_ID }, false);
+        public static Index GAME_PLAYER_JOINED_ROUND_ID_IDX = createIndex("game_player_joined_round_id_idx", GamePlayer.GAME_PLAYER, new OrderField[] { GamePlayer.GAME_PLAYER.JOINED_ROUND_ID }, false);
+        public static Index GAME_PLAYER_PLAYER_ID_IDX = createIndex("game_player_player_id_idx", GamePlayer.GAME_PLAYER, new OrderField[] { GamePlayer.GAME_PLAYER.PLAYER_ID }, false);
         public static Index PLAYER_NICKNAME_PLAYER_ID_IDX = createIndex("player_nickname_player_id_idx", PlayerNickname.PLAYER_NICKNAME, new OrderField[] { PlayerNickname.PLAYER_NICKNAME.PLAYER_ID }, false);
         public static Index ROUND_GAME_ID_IDX = createIndex("round_game_id_idx", Round.ROUND, new OrderField[] { Round.ROUND.GAME_ID }, false);
         public static Index ROUND_CHAT_LOG_PLAYER_ID_IDX = createIndex("round_chat_log_player_id_idx", RoundChatLog.ROUND_CHAT_LOG, new OrderField[] { RoundChatLog.ROUND_CHAT_LOG.PLAYER_ID }, false);
@@ -90,10 +94,6 @@ public class Indexes {
         public static Index ROUND_END_STATS_ROUND_ID_IDX = createIndex("round_end_stats_round_id_idx", RoundEndStats.ROUND_END_STATS, new OrderField[] { RoundEndStats.ROUND_END_STATS.ROUND_ID }, false);
         public static Index ROUND_END_STATS_PLAYER_PLAYER_ID_IDX = createIndex("round_end_stats_player_player_id_idx", RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, new OrderField[] { RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.PLAYER_ID }, false);
         public static Index ROUND_END_STATS_PLAYER_ROUND_ID_IDX = createIndex("round_end_stats_player_round_id_idx", RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, new OrderField[] { RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.ROUND_ID }, false);
-        public static Index ROUND_PLAYER_END_ROUND_ID_IDX = createIndex("round_player_end_round_id_idx", RoundPlayer.ROUND_PLAYER, new OrderField[] { RoundPlayer.ROUND_PLAYER.END_ROUND_ID }, false);
-        public static Index ROUND_PLAYER_GAME_ID_IDX = createIndex("round_player_game_id_idx", RoundPlayer.ROUND_PLAYER, new OrderField[] { RoundPlayer.ROUND_PLAYER.GAME_ID }, false);
-        public static Index ROUND_PLAYER_JOINED_ROUND_ID_IDX = createIndex("round_player_joined_round_id_idx", RoundPlayer.ROUND_PLAYER, new OrderField[] { RoundPlayer.ROUND_PLAYER.JOINED_ROUND_ID }, false);
-        public static Index ROUND_PLAYER_PLAYER_ID_IDX = createIndex("round_player_player_id_idx", RoundPlayer.ROUND_PLAYER, new OrderField[] { RoundPlayer.ROUND_PLAYER.PLAYER_ID }, false);
         public static Index ROUND_PLAYER_DEATH_PLAYER_ID_IDX = createIndex("round_player_death_player_id_idx", RoundPlayerDeath.ROUND_PLAYER_DEATH, new OrderField[] { RoundPlayerDeath.ROUND_PLAYER_DEATH.PLAYER_ID }, false);
         public static Index ROUND_PLAYER_DEATH_ROUND_ID_IDX = createIndex("round_player_death_round_id_idx", RoundPlayerDeath.ROUND_PLAYER_DEATH, new OrderField[] { RoundPlayerDeath.ROUND_PLAYER_DEATH.ROUND_ID }, false);
         public static Index ROUND_PLAYER_KILLER_PLAYER_ID_IDX = createIndex("round_player_killer_player_id_idx", RoundPlayerDeath.ROUND_PLAYER_DEATH, new OrderField[] { RoundPlayerDeath.ROUND_PLAYER_DEATH.KILLER_PLAYER_ID }, false);

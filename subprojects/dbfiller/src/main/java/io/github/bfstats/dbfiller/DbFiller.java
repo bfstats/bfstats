@@ -66,7 +66,7 @@ public class DbFiller {
   private final String engine;
 
   // actually not per round, but per log file
-  private Map<Integer, RoundPlayer> activePlayersByRoundPlayerId = new HashMap<>();
+  private Map<Integer, GamePlayer> activePlayersByRoundPlayerId = new HashMap<>();
 
   private Map<Integer, BfEvent> lastKillEventByVictimId = new HashMap<>();
   private Map<Integer, BfEvent> lastEnterVehicleByPlayerSlotId = new HashMap<>();
@@ -284,13 +284,13 @@ public class DbFiller {
 
       PlayerRecord botPlayerRecord = addPlayerOrNickName("FAKE_BOT", "FAKE_BOT");
       Integer botPlayerId = botPlayerRecord.getId();
-      RoundPlayer botRoundPlayer = new RoundPlayer()
+      GamePlayer botGamePlayer = new GamePlayer()
           .setRoundPlayerSlotId(FAKE_BOT_SLOT_ID)
           .setPlayerId(botPlayerId)
           .setName("FAKE_BOT")
           .setKeyhash("FAKE_BOT")
           .setTeam(FAKE_BOT_TEAM);
-      activePlayersByRoundPlayerId.put(botRoundPlayer.getRoundPlayerSlotId(), botRoundPlayer);
+      activePlayersByRoundPlayerId.put(botGamePlayer.getRoundPlayerSlotId(), botGamePlayer);
 
       this.gameRecordId = createGame();
       parseLog();
@@ -410,14 +410,14 @@ public class DbFiller {
   }
 
   private void recordEndGame(int endingRoundId, Duration endingRoundEndTime) {
-    for (RoundPlayer roundPlayer : activePlayersByRoundPlayerId.values()) {
-      if (isSlotIdBot(roundPlayer.getRoundPlayerSlotId())) {
+    for (GamePlayer gamePlayer : activePlayersByRoundPlayerId.values()) {
+      if (isSlotIdBot(gamePlayer.getRoundPlayerSlotId())) {
         continue;
       }
-      if (roundPlayer.getTeam() == null || roundPlayer.getPlayerId() == null) {
+      if (gamePlayer.getTeam() == null || gamePlayer.getPlayerId() == null) {
         continue;
       }
-      addRoundPlayerTeamUsage(endingRoundId, roundPlayer, endingRoundEndTime);
+      addRoundPlayerTeamUsage(endingRoundId, gamePlayer, endingRoundEndTime);
     }
   }
 
@@ -491,11 +491,11 @@ public class DbFiller {
         break;
       case spawnEvent:
         if (!isSlotIdBot(e.getPlayerSlotId())) {
-          RoundPlayer roundPlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
+          GamePlayer gamePlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
           Integer spawnTeam = e.getIntegerParamValueByName(SpawnEventParams.team.name());
-          if (!roundPlayer.getTeam().equals(spawnTeam)) {
-            addRoundPlayerTeamUsage(roundId, roundPlayer, e.getDurationSinceLogStart());
-            roundPlayer.setTeam(spawnTeam);
+          if (!gamePlayer.getTeam().equals(spawnTeam)) {
+            addRoundPlayerTeamUsage(roundId, gamePlayer, e.getDurationSinceLogStart());
+            gamePlayer.setTeam(spawnTeam);
           }
         }
         break;
@@ -715,11 +715,11 @@ else: repair; number of repairs
 
   // stores previous team interval
   private void parseSetTeamEvent(int roundId, BfEvent e) {
-    RoundPlayer roundPlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
+    GamePlayer gamePlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
 
-    addRoundPlayerTeamUsage(roundId, roundPlayer, e.getDurationSinceLogStart());
+    addRoundPlayerTeamUsage(roundId, gamePlayer, e.getDurationSinceLogStart());
     Integer team = e.getIntegerParamValueByName(SetTeamParams.team.name());
-    roundPlayer.setTeam(team);
+    gamePlayer.setTeam(team);
   }
 
   private void setLastEnterVehicle(BfEvent e) {
@@ -755,13 +755,13 @@ else: repair; number of repairs
   }
 
   // todo: rename parent method to endTeamUsage?
-  private RoundPlayerTeamRecord addRoundPlayerTeamUsage(int roundId, RoundPlayer roundPlayer, Duration teamEnd) {
-    int playerId = roundPlayer.getPlayerId();
-    int team = roundPlayer.getTeam();
-    Duration teamStart = roundPlayer.getTeamStart();
-    roundPlayer.setTeamStart(teamEnd);
+  private RoundPlayerTeamRecord addRoundPlayerTeamUsage(int roundId, GamePlayer gamePlayer, Duration teamEnd) {
+    int playerId = gamePlayer.getPlayerId();
+    int team = gamePlayer.getTeam();
+    Duration teamStart = gamePlayer.getTeamStart();
+    gamePlayer.setTeamStart(teamEnd);
 
-    log.info("end team usage in round " + roundId + " for player slot " + roundPlayer.getRoundPlayerSlotId() + " for team " + team + " start: " + teamStart.getSeconds() + " end: " + teamEnd.getSeconds());
+    log.info("end team usage in round " + roundId + " for player slot " + gamePlayer.getRoundPlayerSlotId() + " for team " + team + " start: " + teamStart.getSeconds() + " end: " + teamEnd.getSeconds());
     LocalDateTime teamStartDate = logStartTime.plus(teamStart);
     LocalDateTime teamEndDate = logStartTime.plus(teamEnd);
 
@@ -848,7 +848,7 @@ else: repair; number of repairs
     return slotId > 127 || slotId == FAKE_BOT_SLOT_ID;
   }
 
-  private RoundPlayer getRoundPlayerFromSlotId(int slotId) {
+  private GamePlayer getRoundPlayerFromSlotId(int slotId) {
     if (isSlotIdBot(slotId)) {
       slotId = FAKE_BOT_SLOT_ID; // treat bots as a single fake player
     }
@@ -856,8 +856,8 @@ else: repair; number of repairs
   }
 
   private int getPlayerIdFromSlotId(int slotId) {
-    RoundPlayer roundPlayer = getRoundPlayerFromSlotId(slotId);
-    return requireNonNull(roundPlayer.getPlayerId(), "cant find player id for slot " + slotId);
+    GamePlayer gamePlayer = getRoundPlayerFromSlotId(slotId);
+    return requireNonNull(gamePlayer.getPlayerId(), "cant find player id for slot " + slotId);
   }
 
   private void parseEventScoreEvent(int roundId, BfEvent e) {
@@ -926,32 +926,32 @@ else: repair; number of repairs
       return;
     }
 
-    RoundPlayer roundPlayer = activePlayersByRoundPlayerId.remove(destroyPlayerEvent.getPlayerSlotId());
+    GamePlayer gamePlayer = activePlayersByRoundPlayerId.remove(destroyPlayerEvent.getPlayerSlotId());
     log.info("removed round-player " + destroyPlayerEvent.getPlayerSlotId());
 
-    if (roundPlayer.getPlayerId() == null) {
-      log.info("Player " + roundPlayer.getName() + " has disconnected before playerKeyHash");
+    if (gamePlayer.getPlayerId() == null) {
+      log.info("Player " + gamePlayer.getName() + " has disconnected before playerKeyHash");
       return;
     }
 
-    addRoundPlayerTeamUsage(roundId, roundPlayer, destroyPlayerEvent.getDurationSinceLogStart());
-    addRoundPlayerJoinEndDates(roundId, roundPlayer, destroyPlayerEvent.getDurationSinceLogStart());
+    addRoundPlayerTeamUsage(roundId, gamePlayer, destroyPlayerEvent.getDurationSinceLogStart());
+    addGamePlayerJoinEndDates(roundId, gamePlayer, destroyPlayerEvent.getDurationSinceLogStart());
   }
 
   private void parseEventPlayerKeyHash(BfEvent e) {
-    RoundPlayer roundPlayer = activePlayersByRoundPlayerId.get(e.getPlayerSlotId());
-    requireNonNull(roundPlayer, "playerKeyHash there should've been createPlayer " + e.getPlayerSlotId());
+    GamePlayer gamePlayer = activePlayersByRoundPlayerId.get(e.getPlayerSlotId());
+    requireNonNull(gamePlayer, "playerKeyHash there should've been createPlayer " + e.getPlayerSlotId());
 
-    roundPlayer.setKeyhash(e.getStringParamValueByName(PlayerKeyHashParams.keyhash.name()));
-    PlayerRecord playerRecord = addPlayerOrNickName(roundPlayer.getName(), roundPlayer.getKeyhash());
-    roundPlayer.setPlayerId(playerRecord.getId());
+    gamePlayer.setKeyhash(e.getStringParamValueByName(PlayerKeyHashParams.keyhash.name()));
+    PlayerRecord playerRecord = addPlayerOrNickName(gamePlayer.getName(), gamePlayer.getKeyhash());
+    gamePlayer.setPlayerId(playerRecord.getId());
   }
 
   private void parseEventCreatePlayer(Integer roundId, BfEvent e) {
     if (activePlayersByRoundPlayerId.containsKey(e.getPlayerSlotId())) {
       throw new IllegalStateException("destroyPlayer event should've deleted player with id " + e.getPlayerSlotId());
     }
-    RoundPlayer roundPlayer = new RoundPlayer()
+    GamePlayer gamePlayer = new GamePlayer()
         .setRoundPlayerSlotId(e.getPlayerSlotId())
         .setName(e.getStringParamValueByName(CreatePlayerParams.name.name()))
         .setKeyhash(null)
@@ -959,7 +959,7 @@ else: repair; number of repairs
         .setTeam(e.getIntegerParamValueByName(CreatePlayerParams.team.name()))
         .setTeamStart(e.getDurationSinceLogStart())
         .setJoinedRoundId(roundId);
-    activePlayersByRoundPlayerId.put(e.getPlayerSlotId(), roundPlayer);
+    activePlayersByRoundPlayerId.put(e.getPlayerSlotId(), gamePlayer);
     log.info("added round-player " + e.getPlayerSlotId());
   }
 
@@ -1003,21 +1003,21 @@ else: repair; number of repairs
     return roundPlayerDeathRecord;
   }
 
-  private RoundPlayerRecord addRoundPlayerJoinEndDates(int endRoundId, RoundPlayer roundPlayer, Duration endTime) {
-    LocalDateTime joined = logStartTime.plus(roundPlayer.getJoined());
+  private GamePlayerRecord addGamePlayerJoinEndDates(int endRoundId, GamePlayer gamePlayer, Duration endTime) {
+    LocalDateTime joined = logStartTime.plus(gamePlayer.getJoined());
     LocalDateTime ended = logStartTime.plus(endTime);
-    Integer joinedRoundId = roundPlayer.getJoinedRoundId();
+    Integer joinedRoundId = gamePlayer.getJoinedRoundId();
 
-    RoundPlayerRecord roundPlayerRecord = transaction().newRecord(ROUND_PLAYER);
-    roundPlayerRecord.setGameId(gameRecordId);
-    roundPlayerRecord.setJoinedRoundId(joinedRoundId); // TODO: there can be 2 rounds, so not really correct to have one round id
-    roundPlayerRecord.setEndRoundId(endRoundId); // TODO: there can be 2 rounds, so not really correct to have one round id
-    roundPlayerRecord.setPlayerId(roundPlayer.getPlayerId());
-    roundPlayerRecord.setStartTime(Timestamp.valueOf(joined));
-    roundPlayerRecord.setEndTime(Timestamp.valueOf(ended));
+    GamePlayerRecord gamePlayerRecord = transaction().newRecord(GAME_PLAYER);
+    gamePlayerRecord.setGameId(gameRecordId);
+    gamePlayerRecord.setJoinedRoundId(joinedRoundId); // TODO: there can be 2 rounds, so not really correct to have one round id
+    gamePlayerRecord.setEndRoundId(endRoundId); // TODO: there can be 2 rounds, so not really correct to have one round id
+    gamePlayerRecord.setPlayerId(gamePlayer.getPlayerId());
+    gamePlayerRecord.setStartTime(Timestamp.valueOf(joined));
+    gamePlayerRecord.setEndTime(Timestamp.valueOf(ended));
 
-    roundPlayerRecord.insert();
-    return roundPlayerRecord;
+    gamePlayerRecord.insert();
+    return gamePlayerRecord;
   }
 
   private RoundPlayerScoreEventRecord addRoundPlayerScoreEvent(int roundId, BfEvent e) {
@@ -1041,7 +1041,7 @@ else: repair; number of repairs
 
   @Data
   @Accessors(chain = true)
-  public static class RoundPlayer {
+  public static class GamePlayer {
     int roundPlayerSlotId;
     Integer playerId;
     String name;
@@ -1051,7 +1051,7 @@ else: repair; number of repairs
     Integer team;
     Integer joinedRoundId;
 
-    public RoundPlayer setTeamStart(Duration teamStart) {
+    public GamePlayer setTeamStart(Duration teamStart) {
       this.teamStart = teamStart;
       log.info("was setting for player slot " + roundPlayerSlotId + " team start to " + teamStart.getSeconds());
       return this;

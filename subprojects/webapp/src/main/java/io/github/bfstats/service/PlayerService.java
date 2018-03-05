@@ -1,8 +1,8 @@
 package io.github.bfstats.service;
 
+import io.github.bfstats.dbstats.jooq.tables.records.GamePlayerRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerRecord;
-import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerRecord;
 import io.github.bfstats.exceptions.NotFoundException;
 import io.github.bfstats.model.*;
 import io.github.bfstats.util.TranslationUtil;
@@ -77,9 +77,9 @@ public class PlayerService {
 
   public Long fetchPlayerTotalTime(int playerId) {
     BigDecimal totalTimeInMs = getDslContext()
-        .select(DSL.sum(DSL.timestampDiff(ROUND_PLAYER.END_TIME, ROUND_PLAYER.START_TIME)).as("totalTime"))
-        .from(ROUND_PLAYER)
-        .where(ROUND_PLAYER.PLAYER_ID.eq(playerId))
+        .select(DSL.sum(DSL.timestampDiff(GAME_PLAYER.END_TIME, GAME_PLAYER.START_TIME)).as("totalTime"))
+        .from(GAME_PLAYER)
+        .where(GAME_PLAYER.PLAYER_ID.eq(playerId))
         .fetchOne("totalTime", BigDecimal.class);
     if (totalTimeInMs == null) {
       return null;
@@ -96,8 +96,8 @@ public class PlayerService {
 
     Result<Record> records = getDslContext()
         .select()
-        .select(ROUND_PLAYER.START_TIME.as("time"), DSL.inline("start").as("start_or_end")).from(ROUND_PLAYER).where(ROUND_PLAYER.START_TIME.greaterThan(sinceTimestamp))
-        .unionAll(getDslContext().select(ROUND_PLAYER.END_TIME.as("time"), DSL.inline("end").as("start_or_end")).from(ROUND_PLAYER).where(ROUND_PLAYER.START_TIME.greaterThan(sinceTimestamp)))
+        .select(GAME_PLAYER.START_TIME.as("time"), DSL.inline("start").as("start_or_end")).from(GAME_PLAYER).where(GAME_PLAYER.START_TIME.greaterThan(sinceTimestamp))
+        .unionAll(getDslContext().select(GAME_PLAYER.END_TIME.as("time"), DSL.inline("end").as("start_or_end")).from(GAME_PLAYER).where(GAME_PLAYER.START_TIME.greaterThan(sinceTimestamp)))
         .orderBy(DSL.field("time"))
         .fetch();
 
@@ -123,10 +123,10 @@ public class PlayerService {
   public Map<LocalDate, Integer> fetchUniquePlayerCountPerDay(@Nonnull LocalDateTime since) {
     Timestamp sinceTimestamp = Timestamp.valueOf(since);
 
-    Table<Record2<Date, Integer>> playersPerDay = DSL.select(DSL.date(ROUND_PLAYER.START_TIME).as("day"), ROUND_PLAYER.PLAYER_ID)
-        .from(ROUND_PLAYER)
-        .where(ROUND_PLAYER.START_TIME.greaterThan(sinceTimestamp))
-        .groupBy(DSL.date(ROUND_PLAYER.START_TIME), ROUND_PLAYER.PLAYER_ID)
+    Table<Record2<Date, Integer>> playersPerDay = DSL.select(DSL.date(GAME_PLAYER.START_TIME).as("day"), GAME_PLAYER.PLAYER_ID)
+        .from(GAME_PLAYER)
+        .where(GAME_PLAYER.START_TIME.greaterThan(sinceTimestamp))
+        .groupBy(DSL.date(GAME_PLAYER.START_TIME), GAME_PLAYER.PLAYER_ID)
         .asTable("a");
 
     Result<Record2<Object, Integer>> records = getDslContext()
@@ -170,17 +170,17 @@ public class PlayerService {
   }
 
   public LocalDateTime getPlayerLastSeen(int playerId) {
-    RoundPlayerRecord roundPlayerRecord = getDslContext().selectFrom(ROUND_PLAYER)
-        .where(ROUND_PLAYER.PLAYER_ID.eq(playerId))
-        .orderBy(ROUND_PLAYER.END_ROUND_ID.desc())
+    GamePlayerRecord gamePlayerRecord = getDslContext().selectFrom(GAME_PLAYER)
+        .where(GAME_PLAYER.PLAYER_ID.eq(playerId))
+        .orderBy(GAME_PLAYER.END_ROUND_ID.desc())
         .limit(1)
         .fetchOne();
 
-    if (roundPlayerRecord == null) {
+    if (gamePlayerRecord == null) {
       return null;
     }
 
-    return roundPlayerRecord.getEndTime().toLocalDateTime();
+    return gamePlayerRecord.getEndTime().toLocalDateTime();
   }
 
   public PlayerDetails getPlayerDetails(int playerId) {

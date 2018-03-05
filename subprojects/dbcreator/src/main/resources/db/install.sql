@@ -177,7 +177,7 @@ CREATE INDEX IF NOT EXISTS round_player_score_player_id_idx ON round_player_scor
 CREATE INDEX IF NOT EXISTS round_player_score_type_idx ON round_player_score_event(score_type);
 
 -- more like game_player
-CREATE TABLE IF NOT EXISTS round_player (
+CREATE TABLE IF NOT EXISTS game_player (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   game_id INTEGER NOT NULL,
   joined_round_id INTEGER NOT NULL,
@@ -190,10 +190,10 @@ CREATE TABLE IF NOT EXISTS round_player (
   FOREIGN KEY (end_round_id) REFERENCES round(id),
   FOREIGN KEY (player_id) REFERENCES player(id)
 );
-CREATE INDEX IF NOT EXISTS round_player_game_id_idx ON round_player(game_id);
-CREATE INDEX IF NOT EXISTS round_player_joined_round_id_idx ON round_player(joined_round_id);
-CREATE INDEX IF NOT EXISTS round_player_end_round_id_idx ON round_player(end_round_id);
-CREATE INDEX IF NOT EXISTS round_player_player_id_idx ON round_player(player_id);
+CREATE INDEX IF NOT EXISTS game_player_game_id_idx ON game_player(game_id);
+CREATE INDEX IF NOT EXISTS game_player_joined_round_id_idx ON game_player(joined_round_id);
+CREATE INDEX IF NOT EXISTS game_player_end_round_id_idx ON game_player(end_round_id);
+CREATE INDEX IF NOT EXISTS game_player_player_id_idx ON game_player(player_id);
 
 CREATE TABLE IF NOT EXISTS round_player_team (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
