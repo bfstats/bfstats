@@ -53,6 +53,7 @@ public class Indexes {
     public static final Index ROUND_END_STATS_PLAYER_PLAYER_ID_IDX = Indexes0.ROUND_END_STATS_PLAYER_PLAYER_ID_IDX;
     public static final Index ROUND_END_STATS_PLAYER_ROUND_ID_IDX = Indexes0.ROUND_END_STATS_PLAYER_ROUND_ID_IDX;
     public static final Index ROUND_PLAYER_END_ROUND_ID_IDX = Indexes0.ROUND_PLAYER_END_ROUND_ID_IDX;
+    public static final Index ROUND_PLAYER_GAME_ID_IDX = Indexes0.ROUND_PLAYER_GAME_ID_IDX;
     public static final Index ROUND_PLAYER_JOINED_ROUND_ID_IDX = Indexes0.ROUND_PLAYER_JOINED_ROUND_ID_IDX;
     public static final Index ROUND_PLAYER_PLAYER_ID_IDX = Indexes0.ROUND_PLAYER_PLAYER_ID_IDX;
     public static final Index ROUND_PLAYER_DEATH_PLAYER_ID_IDX = Indexes0.ROUND_PLAYER_DEATH_PLAYER_ID_IDX;
@@ -90,6 +91,7 @@ public class Indexes {
         public static Index ROUND_END_STATS_PLAYER_PLAYER_ID_IDX = createIndex("round_end_stats_player_player_id_idx", RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, new OrderField[] { RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.PLAYER_ID }, false);
         public static Index ROUND_END_STATS_PLAYER_ROUND_ID_IDX = createIndex("round_end_stats_player_round_id_idx", RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, new OrderField[] { RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.ROUND_ID }, false);
         public static Index ROUND_PLAYER_END_ROUND_ID_IDX = createIndex("round_player_end_round_id_idx", RoundPlayer.ROUND_PLAYER, new OrderField[] { RoundPlayer.ROUND_PLAYER.END_ROUND_ID }, false);
+        public static Index ROUND_PLAYER_GAME_ID_IDX = createIndex("round_player_game_id_idx", RoundPlayer.ROUND_PLAYER, new OrderField[] { RoundPlayer.ROUND_PLAYER.GAME_ID }, false);
         public static Index ROUND_PLAYER_JOINED_ROUND_ID_IDX = createIndex("round_player_joined_round_id_idx", RoundPlayer.ROUND_PLAYER, new OrderField[] { RoundPlayer.ROUND_PLAYER.JOINED_ROUND_ID }, false);
         public static Index ROUND_PLAYER_PLAYER_ID_IDX = createIndex("round_player_player_id_idx", RoundPlayer.ROUND_PLAYER, new OrderField[] { RoundPlayer.ROUND_PLAYER.PLAYER_ID }, false);
         public static Index ROUND_PLAYER_DEATH_PLAYER_ID_IDX = createIndex("round_player_death_player_id_idx", RoundPlayerDeath.ROUND_PLAYER_DEATH, new OrderField[] { RoundPlayerDeath.ROUND_PLAYER_DEATH.PLAYER_ID }, false);

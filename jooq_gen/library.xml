@@ -16,6 +16,18 @@
          Defaults to org.jooq.util.JavaGenerator -->
     <name>org.jooq.util.JavaGenerator</name>
 
+    <!-- from .sql script instead of existing db
+    <database>
+      <name>org.jooq.util.ddl.DDLDatabase</name>
+      <properties>
+        <property>
+          <key>scripts</key>
+          <value>src/main/resources/database.sql</value>
+        </property>
+      </properties>
+    </database>
+    -->
+
     <database>
       <!-- The database type. The format here is:
            org.util.[database].[database]Database -->

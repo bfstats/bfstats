@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RoundPlayer extends TableImpl<RoundPlayerRecord> {
 
-    private static final long serialVersionUID = 1691971522;
+    private static final long serialVersionUID = -391678378;
 
     /**
      * The reference instance of <code>round_player</code>
@@ -60,6 +60,11 @@ public class RoundPlayer extends TableImpl<RoundPlayerRecord> {
      * The column <code>round_player.id</code>.
      */
     public final TableField<RoundPlayerRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
+    /**
+     * The column <code>round_player.game_id</code>.
+     */
+    public final TableField<RoundPlayerRecord, Integer> GAME_ID = createField("game_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>round_player.joined_round_id</code>.
@@ -128,7 +133,7 @@ public class RoundPlayer extends TableImpl<RoundPlayerRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ROUND_PLAYER_END_ROUND_ID_IDX, Indexes.ROUND_PLAYER_JOINED_ROUND_ID_IDX, Indexes.ROUND_PLAYER_PLAYER_ID_IDX);
+        return Arrays.<Index>asList(Indexes.ROUND_PLAYER_END_ROUND_ID_IDX, Indexes.ROUND_PLAYER_GAME_ID_IDX, Indexes.ROUND_PLAYER_JOINED_ROUND_ID_IDX, Indexes.ROUND_PLAYER_PLAYER_ID_IDX);
     }
 
     /**
@@ -160,7 +165,7 @@ public class RoundPlayer extends TableImpl<RoundPlayerRecord> {
      */
     @Override
     public List<ForeignKey<RoundPlayerRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<RoundPlayerRecord, ?>>asList(Keys.FK_ROUND_PLAYER_ROUND_2, Keys.FK_ROUND_PLAYER_ROUND_1, Keys.FK_ROUND_PLAYER_PLAYER_1);
+        return Arrays.<ForeignKey<RoundPlayerRecord, ?>>asList(Keys.FK_ROUND_PLAYER_GAME_1, Keys.FK_ROUND_PLAYER_ROUND_2, Keys.FK_ROUND_PLAYER_ROUND_1, Keys.FK_ROUND_PLAYER_PLAYER_1);
     }
 
     /**

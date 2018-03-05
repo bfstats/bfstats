@@ -119,6 +119,7 @@ public class Keys {
     public static final ForeignKey<RoundEndStatsRecord, RoundRecord> FK_ROUND_END_STATS_ROUND_1 = ForeignKeys0.FK_ROUND_END_STATS_ROUND_1;
     public static final ForeignKey<RoundEndStatsPlayerRecord, RoundEndStatsRecord> FK_ROUND_END_STATS_PLAYER_ROUND_END_STATS_1 = ForeignKeys0.FK_ROUND_END_STATS_PLAYER_ROUND_END_STATS_1;
     public static final ForeignKey<RoundEndStatsPlayerRecord, PlayerRecord> FK_ROUND_END_STATS_PLAYER_PLAYER_1 = ForeignKeys0.FK_ROUND_END_STATS_PLAYER_PLAYER_1;
+    public static final ForeignKey<RoundPlayerRecord, GameRecord> FK_ROUND_PLAYER_GAME_1 = ForeignKeys0.FK_ROUND_PLAYER_GAME_1;
     public static final ForeignKey<RoundPlayerRecord, RoundRecord> FK_ROUND_PLAYER_ROUND_2 = ForeignKeys0.FK_ROUND_PLAYER_ROUND_2;
     public static final ForeignKey<RoundPlayerRecord, RoundRecord> FK_ROUND_PLAYER_ROUND_1 = ForeignKeys0.FK_ROUND_PLAYER_ROUND_1;
     public static final ForeignKey<RoundPlayerRecord, PlayerRecord> FK_ROUND_PLAYER_PLAYER_1 = ForeignKeys0.FK_ROUND_PLAYER_PLAYER_1;
@@ -195,6 +196,7 @@ public class Keys {
         public static final ForeignKey<RoundEndStatsRecord, RoundRecord> FK_ROUND_END_STATS_ROUND_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundEndStats.ROUND_END_STATS, "fk_round_end_stats_round_1", RoundEndStats.ROUND_END_STATS.ROUND_ID);
         public static final ForeignKey<RoundEndStatsPlayerRecord, RoundEndStatsRecord> FK_ROUND_END_STATS_PLAYER_ROUND_END_STATS_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND_END_STATS, RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, "fk_round_end_stats_player_round_end_stats_1", RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.ROUND_ID);
         public static final ForeignKey<RoundEndStatsPlayerRecord, PlayerRecord> FK_ROUND_END_STATS_PLAYER_PLAYER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundEndStatsPlayer.ROUND_END_STATS_PLAYER, "fk_round_end_stats_player_player_1", RoundEndStatsPlayer.ROUND_END_STATS_PLAYER.PLAYER_ID);
+        public static final ForeignKey<RoundPlayerRecord, GameRecord> FK_ROUND_PLAYER_GAME_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_GAME, RoundPlayer.ROUND_PLAYER, "fk_round_player_game_1", RoundPlayer.ROUND_PLAYER.GAME_ID);
         public static final ForeignKey<RoundPlayerRecord, RoundRecord> FK_ROUND_PLAYER_ROUND_2 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundPlayer.ROUND_PLAYER, "fk_round_player_round_2", RoundPlayer.ROUND_PLAYER.JOINED_ROUND_ID);
         public static final ForeignKey<RoundPlayerRecord, RoundRecord> FK_ROUND_PLAYER_ROUND_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_ROUND, RoundPlayer.ROUND_PLAYER, "fk_round_player_round_1", RoundPlayer.ROUND_PLAYER.END_ROUND_ID);
         public static final ForeignKey<RoundPlayerRecord, PlayerRecord> FK_ROUND_PLAYER_PLAYER_1 = createForeignKey(io.github.bfstats.dbstats.jooq.Keys.PK_PLAYER, RoundPlayer.ROUND_PLAYER, "fk_round_player_player_1", RoundPlayer.ROUND_PLAYER.PLAYER_ID);

@@ -72,6 +72,7 @@ public class DbFiller {
   private Map<Integer, BfEvent> lastEnterVehicleByPlayerSlotId = new HashMap<>();
   private Map<Integer, BfEvent> lastBeginRepairByPlayerSlotId = new HashMap<>();
   private Map<Integer, BfEvent> lastBeginMedPackByPlayerSlotId = new HashMap<>();
+  private int gameRecordId;
 
   public DbFiller(BfLog bfLog, ZoneId logFileZoneId) {
     this.bfLog = bfLog;
@@ -291,6 +292,7 @@ public class DbFiller {
           .setTeam(FAKE_BOT_TEAM);
       activePlayersByRoundPlayerId.put(botRoundPlayer.getRoundPlayerSlotId(), botRoundPlayer);
 
+      this.gameRecordId = createGame();
       parseLog();
     });
 
@@ -307,8 +309,6 @@ public class DbFiller {
   }
 
   private void parseLog() {
-    int gameRecordId = createGame();
-
     // Events can be out-of-round, so mixing out-of-round events and rounds.
     // For chat using the last round id, as chances was that it belongs to that more than to the new round
     // (because during long round initialization you probably cant chat anymore).
@@ -323,7 +323,7 @@ public class DbFiller {
         parseEvent(lastRoundId, bfEvent);
       } else if (child instanceof BfRound) {
         BfRound bfRound = (BfRound) child;
-        lastRoundId = parseRound(bfRound, lastRoundId, gameRecordId);
+        lastRoundId = parseRound(bfRound, lastRoundId);
       } else if (child instanceof String) {
         if (!child.toString().equals("\n")) {
           log.warn("got non-newline string child " + child.toString());
@@ -361,7 +361,7 @@ public class DbFiller {
     return server;
   }
 
-  private int parseRound(BfRound bfRound, int previousRoundId, int gameRecordId) {
+  private int parseRound(BfRound bfRound, int previousRoundId) {
     RoundRecord roundRecord = addRound(bfRound, gameRecordId);
     int roundId = requireNonNull(roundRecord.getId());
 
@@ -1009,6 +1009,7 @@ else: repair; number of repairs
     Integer joinedRoundId = roundPlayer.getJoinedRoundId();
 
     RoundPlayerRecord roundPlayerRecord = transaction().newRecord(ROUND_PLAYER);
+    roundPlayerRecord.setGameId(gameRecordId);
     roundPlayerRecord.setJoinedRoundId(joinedRoundId); // TODO: there can be 2 rounds, so not really correct to have one round id
     roundPlayerRecord.setEndRoundId(endRoundId); // TODO: there can be 2 rounds, so not really correct to have one round id
     roundPlayerRecord.setPlayerId(roundPlayer.getPlayerId());
