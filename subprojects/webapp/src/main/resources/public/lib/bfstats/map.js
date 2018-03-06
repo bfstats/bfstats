@@ -1,27 +1,32 @@
 var BfStats = (function() {
-var geoJsonProps = {
-  onEachFeature: function (feature, layer) {
-    if (feature.properties && feature.properties.popupContent) {
-      layer.bindPopup(feature.properties.popupContent);
+
+function getGeoJsonProps(type) {
+  var geoJsonProps = {
+    onEachFeature: function (feature, layer) {
+      if (feature.properties && feature.properties.popupContent) {
+        layer.bindPopup(feature.properties.popupContent);
+      }
+    },
+    pointToLayer: function (feature, latLng) {
+      return L.circleMarker(latLng, {
+        radius: 5,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      });
+    },
+    style: function (feature) {
+      switch (type) {
+        case 'kill':  return {fillColor: "yellow"};
+        case 'death': return {fillColor: "gray"};
+      }
     }
-  },
-  pointToLayer: function (feature, latLng) {
-    return L.circleMarker(latLng, {
-      radius: 5,
-      fillColor: "#ff7800",
-      color: "#000",
-      weight: 1,
-      opacity: 1,
-      fillOpacity: 0.8
-    });
-  },
-  style: function (feature) {
-    switch (feature.properties.type) {
-      case 'kill':  return {fillColor: "yellow"};
-      case 'death': return {fillColor: "gray"};
-    }
-  }
-};
+  };
+
+  return geoJsonProps;
+}
 
 var heatMapProps = {
   radius: 35,
@@ -42,8 +47,8 @@ function geoJson2heat(geojson) {
 }
 
 function initMap(containerId, mapEvents, radarImagePath, lightmapImagePath, activeOverlayLayers) {
-  var killsGroup = L.geoJson(mapEvents.killFeatureCollection, geoJsonProps);
-  var deathsGroup = L.geoJson(mapEvents.deathFeatureCollection, geoJsonProps);
+  var killsGroup = L.geoJson(mapEvents.killFeatureCollection, getGeoJsonProps('kill'));
+  var deathsGroup = L.geoJson(mapEvents.deathFeatureCollection, getGeoJsonProps('death'));
 
   var bounds = [[0, 0], [mapEvents.mapSize, mapEvents.mapSize]];
   var radarLayer = L.imageOverlay(radarImagePath, bounds);

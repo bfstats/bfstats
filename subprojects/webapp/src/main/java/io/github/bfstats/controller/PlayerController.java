@@ -94,7 +94,7 @@ public class PlayerController extends Controller {
 
   @GET("json/{id: [0-9]+}/map/{mapCode}/events")
   public void mapEventsJson(@Param("id") int playerId, @Param("mapCode") String mapCode) {
-    MapEvents mapEvents = mapService.getMapEvents(mapCode, playerId, null);
+    MapEvents mapEvents = mapService.getMapEvents(mapCode, playerId, null, true);
     getRouteContext().json().send(mapEvents);
   }
 }

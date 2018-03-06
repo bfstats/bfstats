@@ -44,7 +44,7 @@ public class MapService {
         .setMapSize(mapSize);
   }
 
-  public MapEvents getMapEvents(String mapCode, Integer playerId, Integer roundId) {
+  public MapEvents getMapEvents(String mapCode, Integer playerId, Integer roundId, boolean withProps) {
     Result<Record> killRecords = getDslContext()
         .select(ROUND_PLAYER_DEATH.fields())
         .select(PLAYER.NAME)
@@ -91,7 +91,7 @@ public class MapService {
         .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
         .fetch();
 
-    return toMapEvents(mapCode, killRecords, deathRecords);
+    return toMapEvents(mapCode, killRecords, deathRecords, withProps);
   }
 
   private static Integer findPlayerTeam(Record deathRecord) {
@@ -126,7 +126,7 @@ public class MapService {
     return killerPlayerTeam;
   }
 
-  private MapEvents toMapEvents(String mapCode, Result<Record> killRecords, Result<Record> deathRecords) {
+  private MapEvents toMapEvents(String mapCode, Result<Record> killRecords, Result<Record> deathRecords, boolean withProps) {
     Collection<Feature> killFeatures = new ArrayList<>();
     for (Record deathRecord : killRecords) {
       BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
@@ -134,44 +134,47 @@ public class MapService {
       BigDecimal killerZ = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
       Location killerLocation = new Location(killerX.floatValue(), killerY.floatValue(), killerZ.floatValue());
 
-      BigDecimal deathX = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_X);
-      BigDecimal deathY = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Y);
-      BigDecimal deathZ = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Z);
-      Location deathLocation = new Location(deathX.floatValue(), deathY.floatValue(), deathZ.floatValue());
-
-      String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
-
-      Integer killerPlayerId = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
-      Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
-      String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
-      String playerName = deathRecord.get(PLAYER.NAME);
-      String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
-
-      Integer playerTeam = findPlayerTeam(deathRecord);
-      Integer killerPlayerTeam = findKillerTeam(deathRecord);
-
-      LocalDateTime deathTime = toUserZone(deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime());
-
-      Weapon killWeapon = ofNullable(killWeaponCode)
-          .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
-          .orElse(null);
-
-      MapEvent killEvent = new MapEvent()
-          .setLocation(killerLocation)
-          .setRelatedLocation(deathLocation)
-          .setTime(deathTime)
-          .setKillerPlayerId(killerPlayerId)
-          .setKillerPlayerName(killerPlayerName)
-          .setKillerPlayerTeam(killerPlayerTeam)
-          .setPlayerId(playerId)
-          .setPlayerName(playerName)
-          .setPlayerTeam(playerTeam)
-          .setKillWeapon(killWeapon)
-          .setKillType(killType);
-
       Feature feature = new Feature();
       feature.geometry = new PointGeometry(new float[]{killerLocation.getX(), killerLocation.getZ()});
-      feature.properties = createProps(killEvent, true);
+
+      if (withProps) {
+        BigDecimal deathX = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_X);
+        BigDecimal deathY = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Y);
+        BigDecimal deathZ = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Z);
+        Location deathLocation = new Location(deathX.floatValue(), deathY.floatValue(), deathZ.floatValue());
+
+        String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
+
+        Integer killerPlayerId = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
+        Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
+        String playerName = deathRecord.get(PLAYER.NAME);
+        String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
+
+        Integer playerTeam = findPlayerTeam(deathRecord);
+        Integer killerPlayerTeam = findKillerTeam(deathRecord);
+
+        LocalDateTime deathTime = toUserZone(deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime());
+        String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
+
+        Weapon killWeapon = ofNullable(killWeaponCode)
+            .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
+            .orElse(null);
+
+        MapEvent killEvent = new MapEvent()
+            .setLocation(killerLocation)
+            .setRelatedLocation(deathLocation)
+            .setTime(deathTime)
+            .setKillerPlayerId(killerPlayerId)
+            .setKillerPlayerName(killerPlayerName)
+            .setKillerPlayerTeam(killerPlayerTeam)
+            .setPlayerId(playerId)
+            .setPlayerName(playerName)
+            .setPlayerTeam(playerTeam)
+            .setKillWeapon(killWeapon)
+            .setKillType(killType);
+        feature.properties = createProps(killEvent, true);
+      }
+
       killFeatures.add(feature);
     }
     FeatureCollection killFeatureCollection = new FeatureCollection(killFeatures);
@@ -183,45 +186,50 @@ public class MapService {
       BigDecimal deathZ = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Z);
       Location deathLocation = new Location(deathX.floatValue(), deathY.floatValue(), deathZ.floatValue());
 
-      String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
-
-      Integer killerPlayerId = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
-      Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
-      String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
-      String playerName = deathRecord.get(PLAYER.NAME);
-      String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
-      Integer playerTeam = findPlayerTeam(deathRecord);
-      Integer killerPlayerTeam = findKillerTeam(deathRecord);
-
-      BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
-      BigDecimal killerY = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
-      BigDecimal killerZ = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
-      Location killerLocation = killerX != null ?
-          new Location(killerX.floatValue(), killerY.floatValue(), killerZ.floatValue()) :
-          null;
-
-      LocalDateTime deathTime = toUserZone(deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime());
-
-      Weapon killWeapon = ofNullable(killWeaponCode)
-          .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
-          .orElse(null);
-
-      MapEvent deathEvent = new MapEvent()
-          .setLocation(deathLocation)
-          .setRelatedLocation(killerLocation)
-          .setTime(deathTime)
-          .setKillerPlayerId(killerPlayerId)
-          .setKillerPlayerName(killerPlayerName)
-          .setKillerPlayerTeam(killerPlayerTeam)
-          .setPlayerId(playerId)
-          .setPlayerName(playerName)
-          .setPlayerTeam(playerTeam)
-          .setKillWeapon(killWeapon)
-          .setKillType(killType);
-
       Feature feature = new Feature();
       feature.geometry = new PointGeometry(new float[]{deathLocation.getX(), deathLocation.getZ()});
-      feature.properties = createProps(deathEvent, false);
+
+      if (withProps) {
+        String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
+
+        Integer killerPlayerId = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
+        Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
+        String playerName = deathRecord.get(PLAYER.NAME);
+        String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
+        Integer playerTeam = findPlayerTeam(deathRecord);
+        Integer killerPlayerTeam = findKillerTeam(deathRecord);
+
+        BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
+        BigDecimal killerY = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
+        BigDecimal killerZ = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
+        Location killerLocation = killerX != null ?
+            new Location(killerX.floatValue(), killerY.floatValue(), killerZ.floatValue()) :
+            null;
+
+        LocalDateTime deathTime = toUserZone(deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime());
+
+        String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
+
+        Weapon killWeapon = ofNullable(killWeaponCode)
+            .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
+            .orElse(null);
+
+        MapEvent deathEvent = new MapEvent()
+            .setLocation(deathLocation)
+            .setRelatedLocation(killerLocation)
+            .setTime(deathTime)
+            .setKillerPlayerId(killerPlayerId)
+            .setKillerPlayerName(killerPlayerName)
+            .setKillerPlayerTeam(killerPlayerTeam)
+            .setPlayerId(playerId)
+            .setPlayerName(playerName)
+            .setPlayerTeam(playerTeam)
+            .setKillWeapon(killWeapon)
+            .setKillType(killType);
+
+        feature.properties = createProps(deathEvent, false);
+      }
+
       //String popupContent = String.format("%s <span style='font-weight: bold'>%s</span> %s %s %s %s", mapEvent.getTime(), mapEvent.getKillerPlayerName(), mapEvent.getKillerPlayerTeam(), mapEvent.getKillWeapon().getName(), mapEvent.getPlayerName(), mapEvent.getPlayerTeam());
       //feature.properties.put("popupContent", popupContent);
       deathFeatures.add(feature);

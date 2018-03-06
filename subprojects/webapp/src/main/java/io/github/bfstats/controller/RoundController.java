@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.github.bfstats.util.DateTimeUtils.toUserZone;
-
 @Path("/rounds")
 public class RoundController extends Controller {
 
@@ -92,7 +90,7 @@ public class RoundController extends Controller {
   @Produces(Produces.JSON)
   public void mapEventsJson(@Param("id") int roundId) {
     Round round = roundService.getRound(roundId);
-    MapEvents mapEvents = mapService.getMapEvents(round.getMapCode(), null, roundId);
+    MapEvents mapEvents = mapService.getMapEvents(round.getMapCode(), null, roundId, true);
     getRouteContext().json().send(mapEvents);
   }
 
@@ -119,7 +117,7 @@ public class RoundController extends Controller {
   @Produces(Produces.JSON)
   public void playerMapEventsJson(@Param("id") int roundId, @Param("playerId") int playerId) {
     Round round = roundService.getRound(roundId);
-    MapEvents mapEvents = mapService.getMapEvents(round.getMapCode(), playerId, roundId);
+    MapEvents mapEvents = mapService.getMapEvents(round.getMapCode(), playerId, roundId, true);
     getRouteContext().json().send(mapEvents);
   }
 }

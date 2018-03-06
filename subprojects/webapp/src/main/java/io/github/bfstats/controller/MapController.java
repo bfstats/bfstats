@@ -43,7 +43,7 @@ public class MapController extends Controller {
   @GET("json/{mapCode}/events")
   @Produces(Produces.JSON)
   public void mapEventsJson(@Param("mapCode") String mapCode) {
-    MapEvents mapEvents = mapService.getMapEvents(mapCode, null, null);
+    MapEvents mapEvents = mapService.getMapEvents(mapCode, null, null, false);
     getRouteContext().json().send(mapEvents);
   }
 }
