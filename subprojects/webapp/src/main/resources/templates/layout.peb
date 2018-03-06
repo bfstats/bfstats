@@ -16,6 +16,8 @@
   <script src="{{ publicAt('lib/jquery/jquery-3.2.1.min.js') }}"></script>
   <script src="{{ publicAt('lib/leaflet/plugins/leaflet.timedimension.min.js') }}"></script>
   <link rel="stylesheet" href="{{ publicAt('lib/leaflet/plugins/leaflet.timedimension.control.min.css') }}"/>
+
+  <script src="{{ publicAt('lib/leaflet/plugins/leaflet-heat.js') }}"></script>
 </head>
 <body>
 

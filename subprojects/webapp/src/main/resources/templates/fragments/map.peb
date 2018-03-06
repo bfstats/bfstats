@@ -27,6 +27,12 @@ var geoJsonProps = {
     }
 };
 
+function geoJson2heat(geojson) {
+  return geojson.features.map(function(feature) {
+    return [parseFloat(feature.geometry.coordinates[1]), parseFloat(feature.geometry.coordinates[0])];
+  });
+}
+
 function initMap(containerId, mapEvents) {
   var killsGroup = L.geoJson(mapEvents.killFeatureCollection, geoJsonProps);
   var deathsGroup = L.geoJson(mapEvents.deathFeatureCollection, geoJsonProps);
@@ -36,6 +42,12 @@ function initMap(containerId, mapEvents) {
   var radarLayer = L.imageOverlay(radarImagePath, bounds);
   var lightmapImagePath = '{{publicAt('img/maps/lightmap/' + map.mapFileName + '.jpg')}}';
   var lightmapLayer = L.imageOverlay(lightmapImagePath, bounds);
+
+  var killsForHeatLayer = geoJson2heat(mapEvents.killFeatureCollection);
+  var killsHeatLayer = L.heatLayer(killsForHeatLayer, {radius: 35});
+
+  var deathsForHeatLayer = geoJson2heat(mapEvents.deathFeatureCollection);
+  var deathsHeatLayer = L.heatLayer(deathsForHeatLayer, {radius: 15});
 
   var leafletMap = L.map(containerId, {
     crs: L.CRS.Simple,
@@ -53,6 +65,8 @@ function initMap(containerId, mapEvents) {
       "Lightmap": lightmapLayer
   };
   var overlayMaps = {
+      "Kills Heatmap": killsHeatLayer,
+      "Deaths Heatmap": deathsHeatLayer,
       "Kills": killsGroup,
       "Deaths": deathsGroup
   };
