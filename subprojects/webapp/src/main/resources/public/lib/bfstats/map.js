@@ -24,7 +24,15 @@ var geoJsonProps = {
 };
 
 var heatMapProps = {
-  radius: 35
+  radius: 35,
+  blur: 15,
+  gradient: {
+    0.4: 'blue',
+    0.6: 'cyan',
+    0.7: 'lime',
+    0.8: 'yellow',
+    1.0: 'red'
+  },
 }
 
 function geoJson2heat(geojson) {
@@ -33,7 +41,7 @@ function geoJson2heat(geojson) {
   });
 }
 
-function initMap(containerId, mapEvents, radarImagePath, lightmapImagePath) {
+function initMap(containerId, mapEvents, radarImagePath, lightmapImagePath, activeOverlayLayers) {
   var killsGroup = L.geoJson(mapEvents.killFeatureCollection, geoJsonProps);
   var deathsGroup = L.geoJson(mapEvents.deathFeatureCollection, geoJsonProps);
 
@@ -47,13 +55,31 @@ function initMap(containerId, mapEvents, radarImagePath, lightmapImagePath) {
   var deathsForHeatLayer = geoJson2heat(mapEvents.deathFeatureCollection);
   var deathsHeatLayer = L.heatLayer(deathsForHeatLayer, heatMapProps);
 
+
+  var activeLayers = activeOverlayLayers.map(function(layerName) {
+    switch (layerName) {
+      case "kills":
+        return killsGroup;
+      case "deaths":
+        return deathsGroup;
+      case "kills_heatmap":
+        return killsHeatLayer;
+      case "deaths_heatmap":
+        return deathsHeatLayer;
+      default:
+        throw "illegal layer: " + layerName;
+    }
+  })
+
+  activeLayers.push(radarLayer); // default background
+
   var leafletMap = L.map(containerId, {
     crs: L.CRS.Simple,
     dragging: !L.Browser.mobile,
     tap: false,
     minZoom: -2,
     maxZoom: 8,
-    layers: [radarLayer, killsGroup, deathsGroup] // default active layers
+    layers: activeLayers // default active layers
   });
 
   leafletMap.fitBounds(bounds);
@@ -91,8 +117,8 @@ function initMap(containerId, mapEvents, radarImagePath, lightmapImagePath) {
 }
 
  return {
-    initializeMap: function(containerId, mapEvents, radarImagePath, lightmapImagePath) {
-      initMap(containerId, mapEvents, radarImagePath, lightmapImagePath);
+    initializeMap: function(containerId, mapEvents, radarImagePath, lightmapImagePath, activeOverlayLayers) {
+      initMap(containerId, mapEvents, radarImagePath, lightmapImagePath, activeOverlayLayers);
     }
  }
 })();

@@ -10,7 +10,14 @@ $.ajax({
   success: function (response) {
     var radarImagePath = '{{publicAt('img/maps/radar/' + map.mapFileName + '.png')}}';
     var lightmapImagePath = '{{publicAt('img/maps/lightmap/' + map.mapFileName + '.jpg')}}';
-    BfStats.initializeMap('map-{{uniqueId}}', response, radarImagePath, lightmapImagePath);
+
+    {% if overlay == "heatmap" %}
+        var activeOverlayLayers = ["kills_heatmap"];
+    {% else %}
+        var activeOverlayLayers = ["kills", "deaths"];
+    {% endif %}
+
+    BfStats.initializeMap('map-{{uniqueId}}', response, radarImagePath, lightmapImagePath, activeOverlayLayers);
   }
 });
 })();

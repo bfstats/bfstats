@@ -5,6 +5,6 @@
 {% block content %}
 <h3>{{ map.mapName }}</h3>
 
-{% include "fragments/map" %}
+{% include "fragments/map" with {"overlay":"heatmap"} %}
 
 {% endblock %}
