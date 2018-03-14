@@ -164,6 +164,16 @@ public class PlayerService {
           m.put(nextDay, 0);
         }
       }
+
+      // if last element and it's not today (meaning there are 0 players)
+      if (i + 1 == records.size() && date.compareTo(LocalDate.now()) < 0) {
+        LocalDate nextDay = date.plusDays(1);
+        m.put(nextDay, 0);
+        if (nextDay.compareTo(LocalDate.now()) < 0) {
+          m.put(LocalDate.now(), 0);
+        }
+      }
+
     }
 
     return m;

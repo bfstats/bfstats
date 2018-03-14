@@ -15,12 +15,7 @@ $.ajax({
       xAxis: {
         type: 'datetime',
         tickInterval: 24 * 3600 * 1000, // one day
-        tickWidth: 1,
-        labels: {
-            align: 'left',
-            x: 3,
-            y: -3
-        }
+        tickWidth: 1
       },
 
       yAxis: [
@@ -30,7 +25,7 @@ $.ajax({
           },
           labels: {
             align: 'left',
-            x: 3,
+            x: 0,
             y: 16,
             format: '{value:.,0f}'
           },
@@ -38,14 +33,14 @@ $.ajax({
         },
         { // right y axis
           linkedTo: 0,
-          gridLineWidth: 0,
+          gridLineWidth: 1,
           opposite: true,
           title: {
             text: null
           },
           labels: {
             align: 'right',
-            x: -3,
+            x: 0,
             y: 16,
             format: '{value:.,0f}'
           },
@@ -60,7 +55,7 @@ $.ajax({
       },
       series: [
         {
-          name: 'All visits',
+          name: 'Unique players',
           lineWidth: 1,
           marker: {
             radius: 3
