@@ -22,7 +22,7 @@
       <properties>
         <property>
           <key>scripts</key>
-          <value>src/main/resources/database.sql</value>
+          <value>D:\Projects\bfstats\subprojects\dbcreator\src\main\resources\resources\install.sql</value>
         </property>
       </properties>
     </database>

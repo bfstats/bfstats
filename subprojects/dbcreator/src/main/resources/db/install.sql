@@ -15,10 +15,11 @@ CREATE INDEX IF NOT EXISTS player_nickname_player_id_idx ON player_nickname(play
 
 CREATE TABLE IF NOT EXISTS server (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  ip INTEGER, -- ip as integer
+  ip VARCHAR(15), -- ip in form 255.255.255.255
   port INTEGER NOT NULL,
   name VARCHAR(150) NOT NULL, -- last known name
-  timezone_name VARCHAR(64) NOT NULL DEFAULT 'GMT' -- timezone name used in java
+  timezone_name VARCHAR(64) NOT NULL DEFAULT 'GMT', -- timezone name used in java
+  last_parsed_datetime VARCHAR(30) -- timestamp of latest added log, new loading will not look into ones added before
 );
 
 -- single log file, consists of 1 or more rounds; same map
@@ -326,16 +327,6 @@ CREATE TABLE IF NOT EXISTS round_player_deploy_object (
 );
 CREATE INDEX IF NOT EXISTS round_player_deploy_object_round_id_idx ON round_player_deploy_object(round_id);
 CREATE INDEX IF NOT EXISTS round_player_deploy_object_player_id_idx ON round_player_deploy_object(player_id);
-
-CREATE TABLE IF NOT EXISTS configuration (
-  -- guarantee that configuration table is a single record table. It has to be unique and can have only one value.
-  lock INTEGER PRIMARY KEY DEFAULT 1,
-  last_parsed_datetime VARCHAR(30),
-  CHECK (lock = 1)
-);
--- add row (if none exist) with null as last_parsed_datetime
-INSERT INTO configuration(last_parsed_datetime)
-SELECT null WHERE NOT EXISTS(SELECT 1 FROM configuration WHERE lock =1);
 
 -- views
 CREATE VIEW IF NOT EXISTS player_summary_no_rank AS

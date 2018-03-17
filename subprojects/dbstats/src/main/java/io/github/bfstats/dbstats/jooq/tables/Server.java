@@ -37,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Server extends TableImpl<ServerRecord> {
 
-    private static final long serialVersionUID = 734820385;
+    private static final long serialVersionUID = -1091803770;
 
     /**
      * The reference instance of <code>server</code>
@@ -60,7 +60,7 @@ public class Server extends TableImpl<ServerRecord> {
     /**
      * The column <code>server.ip</code>.
      */
-    public final TableField<ServerRecord, Integer> IP = createField("ip", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<ServerRecord, String> IP = createField("ip", org.jooq.impl.SQLDataType.VARCHAR(15), this, "");
 
     /**
      * The column <code>server.port</code>.
@@ -76,6 +76,11 @@ public class Server extends TableImpl<ServerRecord> {
      * The column <code>server.timezone_name</code>.
      */
     public final TableField<ServerRecord, String> TIMEZONE_NAME = createField("timezone_name", org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false).defaultValue(org.jooq.impl.DSL.field("'GMT'", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>server.last_parsed_datetime</code>.
+     */
+    public final TableField<ServerRecord, String> LAST_PARSED_DATETIME = createField("last_parsed_datetime", org.jooq.impl.SQLDataType.VARCHAR(30), this, "");
 
     /**
      * Create a <code>server</code> table reference

@@ -12,7 +12,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.jooq.Record1;
 import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
@@ -61,6 +60,7 @@ public class DbFiller {
   private DSLContext transactionDslContext;
 
   private final BfLog bfLog;
+  private final String gameServerAddress;
   private final ZoneId logFileZoneId;
   private final LocalDateTime logStartTime; // in UTC
   private final String engine;
@@ -74,8 +74,9 @@ public class DbFiller {
   private Map<Integer, BfEvent> lastBeginMedPackByPlayerSlotId = new HashMap<>();
   private int gameRecordId;
 
-  public DbFiller(BfLog bfLog, ZoneId logFileZoneId) {
+  public DbFiller(BfLog bfLog, String gameServerAddress, ZoneId logFileZoneId) {
     this.bfLog = bfLog;
+    this.gameServerAddress = gameServerAddress;
     this.logFileZoneId = logFileZoneId;
     LocalDateTime logStartTimeInServerTimezone = bfLog.getTimestampAsDate();
     this.logStartTime = logStartTimeInServerTimezone.atZone(logFileZoneId)
@@ -88,14 +89,6 @@ public class DbFiller {
     return transactionDslContext;
   }
 
-  public static Properties loadConfigProperties() throws IOException {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    InputStream configFileInputStream = loader.getResourceAsStream("ftpconfig.properties");
-    Properties props = new Properties();
-    props.load(configFileInputStream);
-    return props;
-  }
-
   public static Properties loadDbConfigProperties() throws IOException {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
     InputStream configFileInputStream = loader.getResourceAsStream("dbconfig.properties");
@@ -104,30 +97,36 @@ public class DbFiller {
     return props;
   }
 
-  public static void main(String[] args) throws IOException, SQLException {
+  public static void main(String[] args) throws IOException {
     System.setProperty("org.jooq.no-logo", "true");
-
-    Properties props = loadConfigProperties();
-    if (props.getProperty("download", "false").equals("true")) {
-      FtpDownloader.downloadFiles(props);
-    }
-
-    String logDirPath = props.getProperty("localDirectory").trim();
 
     Properties dbConfigProperties = loadDbConfigProperties();
     String dbUrl = dbConfigProperties.getProperty("databaseUrl", "jdbc:sqlite:database.db");
-    prepareConnection(dbUrl);
-    try {
-      parseAllInDir(logDirPath);
-    } finally {
-      closeConnection();
+
+    List<FtpDownloader.ConnectDetails> connectDetailsList = FtpDownloader.loadConfigProperties();
+    for (FtpDownloader.ConnectDetails connectDetails : connectDetailsList) {
+      FtpDownloader.GameServerDetails gameServerDetails = connectDetails.getGameServerDetails();
+      System.out.println("Adding for " + gameServerDetails.getGameServerAddress() + ":" + gameServerDetails.getGameServerPort());
+      if (connectDetails.isDownload()) {
+        FtpDownloader.downloadFiles(connectDetails);
+      }
+      String logDirPath = connectDetails.getLocalDirectory();
+      prepareConnection(dbUrl);
+      try {
+        parseAllInDir(logDirPath, gameServerDetails);
+      } finally {
+        closeConnection();
+      }
     }
   }
 
-  public static void parseAllInDir(String logDirPath) throws IOException {
-    Properties props = loadConfigProperties();
-    String timeZone = props.getProperty("gameServerTimezone", "GMT");
-    ZoneId logFileZoneId = ZoneId.of(timeZone);
+  private static void parseAllInDir(String logDirPath, FtpDownloader.GameServerDetails gameServerDetails) {
+    String gameServerAddress = gameServerDetails.getGameServerAddress();
+    int gameServerPort = gameServerDetails.getGameServerPort();
+
+    String gameServerTimezone = gameServerDetails.getGameServerTimezone();
+    ZoneId logFileZoneId = ZoneId.of(gameServerTimezone);
+
     File logDir = new File(logDirPath);
     File[] dirFiles = logDir.listFiles((dir, name) -> name.endsWith(".xml") || name.endsWith(".zxml"));
     if (dirFiles == null) {
@@ -141,7 +140,7 @@ public class DbFiller {
     int totalNumberOfFiles = dirFiles.length;
     int numberOfFilesCompleted = 0;
 
-    LocalDateTime latestAdded = findLatestAddedLogFileTime();
+    LocalDateTime latestAdded = findLatestAddedLogFileTime(gameServerAddress, gameServerPort);
 
     String lastValidDateTimeStr = null;
     for (File fileI : dirFiles) {
@@ -168,7 +167,7 @@ public class DbFiller {
       filePath = extractIfNecessary(filePath);
       if (filePath != null) {
         try {
-          addFromXmlFile(filePath, !probablyLiveFile, logFileZoneId);
+          addFromXmlFile(filePath, !probablyLiveFile, gameServerAddress, logFileZoneId);
           lastValidDateTimeStr = dateTimeStr;
         } catch (RuntimeException e) {
           log.warn("Could not parse " + filePath, e);
@@ -177,25 +176,32 @@ public class DbFiller {
     }
 
     if (lastValidDateTimeStr != null) {
-      updateLatestAddedLogFileTime(lastValidDateTimeStr);
+      updateLatestAddedLogFileTime(gameServerAddress, gameServerPort, lastValidDateTimeStr);
     }
   }
 
   @Nullable
-  private static LocalDateTime findLatestAddedLogFileTime() {
-    LocalDateTime latestAdded = null;
-    Record1<String> lastParsedDatetimeRecord = dslContext.select(CONFIGURATION.LAST_PARSED_DATETIME).from(CONFIGURATION).fetchOne();
-    String lastParsedDateTime = lastParsedDatetimeRecord.get(CONFIGURATION.LAST_PARSED_DATETIME);
-    if (lastParsedDateTime != null) {
-      latestAdded = LocalDateTime.parse(lastParsedDateTime, DATE_TIME_FORMATTER);
+  private static LocalDateTime findLatestAddedLogFileTime(String gameServerAddress, int gameServerPort) {
+    ServerRecord server = findServer(gameServerAddress, gameServerPort);
+    if (server == null) {
+      return null;
     }
-    return latestAdded;
+
+    String lastParsedDateTime = server.getLastParsedDatetime();
+    if (lastParsedDateTime == null) {
+      return null;
+    }
+
+    return LocalDateTime.parse(lastParsedDateTime, DATE_TIME_FORMATTER);
   }
 
-  private static void updateLatestAddedLogFileTime(String lastValidDateTimeStr) {
-    dslContext.update(CONFIGURATION)
-        .set(CONFIGURATION.LAST_PARSED_DATETIME, lastValidDateTimeStr)
-        .execute();
+  private static void updateLatestAddedLogFileTime(String gameServerAddress, int gameServerPort, String lastValidDateTimeStr) {
+    ServerRecord server = findServer(gameServerAddress, gameServerPort);
+    if (server == null) {
+      throw new IllegalStateException("server does not exist for IP " + gameServerAddress + " and port " + gameServerPort);
+    }
+    server.setLastParsedDatetime(lastValidDateTimeStr);
+    server.update();
   }
 
   private static String extractIfNecessary(String filePath) {
@@ -245,12 +251,12 @@ public class DbFiller {
     }
   }
 
-  private static void addFromXmlFile(String xmlFilePath, boolean tryFixing, ZoneId logFileZoneId) {
+  private static void addFromXmlFile(String xmlFilePath, boolean tryFixing, String gameServerAddress, ZoneId logFileZoneId) {
     try {
       log.info("Parsing " + xmlFilePath);
       File file = new File(xmlFilePath);
       BfLog bfLog = XmlParser.parseXmlLogFile(file, tryFixing);
-      DbFiller dbFiller = new DbFiller(bfLog, logFileZoneId);
+      DbFiller dbFiller = new DbFiller(bfLog, gameServerAddress, logFileZoneId);
       dbFiller.fillDb();
     } catch (JAXBException | IOException e) {
       throw new RuntimeException(e);
@@ -303,7 +309,7 @@ public class DbFiller {
 
   private int createGame() {
     BfRound firstRound = bfLog.getFirstRound();
-    ServerRecord serverRecord = addOrGetServer(firstRound.getPort(), firstRound.getServerName());
+    ServerRecord serverRecord = addOrGetServer(gameServerAddress, firstRound.getPort(), firstRound.getServerName());
     GameRecord gameRecord = createGameRecord(serverRecord.getId(), firstRound);
     return gameRecord.getId();
   }
@@ -341,13 +347,22 @@ public class DbFiller {
     lastEnterVehicleByPlayerSlotId.clear();
   }
 
-  private ServerRecord addOrGetServer(int port, String name) {
-    // TODO: add ip to server (unfortunately not present in log file)
-    ServerRecord server = transaction().selectFrom(SERVER).where(SERVER.PORT.eq(port)).fetchOne();
+  @Nullable
+  private static ServerRecord findServer(String ip, int port) {
+    ServerRecord server = dslContext
+        .selectFrom(SERVER)
+        .where(SERVER.IP.eq(ip).and(SERVER.PORT.eq(port)))
+        .fetchOne();
+
+    return server;
+  }
+
+  private ServerRecord addOrGetServer(String ip, int port, String name) {
+    ServerRecord server = findServer(ip, port);
 
     if (server == null) {
       server = transaction().newRecord(SERVER);
-
+      server.setIp(ip);
       server.setPort(port);
       server.setName(name);
       server.setTimezoneName(logFileZoneId.getId());

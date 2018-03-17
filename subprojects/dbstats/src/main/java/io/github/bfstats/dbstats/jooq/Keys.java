@@ -4,7 +4,6 @@
 package io.github.bfstats.dbstats.jooq;
 
 
-import io.github.bfstats.dbstats.jooq.tables.Configuration;
 import io.github.bfstats.dbstats.jooq.tables.Game;
 import io.github.bfstats.dbstats.jooq.tables.GamePlayer;
 import io.github.bfstats.dbstats.jooq.tables.Player;
@@ -22,7 +21,6 @@ import io.github.bfstats.dbstats.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerVehicle;
 import io.github.bfstats.dbstats.jooq.tables.Server;
-import io.github.bfstats.dbstats.jooq.tables.records.ConfigurationRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.GamePlayerRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.GameRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerNicknameRecord;
@@ -88,7 +86,6 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final UniqueKey<ConfigurationRecord> PK_CONFIGURATION = UniqueKeys0.PK_CONFIGURATION;
     public static final UniqueKey<GameRecord> PK_GAME = UniqueKeys0.PK_GAME;
     public static final UniqueKey<GamePlayerRecord> PK_GAME_PLAYER = UniqueKeys0.PK_GAME_PLAYER;
     public static final UniqueKey<PlayerRecord> PK_PLAYER = UniqueKeys0.PK_PLAYER;
@@ -167,7 +164,6 @@ public class Keys {
     }
 
     private static class UniqueKeys0 extends AbstractKeys {
-        public static final UniqueKey<ConfigurationRecord> PK_CONFIGURATION = createUniqueKey(Configuration.CONFIGURATION, "pk_configuration", Configuration.CONFIGURATION.LOCK);
         public static final UniqueKey<GameRecord> PK_GAME = createUniqueKey(Game.GAME, "pk_game", Game.GAME.ID);
         public static final UniqueKey<GamePlayerRecord> PK_GAME_PLAYER = createUniqueKey(GamePlayer.GAME_PLAYER, "pk_game_player", GamePlayer.GAME_PLAYER.ID);
         public static final UniqueKey<PlayerRecord> PK_PLAYER = createUniqueKey(Player.PLAYER, "pk_player", Player.PLAYER.ID);

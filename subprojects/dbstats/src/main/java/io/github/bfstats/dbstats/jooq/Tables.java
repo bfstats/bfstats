@@ -4,7 +4,6 @@
 package io.github.bfstats.dbstats.jooq;
 
 
-import io.github.bfstats.dbstats.jooq.tables.Configuration;
 import io.github.bfstats.dbstats.jooq.tables.Game;
 import io.github.bfstats.dbstats.jooq.tables.GamePlayer;
 import io.github.bfstats.dbstats.jooq.tables.Player;
@@ -42,11 +41,6 @@ import javax.annotation.Generated;
 )
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
-
-    /**
-     * The table <code>configuration</code>.
-     */
-    public static final Configuration CONFIGURATION = io.github.bfstats.dbstats.jooq.tables.Configuration.CONFIGURATION;
 
     /**
      * The table <code>game</code>.

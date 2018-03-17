@@ -1,7 +1,12 @@
-serverAddress=
-userId=
-password=
-remoteDirectory=
-localDirectory=/home/bfstats/bflogs
-download=true
-gameServerTimezone=-05:00
+# FTP server address
+server.1.serverAddress=1.1.1.1
+server.1.isFtps=false
+server.1.userId=
+server.1.password=
+server.1.remoteDirectory=
+server.1.download=true
+server.1.localDirectory=/home/bfstats/bflogs
+server.1.gameServerAddress=1.1.1.1
+server.1.gameServerPort=15567
+# can use timezone or offset
+server.1.gameServerTimezone=-05:00

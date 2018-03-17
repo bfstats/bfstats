@@ -4,7 +4,6 @@
 package io.github.bfstats.dbstats.jooq;
 
 
-import io.github.bfstats.dbstats.jooq.tables.Configuration;
 import io.github.bfstats.dbstats.jooq.tables.Game;
 import io.github.bfstats.dbstats.jooq.tables.GamePlayer;
 import io.github.bfstats.dbstats.jooq.tables.Player;
@@ -51,17 +50,12 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 248399768;
+    private static final long serialVersionUID = -929493423;
 
     /**
      * The reference instance of <code></code>
      */
     public static final DefaultSchema DEFAULT_SCHEMA = new DefaultSchema();
-
-    /**
-     * The table <code>configuration</code>.
-     */
-    public final Configuration CONFIGURATION = io.github.bfstats.dbstats.jooq.tables.Configuration.CONFIGURATION;
 
     /**
      * The table <code>game</code>.
@@ -193,7 +187,6 @@ public class DefaultSchema extends SchemaImpl {
 
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
-            Configuration.CONFIGURATION,
             Game.GAME,
             GamePlayer.GAME_PLAYER,
             Player.PLAYER,

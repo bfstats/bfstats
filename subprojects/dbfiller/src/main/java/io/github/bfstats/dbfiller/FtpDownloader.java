@@ -9,41 +9,70 @@ import org.apache.commons.net.ftp.FTPFileFilter;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.util.stream.Collectors.toList;
 
 // normal maps on everything on highest settings, even on leaves and trees
 
 @Log
 public class FtpDownloader {
   public static void main(String[] args) throws IOException {
-    Properties props = DbFiller.loadConfigProperties();
-    downloadFiles(props);
+    List<ConnectDetails> connectDetailsList = loadConfigProperties();
+    for (ConnectDetails connectDetails : connectDetailsList) {
+      downloadFiles(connectDetails);
+    }
   }
 
-  public static void downloadFiles(Properties props) throws IOException {
-    ConnectDetails connectDetails = new ConnectDetails()
-        .setServerAddress(props.getProperty("serverAddress").trim())
-        .setUserId(props.getProperty("userId").trim())
-        .setPassword(props.getProperty("password").trim())
-        .setRemoteDirectory(props.getProperty("remoteDirectory").trim())
-        .setLocalDirectory(props.getProperty("localDirectory").trim());
+  private static ConnectDetails mapToConnectDetails(Map<String, String> props) {
+    GameServerDetails gameServerDetails = new GameServerDetails()
+        .setGameServerAddress(props.get("gameServerAddress").trim())
+        .setGameServerPort(Integer.parseInt(props.get("gameServerPort").trim()))
+        .setGameServerTimezone(props.get("gameServerTimezone").trim());
 
-    try {
-      downloadFiles(connectDetails);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    return new ConnectDetails()
+        .setServerAddress(props.get("serverAddress").trim())
+        .setUserId(props.get("userId").trim())
+        .setPassword(props.get("password").trim())
+        .setRemoteDirectory(props.get("remoteDirectory").trim())
+        .setLocalDirectory(props.get("localDirectory").trim())
+        .setFtps(props.getOrDefault("isFtps", "false").equals("true"))
+        .setDownload(props.getOrDefault("download", "false").equals("true"))
+        .setGameServerDetails(gameServerDetails);
+  }
+
+  public static List<ConnectDetails> loadConfigProperties() throws IOException {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    InputStream configFileInputStream = loader.getResourceAsStream("ftpconfig.properties");
+    Properties props = new Properties();
+    props.load(configFileInputStream);
+
+    Map<String, Map<String, String>> map = new HashMap<>();
+
+    props.forEach((key, propertyValue) -> {
+      if (key instanceof String) {
+        String keyStr = (String) key;
+        if (keyStr.startsWith("server.")) {
+          String[] keyParts = keyStr.split("\\.", 10);
+          String serverKey = keyParts[1];
+          String propertyName = keyParts[2];
+          map.computeIfAbsent(serverKey, k -> new HashMap<>())
+              .put(propertyName, (String) propertyValue);
+        }
+      }
+    });
+
+    return map.values()
+        .stream()
+        .map(FtpDownloader::mapToConnectDetails)
+        .collect(toList());
   }
 
   @Accessors(chain = true)
@@ -54,6 +83,19 @@ public class FtpDownloader {
     String password;
     String remoteDirectory;
     String localDirectory;
+
+    boolean ftps;
+    boolean download;
+
+    GameServerDetails gameServerDetails;
+  }
+
+  @Accessors(chain = true)
+  @Data
+  public static class GameServerDetails {
+    String gameServerAddress;
+    int gameServerPort;
+    String gameServerTimezone;
   }
 
   public static boolean downloadFiles(ConnectDetails connectDetails) throws IOException {
@@ -87,7 +129,7 @@ public class FtpDownloader {
     FTPFile[] array = ftpClient.listFiles(null, logFilesFilter);
     List<FTPFile> filesOrderedByNameAsc = Arrays.stream(array)
         .sorted(Comparator.comparing(FTPFile::getName))
-        .collect(Collectors.toList());
+        .collect(toList());
 
     for (FTPFile ftpFile : filesOrderedByNameAsc) {
       String filename = ftpFile.getName();
