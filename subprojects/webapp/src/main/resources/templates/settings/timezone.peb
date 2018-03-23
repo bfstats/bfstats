@@ -11,9 +11,13 @@
 
 <form>
   <select name="zone" onchange="this.form.submit()">
-  {% for zoneId in timezones %}
-    {{option(zoneId.value, zoneId.label, session.all.timezone)}}
-  {% endfor %}
+    {% for entry in timezoneGroups %}
+      <optgroup label="{{ entry.key }}">
+        {% for zoneId in entry.value %}
+          {{option(zoneId, zoneId, session.all.timezone)}}
+        {% endfor %}
+      </optgroup>
+    {% endfor %}
   </select>
 </form>
 

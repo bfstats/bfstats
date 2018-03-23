@@ -18,9 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 public class BfStatsApplication extends ControllerApplication {
 
@@ -40,16 +42,18 @@ public class BfStatsApplication extends ControllerApplication {
 
     List<ZoneId> timezones = DateTimeUtils.getTimezones();
     Instant instant = Instant.now();
-    List<SelectOption> timezoneOptions = timezones.stream()
-        .map(zoneId -> {
-          ZoneOffset zoneOffset = zoneId.getRules().getStandardOffset(instant);
-          String offset = zoneOffset.getTotalSeconds() == 0 ? " 00:00" : zoneOffset.getId();
-          return new SelectOption(zoneId.getId(), "(" + offset + ") " + zoneId.getId());
-        })
-        .collect(toList());
+
+    Map<String, List<String>> zoneIdsByOffset = timezones.stream()
+        .collect(
+            groupingBy(
+                zoneId -> getZoneIdOffset(instant, zoneId),
+                LinkedHashMap::new,
+                mapping(ZoneId::getId, toList())
+            )
+        );
 
     getRoutePreDispatchListeners().add((request, response) ->
-        response.getLocals().put("timezones", timezoneOptions)
+        response.getLocals().put("timezoneGroups", zoneIdsByOffset)
     );
 
     addControllers("io.github.bfstats.controller");
@@ -61,6 +65,11 @@ public class BfStatsApplication extends ControllerApplication {
       // render the template associated with this http status code
       getErrorHandler().handle(404, routeContext);
     });
+  }
+
+  private static String getZoneIdOffset(Instant instant, ZoneId zoneId) {
+    ZoneOffset zoneOffset = zoneId.getRules().getStandardOffset(instant);
+    return zoneOffset.getTotalSeconds() == 0 ? " 00:00" : zoneOffset.getId();
   }
 
   @Data
