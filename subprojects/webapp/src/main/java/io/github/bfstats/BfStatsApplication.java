@@ -5,8 +5,6 @@ import com.google.inject.Injector;
 import io.github.bfstats.exceptions.NotFoundException;
 import io.github.bfstats.util.DateTimeUtils;
 import io.github.bfstats.util.DbUtils;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.core.RequestResponseFactory;
 import ro.pippo.core.util.PathRegexBuilder;
@@ -81,13 +79,6 @@ public class BfStatsApplication extends ControllerApplication {
   private static String getZoneIdOffset(Instant instant, ZoneId zoneId) {
     ZoneOffset zoneOffset = zoneId.getRules().getStandardOffset(instant);
     return zoneOffset.getTotalSeconds() == 0 ? " 00:00" : zoneOffset.getId();
-  }
-
-  @Data
-  @AllArgsConstructor
-  public static class SelectOption {
-    private String value;
-    private String label;
   }
 
   @Override
