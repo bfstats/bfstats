@@ -156,6 +156,10 @@ h3 .less-important {
   transition: background-color 200ms linear;
 }
 
+#navigation a.active {
+  background-color: rgba(50,50,10, 1);
+}
+
 #navigation a:hover {
   background-color: rgba(50,50,10,0.6);
 }

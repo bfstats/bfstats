@@ -25,12 +25,20 @@
 <option value="{{value}}" {{ value == selectedValue ? "selected" : "" }} >{{label}}</option>
 {% endmacro %}
 
+{% macro navigationClass(currentPath, navigationPath) %}
+{{ currentPath == navigationPath or currentPath.startsWith(navigationPath + "/") ? "active" : ""}}
+{% endmacro %}
+
+{% macro homePageNavigationClass(currentPath) %}
+{{ currentPath == "/" or currentPath == "" ? "active" : ""}}
+{% endmacro %}
+
 <nav id="navigation">
-  <a href="{{appPath}}/ranking">Ranks</a>
-  <a href="{{appPath}}/rounds/active">Rounds</a>
-  <a href="{{appPath}}/maps">Maps</a>
-  <a href="{{appPath}}/chat">Chat</a>
-  <a href="{{appPath}}/graphs">Graphs</a>
+  <a href="{{appPath}}/ranking" class="{{homePageNavigationClass(currentPath)}} {{navigationClass(currentPath, '/ranking')}}">Ranks</a>
+  <a href="{{appPath}}/rounds/active" class="{{navigationClass(currentPath, '/rounds')}}">Rounds</a>
+  <a href="{{appPath}}/maps" class="{{navigationClass(currentPath, '/maps')}}">Maps</a>
+  <a href="{{appPath}}/chat" class="{{navigationClass(currentPath, '/chat')}}">Chat</a>
+  <a href="{{appPath}}/graphs" class="{{navigationClass(currentPath, '/graphs')}}">Graphs</a>
 
   <form action="{{appPath}}/players">
     <input type="text" id="menu_query" name="query" placeholder="Search player" value="{{query}}"/>

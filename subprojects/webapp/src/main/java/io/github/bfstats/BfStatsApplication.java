@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.core.RequestResponseFactory;
+import ro.pippo.core.util.PathRegexBuilder;
 import ro.pippo.guice.GuiceControllerFactory;
 import ro.pippo.session.*;
 
@@ -52,9 +53,11 @@ public class BfStatsApplication extends ControllerApplication {
             )
         );
 
-    getRoutePreDispatchListeners().add((request, response) ->
-        response.getLocals().put("timezoneGroups", zoneIdsByOffset)
-    );
+    ANY(pathsForLocals(), routeContext -> {
+      routeContext.setLocal("timezoneGroups", zoneIdsByOffset);
+      routeContext.setLocal("currentPath", routeContext.getRequestUri());
+      routeContext.next(); // allow other handlers to handle this path
+    });
 
     addControllers("io.github.bfstats.controller");
     closeDbConnections();
@@ -65,6 +68,14 @@ public class BfStatsApplication extends ControllerApplication {
       // render the template associated with this http status code
       getErrorHandler().handle(404, routeContext);
     });
+  }
+
+  private String pathsForLocals() {
+    return new PathRegexBuilder()
+        .excludes(
+            "/public"
+        )
+        .build();
   }
 
   private static String getZoneIdOffset(Instant instant, ZoneId zoneId) {
