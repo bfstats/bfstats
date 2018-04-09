@@ -6,7 +6,17 @@ import io.github.bfstats.model.KitUsage;
 import java.util.Map;
 
 public class KitService {
-  private static Map<String, String> teamNameByCode = ImmutableMap.<String, String>builder()
+  private static Map<String, String> teamNameByCodeBf1942 = ImmutableMap.<String, String>builder()
+      .put("German", "Germany")
+      .put("GB", "United Kingdom")
+      .put("Jap", "Japan")
+      .put("US", "USA")
+      .put("Canadian", "Canada")
+      .put("Russ", "Soviet Union")
+      .put("Iraq", "Iraq") // Desert Combat mod
+      .build();
+
+  private static Map<String, String> teamNameByCodeBfVietnam = ImmutableMap.<String, String>builder()
       .put("NVA", "NVA")
       .put("Vietcong", "VC")
       .put("ARVN", "ARVN")
@@ -15,15 +25,49 @@ public class KitService {
       .put("USMarine", "USA")
       .build();
 
-  private static Map<String, String> categoryNameByCode = ImmutableMap.<String, String>builder()
+  private static Map<String, Map<String, String>> teamNameByCodeByGameCode = ImmutableMap.<String, Map<String, String>>builder()
+      .put("bf1942", teamNameByCodeBf1942)
+      .put("bfvietnam", teamNameByCodeBfVietnam)
+      .build();
+
+
+  private static Map<String, String> categoryNameByCodeBf1942 = ImmutableMap.<String, String>builder()
       .put("Assault", "Assault")
       .put("Engineer", "Engineer")
-      .put("HeavyAssault", "HeavyAssault")
+      .put("AT", "Anti-Tank")
+      .put("Scout", "Scout")
+      .put("Medic", "Medic")
+      .build();
+
+  private static Map<String, String> categoryNameByCodeBfVietnam = ImmutableMap.<String, String>builder()
+      .put("Assault", "Assault")
+      .put("Engineer", "Engineer")
+      .put("HeavyAssault", "Heavy Assault")
       .put("Scout", "Scout")
       .put("Recon", "Recon")
       .build();
 
-  private static Map<String, String> weaponsByKitCode = ImmutableMap.<String, String>builder()
+  private static Map<String, Map<String, String>> categoryNameByCodeByGameCode = ImmutableMap.<String, Map<String, String>>builder()
+      .put("bf1942", categoryNameByCodeBf1942)
+      .put("bfvietnam", categoryNameByCodeBfVietnam)
+      .build();
+
+
+  private static Map<String, String> weaponsByKitCodeBf1942 = ImmutableMap.<String, String>builder()
+      .put("German_Scout_Desert", "German_AT_Desert")
+      .put("German_Assault_Desert", "German_AT_Desert")
+      .put("German_AT_Desert", "German_AT_Desert")
+      .put("German_Medic_Desert", "German_AT_Desert")
+      .put("German_Engineer_Desert", "German_AT_Desert")
+      .put("GB_Scout", "GB_Scout")
+      .put("GB_Assault", "GB_Assault")
+      .put("GB_AT", "GB_AT")
+      .put("GB_Medic", "GB_Medic")
+      .put("GB_Engineer", "GB_Engineer")
+      // TODO: fill it with real info
+      .build();
+
+  private static Map<String, String> weaponsByKitCodeBfVietnam = ImmutableMap.<String, String>builder()
       .put("NVA_Assault", "AK47-GRENADES")
       .put("NVA_Assault_Alt", "RPD-GRENADES")
       .put("NVA_Engineer", "MAT49-BOOBY TRAP-MORTAR-WRENCH")
@@ -79,6 +123,10 @@ public class KitService {
       .put("USMarine_Recon_Alt", "M16SNIPER-SMOKE-BINOCULARS")
       .build();
 
+  private static Map<String, Map<String, String>> weaponsByKitCodeByGameCode = ImmutableMap.<String, Map<String, String>>builder()
+      .put("bf1942", weaponsByKitCodeBf1942)
+      .put("bfvietnam", weaponsByKitCodeBfVietnam)
+      .build();
 
   public static String kitName(String gameCode, String kitCode) {
     String[] parts = kitCode.split("_");
@@ -87,20 +135,19 @@ public class KitService {
     }
 
     String teamCode = parts[0];
-    String teamName = teamNameByCode.getOrDefault(teamCode, teamCode);
+    String teamName = teamNameByCodeByGameCode.get(gameCode).getOrDefault(teamCode, teamCode);
 
     String categoryCode = parts[1];
-    String categoryName = categoryNameByCode.getOrDefault(categoryCode, categoryCode);
+    String categoryName = categoryNameByCodeByGameCode.get(gameCode).getOrDefault(categoryCode, categoryCode);
 
     String line = teamName + " " + categoryName;
 
     if (parts.length > 2) {
       String categoryAlt = parts[2];
-      line += " 2";
+      line += " " + categoryAlt;
     }
 
-
-    String weapons = weaponsByKitCode.get(kitCode);
+    String weapons = weaponsByKitCodeByGameCode.get(gameCode).get(kitCode);
     if (weapons != null) {
       line += " (" + weapons + ")";
     } else {
