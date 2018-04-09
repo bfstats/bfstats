@@ -38,6 +38,17 @@ public class TranslationUtil {
   }
 
   @Nonnull
+  public static String getVehicleModifier(@Nonnull String vehicleModifierCode) {
+    switch (vehicleModifierCode) {
+      case "CoPilot":
+        return "co-pilot";
+      case "Gunner":
+        return "gunner";
+    }
+    return vehicleModifierCode;
+  }
+
+  @Nonnull
   public static String getWeaponName(@Nonnull String weaponCode) {
     return weaponNameByCode.getOrDefault(weaponCode, weaponCode);
   }

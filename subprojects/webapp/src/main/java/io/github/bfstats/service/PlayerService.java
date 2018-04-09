@@ -363,6 +363,7 @@ public class PlayerService {
       String modifierName = code.substring(codeWithoutModifiers.length());
       modifierName = removePCO(modifierName);
       modifierName = StringUtils.removeStart(modifierName, "_");
+      modifierName = TranslationUtil.getVehicleModifier(modifierName);
       vehicleName += " " + modifierName;
     }
 
