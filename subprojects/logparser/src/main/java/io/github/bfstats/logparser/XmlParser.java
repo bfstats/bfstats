@@ -42,27 +42,26 @@ public class XmlParser {
     namespaceFilter.setContentHandler(unmarshallerHandler);
 
     // Parse the XML
+    try {
+      return unmarshal(file, namespaceFilter, unmarshallerHandler);
+    } catch (SAXParseException e) {
+      if (tryFixing) {
+        File fixedFile = fixFileEnding(file);
+        return unmarshal(fixedFile, namespaceFilter, unmarshallerHandler);
+      }
+      throw e;
+    }
+  }
+
+  private static BfLog unmarshal(File file, XMLFilter namespaceFilter, UnmarshallerHandler unmarshallerHandler) throws IOException, SAXException, JAXBException {
     InputSource xml = new InputSource(new FileReader(file));
     namespaceFilter.parse(xml);
     Object result = unmarshallerHandler.getResult();
-    System.out.println("ok");
-    //Unmarshaller um2 = context.createUnmarshaller();
-    /*try {
-      return (BfLog) um.unmarshal(new FileReader(file));
-    } catch (UnmarshalException e) {
-      if (tryFixing) {
-        File fixedFile = fixFileEnding(file);
-        return (BfLog) um.unmarshal(new FileReader(fixedFile));
-      }
-      throw e;
-    }*/
-
     BfLog bfLog = (BfLog) result;
     if (bfLog.isTimestampMissing()) {
       String timestampString = extractTimestampStringFromFilename(file);
       bfLog.setTimestamp(timestampString);
     }
-
     return bfLog;
   }
 
