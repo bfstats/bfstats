@@ -54,11 +54,11 @@ public class KitService {
 
 
   private static Map<String, String> weaponsByKitCodeBf1942 = ImmutableMap.<String, String>builder()
-      .put("German_Scout_Desert", "German_AT_Desert")
-      .put("German_Assault_Desert", "German_AT_Desert")
+      .put("German_Scout_Desert", "K98K-WALTHERP38-BINOCULARS-GRENADE")
+      .put("German_Assault_Desert", "German_Assault_Desert")
       .put("German_AT_Desert", "German_AT_Desert")
-      .put("German_Medic_Desert", "German_AT_Desert")
-      .put("German_Engineer_Desert", "German_AT_Desert")
+      .put("German_Medic_Desert", "German_Medic_Desert")
+      .put("German_Engineer_Desert", "German_Engineer_Desert")
       .put("GB_Scout", "GB_Scout")
       .put("GB_Assault", "GB_Assault")
       .put("GB_AT", "GB_AT")
