@@ -73,7 +73,7 @@ public class RoundController extends Controller {
     Round round = roundService.getRound(roundId);
     List<RoundService.RoundPlayerStats> roundPlayerStats = roundService.getRoundPlayerStats(roundId);
 
-    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(round.getMapCode());
+    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(round.getGameCode(), round.getMapCode());
     List<ChatMessage> chatMessages = chatService.getChatMessages(roundId, 1);
     Map<LocalDate, List<ChatMessage>> messagesByDay = chatMessages.stream()
         .collect(Collectors.groupingBy(r -> r.getTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
@@ -90,7 +90,7 @@ public class RoundController extends Controller {
   @Produces(Produces.JSON)
   public void mapEventsJson(@Param("id") int roundId) {
     Round round = roundService.getRound(roundId);
-    MapEvents mapEvents = mapService.getMapEvents(round.getMapCode(), null, roundId, true);
+    MapEvents mapEvents = mapService.getMapEvents(round.getGameCode(), round.getMapCode(), null, roundId, true);
     getRouteContext().json().send(mapEvents);
   }
 
@@ -99,7 +99,7 @@ public class RoundController extends Controller {
     Round round = roundService.getRound(roundId);
     List<RoundService.RoundPlayerStats> roundPlayerStats = roundService.getRoundPlayerStats(roundId);
 
-    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(round.getMapCode());
+    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(round.getGameCode(), round.getMapCode());
 
     Player player = playerService.getPlayer(playerId);
 
@@ -117,7 +117,7 @@ public class RoundController extends Controller {
   @Produces(Produces.JSON)
   public void playerMapEventsJson(@Param("id") int roundId, @Param("playerId") int playerId) {
     Round round = roundService.getRound(roundId);
-    MapEvents mapEvents = mapService.getMapEvents(round.getMapCode(), playerId, roundId, true);
+    MapEvents mapEvents = mapService.getMapEvents(round.getGameCode(), round.getMapCode(), playerId, roundId, true);
     getRouteContext().json().send(mapEvents);
   }
 }

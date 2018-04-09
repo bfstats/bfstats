@@ -57,6 +57,7 @@ public class GameService {
 
     return new Game()
         .setId(gameRecord.getId())
+        .setGameCode(gameRecord.getGameCode())
         .setMapCode(mapCode)
         .setMapName(mapName)
         .setModeName(modeName)
@@ -68,6 +69,7 @@ public class GameService {
         .setServerName(gameRecord.getServerName())
         .setServerPort(gameRecord.getServerPort())
         .setModId(gameRecord.getModId())
+        .setGameCode(gameRecord.getGameCode())
         .setGameModeCode(gameRecord.getGameMode())
         .setGameModeName(TranslationUtil.getModeName(gameRecord.getGameMode()))
         .setMaxGameTime(gameRecord.getMaxGameTime())

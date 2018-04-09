@@ -83,7 +83,7 @@ public class PlayerController extends Controller {
   @GET("/{id: [0-9]+}/map/{mapCode}")
   public void mapStats(@Param("id") int playerId, @Param("mapCode") String mapCode) {
     Player player = playerService.getPlayer(playerId);
-    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(mapCode);
+    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo("bfvietnam", mapCode);
 
     getResponse()
         .bind("player", player)
@@ -94,7 +94,7 @@ public class PlayerController extends Controller {
 
   @GET("json/{id: [0-9]+}/map/{mapCode}/events")
   public void mapEventsJson(@Param("id") int playerId, @Param("mapCode") String mapCode) {
-    MapEvents mapEvents = mapService.getMapEvents(mapCode, playerId, null, true);
+    MapEvents mapEvents = mapService.getMapEvents("bfvietnam", mapCode, playerId, null, true);
     getRouteContext().json().send(mapEvents);
   }
 }

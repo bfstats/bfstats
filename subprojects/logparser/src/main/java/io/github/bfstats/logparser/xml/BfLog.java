@@ -8,12 +8,19 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "log")
 @Getter
 @ToString(of = {"engine", "timestamp"})
 public class BfLog {
+
+  // bfvietnam
   public static final String NAMESPACE = "http://www.dice.se/xmlns/bf/1.0";
+
+  // bf1942: <bf:log version="1.1" xmlns:bf="http://www.dice.se/xmlns/bf/1.1">
+  public static final String NAMESPACE_11 = "http://www.dice.se/xmlns/bf/1.1";
 
   @XmlAttribute(name = "engine", required = true)
   private String engine; // BFVietnam v1.21
@@ -34,7 +41,7 @@ public class BfLog {
   private List<Object> rootEventsAndRounds;
 
   public String getEngine() {
-    return engine;
+    return ofNullable(engine).orElse("bf1942");
   }
 
   public BfRound getFirstRound() {
@@ -42,6 +49,14 @@ public class BfLog {
         .filter(child -> child instanceof BfRound)
         .map(child -> (BfRound) child)
         .findFirst().orElseThrow(() -> new IllegalStateException("log file does not contain any rounds " + getTimestampAsDate()));
+  }
+
+  public boolean isTimestampMissing() {
+    return getTimestamp() == null;
+  }
+
+  public void setTimestamp(String timestamp) {
+    this.timestamp = timestamp;
   }
 }
 

@@ -1231,7 +1231,7 @@ else: repair; number of repairs
 
     gameRecord.setServerId(serverId);
     gameRecord.setStartTime(Timestamp.valueOf(logStartTime));
-    gameRecord.setGamename(engine.startsWith("BFVietnam") ? "bfvietnam" : "bf1942");
+    gameRecord.setGameCode(engine.startsWith("BFVietnam") ? "bfvietnam" : "bf1942"); // could also use firstRound.getGame()
     gameRecord.setServerName(firstRound.getServerName());
     gameRecord.setServerPort(firstRound.getPort());
     gameRecord.setModId(firstRound.getModId());
@@ -1304,6 +1304,7 @@ else: repair; number of repairs
     round.setStartTicketsTeam_2(ticketsTeam2);
     round.setServerName(bfRound.getServerName());
     round.setServerPort(bfRound.getPort());
+    round.setGameCode(engine.startsWith("BFVietnam") ? "bfvietnam" : "bf1942"); // could also use firstRound.getGame()
     round.setModId(bfRound.getModId());
     round.setMapCode(bfRound.getMap());
     round.setGameMode(bfRound.getGameMode());

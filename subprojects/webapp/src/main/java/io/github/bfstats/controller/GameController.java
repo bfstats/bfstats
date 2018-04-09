@@ -62,7 +62,7 @@ public class GameController extends Controller {
   public void details(@Param("id") int gameId) {
     Game game = gameService.getGame(gameId);
 
-    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(game.getMapCode());
+    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(game.getGameCode(), game.getMapCode());
 
     List<Round> rounds = roundService.getRoundsByGameId(gameId);
 

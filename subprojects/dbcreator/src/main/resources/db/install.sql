@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS server (
 -- single log file, consists of 1 or more rounds; same map
 CREATE TABLE IF NOT EXISTS game (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  gamename VARCHAR(100) NOT NULL, -- bf1942 or bfvietnam
+  game_code VARCHAR(100) NOT NULL, -- bf1942 or bfvietnam
   server_id INTEGER NOT NULL,
   start_time DATETIME NOT NULL, -- log file timestamp
   -- following attributes are basically from first round (if it exists), and are common to all rounds
@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS round (
   start_tickets_team_2 INTEGER NOT NULL, -- from roundInit event
   server_name VARCHAR(150) NOT NULL,
   server_port INTEGER NOT NULL,
+  game_code VARCHAR(100) NOT NULL,
   mod_id VARCHAR(100) NOT NULL,
   map_code VARCHAR(100) NOT NULL,
   game_mode VARCHAR(100) NOT NULL,

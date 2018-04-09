@@ -1,5 +1,6 @@
 package io.github.bfstats.service;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.model.*;
 import io.github.bfstats.model.geojson.Feature;
@@ -30,28 +31,30 @@ public class MapService {
   public static final String KILL = "Kill";
   public static final String TK = "TK";
 
-  private static Map<String, Integer> mapSizeByMapCode = loadPropertiesFileFromResources("maps/mapsizes.properties")
-      .entrySet().stream()
-      .collect(Collectors.toMap(Map.Entry::getKey, e -> Integer.parseInt(e.getValue())));
+  private static Map<String, Map<String, Integer>> mapSizeByMapCodeByGameCode = ImmutableMap.<String, Map<String, Integer>>builder()
+      .put("bf1942", findMapSizes("bf1942"))
+      .put("bfvietnam", findMapSizes("bfvietnam"))
+      .build();
 
-  public BasicMapInfo getBasicMapInfo(String mapCode) {
-    Integer mapSize = mapSizeByMapCode.get(mapCode);
+  private static Map<String, Integer> findMapSizes(String modName) {
+    return loadPropertiesFileFromResources("maps/" + modName + "/mapsizes.properties")
+        .entrySet().stream()
+        .collect(Collectors.toMap(Map.Entry::getKey, e -> Integer.parseInt(e.getValue())));
+  }
+
+  public BasicMapInfo getBasicMapInfo(String gameCode, String mapCode) {
     String mapName = TranslationUtil.getMapName(mapCode);
 
-    String gameCode = "bfvietnam";
-    // TODO: use proper game identification logic
-    if (mapName.equals(mapCode)) {
-      gameCode = "bf1942";
-    }
+    Integer mapSize = mapSizeByMapCodeByGameCode.get(gameCode).get(mapCode);
 
     return new BasicMapInfo()
         .setMapName(mapName)
-        .setMapGameName(gameCode)
+        .setGameCode(gameCode)
         .setMapFileName(mapCode)
         .setMapSize(mapSize);
   }
 
-  public MapEvents getMapEvents(String mapCode, Integer playerId, Integer roundId, boolean withProps) {
+  public MapEvents getMapEvents(String gameCode, String mapCode, Integer playerId, Integer roundId, boolean withProps) {
     Result<Record> killRecords = getDslContext()
         .select(ROUND_PLAYER_DEATH.fields())
         .select(PLAYER.NAME)
@@ -98,7 +101,7 @@ public class MapService {
         .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
         .fetch();
 
-    return toMapEvents(mapCode, killRecords, deathRecords, withProps);
+    return toMapEvents(gameCode, mapCode, killRecords, deathRecords, withProps);
   }
 
   private static Integer findPlayerTeam(Record deathRecord) {
@@ -133,7 +136,7 @@ public class MapService {
     return killerPlayerTeam;
   }
 
-  private MapEvents toMapEvents(String mapCode, Result<Record> killRecords, Result<Record> deathRecords, boolean withProps) {
+  private MapEvents toMapEvents(String gameCode, String mapCode, Result<Record> killRecords, Result<Record> deathRecords, boolean withProps) {
     Collection<Feature> killFeatures = new ArrayList<>();
     for (Record deathRecord : killRecords) {
       BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
@@ -243,7 +246,7 @@ public class MapService {
     }
     FeatureCollection deathFeatureCollection = new FeatureCollection(deathFeatures);
 
-    BasicMapInfo basicMapInfo = getBasicMapInfo(mapCode);
+    BasicMapInfo basicMapInfo = getBasicMapInfo(gameCode, mapCode);
 
     return new MapEvents()
         .setMapName(basicMapInfo.getMapName())

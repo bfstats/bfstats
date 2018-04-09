@@ -27,7 +27,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class GameRecord extends UpdatableRecordImpl<GameRecord> {
 
-    private static final long serialVersionUID = -1395367753;
+    private static final long serialVersionUID = 1820102821;
 
     /**
      * Setter for <code>game.id</code>.
@@ -44,16 +44,16 @@ public class GameRecord extends UpdatableRecordImpl<GameRecord> {
     }
 
     /**
-     * Setter for <code>game.gamename</code>.
+     * Setter for <code>game.game_code</code>.
      */
-    public void setGamename(String value) {
+    public void setGameCode(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>game.gamename</code>.
+     * Getter for <code>game.game_code</code>.
      */
-    public String getGamename() {
+    public String getGameCode() {
         return (String) get(1);
     }
 
@@ -587,11 +587,11 @@ public class GameRecord extends UpdatableRecordImpl<GameRecord> {
     /**
      * Create a detached, initialised GameRecord
      */
-    public GameRecord(Integer id, String gamename, Integer serverId, Timestamp startTime, String serverName, Integer serverPort, String modId, String mapCode, String gameMode, Integer maxGameTime, Integer maxPlayers, Integer scoreLimit, Integer noOfRounds, Integer spawnTime, Integer spawnDelay, Integer gameStartDelay, Integer roundStartDelay, Integer soldierFf, Integer soldierFfOnSplash, Integer vehicleFf, Integer vehicleFfOnSplash, Integer ffKickback, Integer ffKickbackOnSplash, Integer ticketRatio, Integer teamKillPunish, Integer punkbusterEnabled, Integer autoBalanceEnabled, Integer tagDistance, Integer tagDistanceScope, Integer noseCameraAllowed, Integer freeCameraAllowed, Integer externalViewsAllowed, Integer hitIndicationEnabled, Integer internet, Integer coopCpu, Integer coopSkill, Integer alliedPlayerCountRatio, Integer axisPlayerCountRatio) {
+    public GameRecord(Integer id, String gameCode, Integer serverId, Timestamp startTime, String serverName, Integer serverPort, String modId, String mapCode, String gameMode, Integer maxGameTime, Integer maxPlayers, Integer scoreLimit, Integer noOfRounds, Integer spawnTime, Integer spawnDelay, Integer gameStartDelay, Integer roundStartDelay, Integer soldierFf, Integer soldierFfOnSplash, Integer vehicleFf, Integer vehicleFfOnSplash, Integer ffKickback, Integer ffKickbackOnSplash, Integer ticketRatio, Integer teamKillPunish, Integer punkbusterEnabled, Integer autoBalanceEnabled, Integer tagDistance, Integer tagDistanceScope, Integer noseCameraAllowed, Integer freeCameraAllowed, Integer externalViewsAllowed, Integer hitIndicationEnabled, Integer internet, Integer coopCpu, Integer coopSkill, Integer alliedPlayerCountRatio, Integer axisPlayerCountRatio) {
         super(Game.GAME);
 
         set(0, id);
-        set(1, gamename);
+        set(1, gameCode);
         set(2, serverId);
         set(3, startTime);
         set(4, serverName);

@@ -32,7 +32,7 @@ public class MapController extends Controller {
 
   @GET("/{mapCode}")
   public void details(@Param("mapCode") String mapCode) {
-    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(mapCode);
+    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo("bfvietnam", mapCode);
 
     getResponse()
         .bind("map", basicMapInfo)
@@ -43,7 +43,7 @@ public class MapController extends Controller {
   @GET("json/{mapCode}/events")
   @Produces(Produces.JSON)
   public void mapEventsJson(@Param("mapCode") String mapCode) {
-    MapEvents mapEvents = mapService.getMapEvents(mapCode, null, null, false);
+    MapEvents mapEvents = mapService.getMapEvents("bfvietnam", mapCode, null, null, false);
     getRouteContext().json().send(mapEvents);
   }
 }

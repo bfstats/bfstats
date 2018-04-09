@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Round extends TableImpl<RoundRecord> {
 
-    private static final long serialVersionUID = 1884931991;
+    private static final long serialVersionUID = -228137310;
 
     /**
      * The reference instance of <code>round</code>
@@ -90,6 +90,11 @@ public class Round extends TableImpl<RoundRecord> {
      * The column <code>round.server_port</code>.
      */
     public final TableField<RoundRecord, Integer> SERVER_PORT = createField("server_port", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>round.game_code</code>.
+     */
+    public final TableField<RoundRecord, String> GAME_CODE = createField("game_code", org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "");
 
     /**
      * The column <code>round.mod_id</code>.

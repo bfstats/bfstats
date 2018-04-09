@@ -141,6 +141,7 @@ public class RoundService {
     return new ServerSettings()
         .setServerName(roundRecord.getServerName())
         .setServerPort(roundRecord.getServerPort())
+        .setGameCode(roundRecord.getGameCode())
         .setModId(roundRecord.getModId())
         .setGameModeCode(roundRecord.getGameMode())
         .setGameModeName(TranslationUtil.getModeName(roundRecord.getGameMode()))
@@ -168,6 +169,7 @@ public class RoundService {
 
     Round round = new Round()
         .setId(roundRecord.getId())
+        .setGameCode(roundRecord.getGameCode())
         .setMapCode(mapCode)
         .setMapName(mapName)
         .setModeName(modeName)

@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 public class ServerSettings {
   private String serverName;
   private int serverPort;
+  private String gameCode;
   private String modId;
   private String gameModeCode;
   private String gameModeName;

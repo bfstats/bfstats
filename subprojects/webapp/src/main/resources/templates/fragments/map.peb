@@ -8,8 +8,8 @@ $.ajax({
   url: "{{appPath}}/{{mapEventsUrlPath}}",
   dataType: 'json',
   success: function (response) {
-    var radarImagePath = '{{publicAt('img/maps/' + map.mapGameName + '/radar/' + map.mapFileName + '.png')}}';
-    var lightmapImagePath = '{{publicAt('img/maps/' + map.mapGameName + '/lightmap/' + map.mapFileName + '.jpg')}}';
+    var radarImagePath = '{{publicAt('img/maps/' + map.gameCode + '/radar/' + map.mapFileName + '.png')}}';
+    var lightmapImagePath = '{{publicAt('img/maps/' + map.gameCode + '/lightmap/' + map.mapFileName + '.jpg')}}';
 
     {% if overlay == "heatmap" %}
         var activeOverlayLayers = ["kills_heatmap"];

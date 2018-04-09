@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class Round {
   private int id;
+  private String gameCode;
   private String mapCode;
   private String mapName;
   private String modeName;
