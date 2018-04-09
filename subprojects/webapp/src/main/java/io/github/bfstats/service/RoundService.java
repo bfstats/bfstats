@@ -187,6 +187,15 @@ public class RoundService {
           .setVictoryType(roundEndStatsRecord.getVictoryType())
           .setEndTicketsTeam1(roundEndStatsRecord.getEndTicketsTeam_1())
           .setEndTicketsTeam2(roundEndStatsRecord.getEndTicketsTeam_2());
+    } else {
+      // round was restarted (or server crashed) before it could be finished, so no end stats present
+      round
+          .setEndTime(startTime) // actually it can be longer
+          .setDurationInMinutes(0)
+          .setWinningTeam(-1)
+          .setVictoryType(-1)
+          .setEndTicketsTeam1(roundRecord.getStartTicketsTeam_1())
+          .setEndTicketsTeam2(roundRecord.getStartTicketsTeam_2());
     }
 
     round.setMapEventsUrlPath("rounds/json/" + round.getId() + "/events");
