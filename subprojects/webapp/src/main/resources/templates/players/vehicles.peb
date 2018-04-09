@@ -5,7 +5,7 @@
   <tr>
     <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Vehicle</span></div></th>
-    <th><div><span class="label">Drive time</span></div></th>
+    <th><div><span class="label">Duration</span></div></th>
     <th><div><span class="label">Used</span></div></th>
     <th><div><span class="label">%</span></div></th>
   </tr>

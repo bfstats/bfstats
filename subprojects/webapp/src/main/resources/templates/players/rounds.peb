@@ -5,8 +5,8 @@
   <tr>
     <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Round</span></div></th>
+    <th><div><span class="label">Map</span></div></th>
     <th><div><span class="label">Start</span></div></th>
-    <th><div><span class="label">End</span></div></th>
     <th><div><span class="label">Duration</span></div></th>
   </tr>
   </thead>
@@ -14,9 +14,9 @@
   {% for round in rounds %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td class="left"><a href="{{appPath}}/rounds/{{ round.id }}">{{ round.id }} {{ round.mapName }}</a></td>
+    <td><a href="{{appPath}}/rounds/{{ round.id }}">{{ round.id }}</a></td>
+    <td class="left"><a href="{{appPath}}/rounds/{{ round.id }}">{{ round.mapName }}</a></td>
     <td>{{ round.startTime | dt("dd-MM-yyyy HH:mm") }}</td>
-    <td>{{ round.endTime | dt("HH:mm") }}</td>
     <td>{{ round.durationInMinutes }} min</td>
   </tr>
   {% endfor %}
