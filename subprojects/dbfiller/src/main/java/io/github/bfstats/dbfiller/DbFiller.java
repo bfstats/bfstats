@@ -13,11 +13,13 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.xml.sax.SAXException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -258,7 +260,7 @@ public class DbFiller {
       BfLog bfLog = XmlParser.parseXmlLogFile(file, tryFixing);
       DbFiller dbFiller = new DbFiller(bfLog, gameServerAddress, logFileZoneId);
       dbFiller.fillDb();
-    } catch (JAXBException | IOException e) {
+    } catch (JAXBException | IOException | SAXException | ParserConfigurationException e) {
       throw new RuntimeException(e);
     }
   }

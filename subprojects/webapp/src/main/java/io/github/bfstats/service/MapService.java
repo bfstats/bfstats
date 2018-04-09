@@ -38,8 +38,15 @@ public class MapService {
     Integer mapSize = mapSizeByMapCode.get(mapCode);
     String mapName = TranslationUtil.getMapName(mapCode);
 
+    String gameCode = "bfvietnam";
+    // TODO: use proper game identification logic
+    if (mapName.equals(mapCode)) {
+      gameCode = "bf1942";
+    }
+
     return new BasicMapInfo()
         .setMapName(mapName)
+        .setMapGameName(gameCode)
         .setMapFileName(mapCode)
         .setMapSize(mapSize);
   }
