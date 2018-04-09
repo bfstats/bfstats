@@ -67,6 +67,8 @@ public class DbFiller {
   private final LocalDateTime logStartTime; // in UTC
   private final String engine;
 
+  private List<BfEvent> eventQueueBeforeFirstRound = new ArrayList<>();
+
   // actually not per round, but per log file
   private Map<Integer, GamePlayer> activePlayersByRoundPlayerId = new HashMap<>();
 
@@ -316,6 +318,7 @@ public class DbFiller {
     return gameRecord.getId();
   }
 
+
   private void parseLog() {
     // Events can be out-of-round, so mixing out-of-round events and rounds.
     // For chat using the last round id, as chances was that it belongs to that more than to the new round
@@ -323,12 +326,13 @@ public class DbFiller {
     int lastRoundId = -1;
     for (Object child : bfLog.getRootEventsAndRounds()) {
       if (child instanceof BfEvent) {
-        if (lastRoundId == -1) {
-          log.info("round has not started yet, so ignoring event " + child);
-          continue;
-        }
         BfEvent bfEvent = (BfEvent) child;
-        parseEvent(lastRoundId, bfEvent);
+        if (lastRoundId == -1) {
+          log.info("round has not started yet, so adding event to queue " + child);
+          eventQueueBeforeFirstRound.add(bfEvent);
+        } else {
+          parseEvent(lastRoundId, bfEvent);
+        }
       } else if (child instanceof BfRound) {
         BfRound bfRound = (BfRound) child;
         lastRoundId = parseRound(bfRound, lastRoundId);
@@ -340,6 +344,13 @@ public class DbFiller {
         log.warn("unhandled child type" + child.toString());
       }
     }
+  }
+
+  private void processEventQueueFromBeforeFirstRound(int firstRoundId) {
+    for (BfEvent bfEvent : eventQueueBeforeFirstRound) {
+      parseEvent(firstRoundId, bfEvent);
+    }
+    eventQueueBeforeFirstRound.clear();
   }
 
   private void forceEndAllVehicleEvents(int roundId, Duration endTimeDurationSinceLogStart) {
@@ -381,6 +392,12 @@ public class DbFiller {
   private int parseRound(BfRound bfRound, int previousRoundId) {
     RoundRecord roundRecord = addRound(bfRound, gameRecordId);
     int roundId = requireNonNull(roundRecord.getId());
+
+    // if this is the first round of a game, then process events written before the round element as if they belong
+    // inside this round
+    if (previousRoundId == -1) {
+      processEventQueueFromBeforeFirstRound(roundId);
+    }
 
     // if this is not the first round of a game
     if (previousRoundId != -1) {
@@ -984,7 +1001,7 @@ else: repair; number of repairs
    * @param deathEvent "DeathNoMsg" or "Death" score event type, should not be null, unless I'm wrong
    * @param killEvent  nullable, "Kill" or "TK" score event type, can be null if player just died
    */
-  private RoundPlayerDeathRecord addPlayerDeath(int roundId, BfEvent deathEvent, BfEvent killEvent) {
+  private RoundPlayerDeathRecord addPlayerDeath(int roundId, BfEvent deathEvent, @Nullable BfEvent killEvent) {
     LocalDateTime eventTime = logStartTime.plus(deathEvent.getDurationSinceLogStart());
 
     RoundPlayerDeathRecord roundPlayerDeathRecord = transaction().newRecord(ROUND_PLAYER_DEATH);
@@ -1010,7 +1027,7 @@ else: repair; number of repairs
       roundPlayerDeathRecord.setKillType(scoreType); // Kill or TK
 
       String weapon = killEvent.getStringParamValueByName(ScoreEventParams.weapon.name());
-      if ("(none)".equals(weapon)) {
+      if ("(none)" .equals(weapon)) {
         weapon = null;
       }
       roundPlayerDeathRecord.setKillWeapon(weapon);
