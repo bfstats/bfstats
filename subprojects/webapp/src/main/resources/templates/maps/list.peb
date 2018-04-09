@@ -21,7 +21,7 @@ There are no maps.
   {% for map in maps %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td class="left"> <a href="{{appPath}}/maps/{{ map.code }}">{{ map.name }}</a></td>
+    <td class="left"> <a href="{{appPath}}/maps/{{ map.gameCode }}/{{ map.code }}">{{ map.name }}</a></td>
     <td>{{ map.timesUsed }}</td>
     <td class="percent">{{ map.percentage | numberformat("0.0") }}
       <div class="meter">

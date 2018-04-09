@@ -30,9 +30,9 @@ public class MapController extends Controller {
     getResponse().bind("maps", mapUsagesForPlayer).render("maps/list");
   }
 
-  @GET("/{mapCode}")
-  public void details(@Param("mapCode") String mapCode) {
-    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo("bfvietnam", mapCode);
+  @GET("/{gameCode}/{mapCode}")
+  public void details(@Param("gameCode") String gameCode, @Param("mapCode") String mapCode) {
+    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(gameCode, mapCode);
 
     getResponse()
         .bind("map", basicMapInfo)

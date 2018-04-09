@@ -306,6 +306,7 @@ public class MapService {
               String mapCode = r.get(ROUND.MAP_CODE);
               Integer timesUsed = r.get("times_used", Integer.class);
               return new MapUsage()
+                  .setGameCode(r.get(ROUND.GAME_CODE))
                   .setCode(mapCode)
                   .setName(TranslationUtil.getMapName(mapCode))
                   .setPercentage(percentage(timesUsed, totalTimesUsed))
@@ -317,8 +318,8 @@ public class MapService {
 
   public List<MapUsage> getMapUsagesForPlayer(int playerId) {
     Field<BigDecimal> fieldMapTotalScore = DSL.sum(ROUND_END_STATS_PLAYER.SCORE).as("map_total_score");
-    Result<Record3<String, BigDecimal, Integer>> records = getDslContext()
-        .select(ROUND.MAP_CODE, fieldMapTotalScore, DSL.count().as("times_used"))
+    Result<Record4<String, String, BigDecimal, Integer>> records = getDslContext()
+        .select(ROUND.GAME_CODE, ROUND.MAP_CODE, fieldMapTotalScore, DSL.count().as("times_used"))
         .from(ROUND_END_STATS_PLAYER)
         .join(ROUND).on(ROUND.ID.eq(ROUND_END_STATS_PLAYER.ROUND_ID))
         .where(ROUND_END_STATS_PLAYER.PLAYER_ID.eq(playerId))
@@ -338,6 +339,7 @@ public class MapService {
     String mapCode = r.get(ROUND.MAP_CODE);
     Integer mapTotalScore = r.get("map_total_score", Integer.class);
     return new MapUsage()
+        .setGameCode(r.get(ROUND.GAME_CODE))
         .setCode(mapCode)
         .setName(TranslationUtil.getMapName(mapCode))
         .setScore(mapTotalScore)
