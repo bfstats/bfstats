@@ -18,9 +18,9 @@ public class WeaponController extends Controller {
     this.weaponService = weaponService;
   }
 
-  @GET("/{code}")
-  public void details(@Param("code") String weaponCode) {
-    WeaponUsage weapon = weaponService.getWeapon(weaponCode);
+  @GET("/{gameCode}/{code}")
+  public void details(@Param("gameCode") String gameCode, @Param("code") String weaponCode) {
+    WeaponUsage weapon = weaponService.getWeapon(gameCode, weaponCode);
 
     getResponse()
         .bind("weapon", weapon)

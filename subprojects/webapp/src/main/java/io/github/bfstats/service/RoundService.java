@@ -144,7 +144,7 @@ public class RoundService {
         .setGameCode(roundRecord.getGameCode())
         .setModId(roundRecord.getModId())
         .setGameModeCode(roundRecord.getGameMode())
-        .setGameModeName(TranslationUtil.getModeName(roundRecord.getGameMode()))
+        .setGameModeName(TranslationUtil.getModeName(roundRecord.getGameCode(), roundRecord.getGameMode()))
         .setMaxGameTime(roundRecord.getMaxGameTime())
         .setMaxPlayers(roundRecord.getMaxPlayers())
         .setScoreLimit(roundRecord.getScoreLimit())
@@ -161,15 +161,16 @@ public class RoundService {
   }
 
   private static Round toRound(@Nonnull RoundRecord roundRecord, @Nonnull RoundEndStatsRecord roundEndStatsRecord) {
+    String gameCode = roundRecord.getGameCode();
     String mapCode = roundRecord.getMapCode();
-    String mapName = TranslationUtil.getMapName(mapCode);
-    String modeName = TranslationUtil.getModeName(roundRecord.getGameMode());
+    String mapName = TranslationUtil.getMapName(gameCode, mapCode);
+    String modeName = TranslationUtil.getModeName(gameCode, roundRecord.getGameMode());
 
     LocalDateTime startTime = toUserZone(roundRecord.getStartTime().toLocalDateTime());
 
     Round round = new Round()
         .setId(roundRecord.getId())
-        .setGameCode(roundRecord.getGameCode())
+        .setGameCode(gameCode)
         .setMapCode(mapCode)
         .setMapName(mapName)
         .setModeName(modeName)

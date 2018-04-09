@@ -18,9 +18,9 @@ public class KitController extends Controller {
     this.kitService = kitService;
   }
 
-  @GET("/{code}")
-  public void details(@Param("code") String kitCode) {
-    KitUsage kit = kitService.getKit(kitCode);
+  @GET("/{gameCode}/{code}")
+  public void details(@Param("gameCode") String gameCode, @Param("code") String kitCode) {
+    KitUsage kit = kitService.getKit(gameCode, kitCode);
 
     getResponse()
         .bind("kit", kit)

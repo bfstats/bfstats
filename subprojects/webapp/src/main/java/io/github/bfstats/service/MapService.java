@@ -43,13 +43,14 @@ public class MapService {
   }
 
   public BasicMapInfo getBasicMapInfo(String gameCode, String mapCode) {
-    String mapName = TranslationUtil.getMapName(mapCode);
+    String mapName = TranslationUtil.getMapName(gameCode, mapCode);
 
     Integer mapSize = mapSizeByMapCodeByGameCode.get(gameCode).get(mapCode);
 
     return new BasicMapInfo()
-        .setMapName(mapName)
         .setGameCode(gameCode)
+        .setMapCode(mapCode)
+        .setMapName(mapName)
         .setMapFileName(mapCode)
         .setMapSize(mapSize);
   }
@@ -167,7 +168,7 @@ public class MapService {
         String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
 
         Weapon killWeapon = ofNullable(killWeaponCode)
-            .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
+            .map(c -> new Weapon(gameCode, killWeaponCode, TranslationUtil.getWeaponOrVehicleName(gameCode, killWeaponCode)))
             .orElse(null);
 
         MapEvent killEvent = new MapEvent()
@@ -221,7 +222,7 @@ public class MapService {
         String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
 
         Weapon killWeapon = ofNullable(killWeaponCode)
-            .map(c -> new Weapon(killWeaponCode, TranslationUtil.getWeaponOrVehicleName(killWeaponCode)))
+            .map(c -> new Weapon(gameCode, killWeaponCode, TranslationUtil.getWeaponOrVehicleName(gameCode, killWeaponCode)))
             .orElse(null);
 
         MapEvent deathEvent = new MapEvent()
@@ -290,7 +291,7 @@ public class MapService {
   }
 
   public List<MapUsage> getMapUsages() {
-    Result<Record2<String, Integer>> records = getDslContext().select(ROUND.MAP_CODE, DSL.count().as("times_used"))
+    Result<Record3<String, String, Integer>> records = getDslContext().select(ROUND.GAME_CODE, ROUND.MAP_CODE, DSL.count().as("times_used"))
         .from(ROUND)
         .join(ROUND_END_STATS).on(ROUND_END_STATS.ROUND_ID.eq(ROUND.ID)) // to ignore empty rounds
         .groupBy(ROUND.MAP_CODE)
@@ -303,12 +304,13 @@ public class MapService {
 
     return records.stream()
         .map(r -> {
+              String gameCode = r.get(ROUND.GAME_CODE);
               String mapCode = r.get(ROUND.MAP_CODE);
               Integer timesUsed = r.get("times_used", Integer.class);
               return new MapUsage()
-                  .setGameCode(r.get(ROUND.GAME_CODE))
+                  .setGameCode(gameCode)
                   .setCode(mapCode)
-                  .setName(TranslationUtil.getMapName(mapCode))
+                  .setName(TranslationUtil.getMapName(gameCode, mapCode))
                   .setPercentage(percentage(timesUsed, totalTimesUsed))
                   .setTimesUsed(timesUsed);
             }
@@ -336,12 +338,13 @@ public class MapService {
   }
 
   private static MapUsage toMapUsage(Record r, int totalMapsScore) {
+    String gameCode = r.get(ROUND.GAME_CODE);
     String mapCode = r.get(ROUND.MAP_CODE);
     Integer mapTotalScore = r.get("map_total_score", Integer.class);
     return new MapUsage()
-        .setGameCode(r.get(ROUND.GAME_CODE))
+        .setGameCode(gameCode)
         .setCode(mapCode)
-        .setName(TranslationUtil.getMapName(mapCode))
+        .setName(TranslationUtil.getMapName(gameCode, mapCode))
         .setScore(mapTotalScore)
         .setPercentage(percentage(mapTotalScore, totalMapsScore))
         .setTimesUsed(r.get("times_used", Integer.class));

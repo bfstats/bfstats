@@ -18,9 +18,9 @@ public class VehicleController extends Controller {
     this.vehicleService = vehicleService;
   }
 
-  @GET("/{code}")
-  public void details(@Param("code") String vehicleCode) {
-    VehicleUsage vehicle = vehicleService.getVehicle(vehicleCode);
+  @GET("/{gameCode}/{code}")
+  public void details(@Param("gameCode") String gameCode, @Param("code") String vehicleCode) {
+    VehicleUsage vehicle = vehicleService.getVehicle(gameCode, vehicleCode);
 
     getResponse()
         .bind("vehicle", vehicle)

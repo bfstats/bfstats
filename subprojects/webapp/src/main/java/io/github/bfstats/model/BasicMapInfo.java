@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class BasicMapInfo {
   private String mapName;
+  private String mapCode;
   private String gameCode;
   private String mapFileName;
   private Integer mapSize;

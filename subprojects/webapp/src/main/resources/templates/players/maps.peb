@@ -13,7 +13,7 @@
   {% for map in maps %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td class="left"><a href="{{appPath}}/players/{{ player.id }}/map/{{ map.code }}">{{ map.name }}</a></td>
+    <td class="left"><a href="{{appPath}}/players/{{ player.id }}/map/{{ map.gameCode }}/{{ map.code }}">{{ map.name }}</a></td>
     <td>{{ map.score }}</td>
     <td class="percent">{{ map.percentage | numberformat("0.0") }}
       <div class="meter">

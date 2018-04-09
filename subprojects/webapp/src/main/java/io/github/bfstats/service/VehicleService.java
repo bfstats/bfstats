@@ -5,9 +5,10 @@ import io.github.bfstats.util.TranslationUtil;
 
 public class VehicleService {
 
-  public VehicleUsage getVehicle(String vehicleCode) {
+  public VehicleUsage getVehicle(String gameCode, String vehicleCode) {
     return new VehicleUsage()
+        .setGameCode(gameCode)
         .setCode(vehicleCode)
-        .setName(TranslationUtil.getVehicleName(vehicleCode));
+        .setName(TranslationUtil.getVehicleName(gameCode, vehicleCode));
   }
 }

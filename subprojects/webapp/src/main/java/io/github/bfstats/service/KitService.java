@@ -80,7 +80,7 @@ public class KitService {
       .build();
 
 
-  public static String kitName(String kitCode) {
+  public static String kitName(String gameCode, String kitCode) {
     String[] parts = kitCode.split("_");
     if (parts.length < 2) {
       return "???";
@@ -110,9 +110,10 @@ public class KitService {
     return line;
   }
 
-  public KitUsage getKit(String kitCode) {
+  public KitUsage getKit(String gameCode, String kitCode) {
     return new KitUsage()
+        .setGameCode(gameCode)
         .setCode(kitCode)
-        .setName(kitName(kitCode));
+        .setName(kitName(gameCode, kitCode));
   }
 }

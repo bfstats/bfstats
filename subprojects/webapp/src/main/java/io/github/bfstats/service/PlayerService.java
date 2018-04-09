@@ -270,8 +270,9 @@ public class PlayerService {
   }
 
   public List<WeaponUsage> getWeaponUsages(int playerId) {
-    Result<Record2<String, Integer>> records = getDslContext().select(ROUND_PLAYER_DEATH.KILL_WEAPON, DSL.count().as("times_used"))
+    Result<Record3<String, String, Integer>> records = getDslContext().select(ROUND.GAME_CODE, ROUND_PLAYER_DEATH.KILL_WEAPON, DSL.count().as("times_used"))
         .from(ROUND_PLAYER_DEATH)
+        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
         .where(ROUND_PLAYER_DEATH.KILL_WEAPON.isNotNull())
         .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
         .groupBy(ROUND_PLAYER_DEATH.KILL_WEAPON)
@@ -291,9 +292,11 @@ public class PlayerService {
 
   private static WeaponUsage toWeaponUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
+    String gameCode = r.get(ROUND.GAME_CODE);
     String code = r.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
-    String weaponOrVehicleName = TranslationUtil.getWeaponOrVehicleName(code);
+    String weaponOrVehicleName = TranslationUtil.getWeaponOrVehicleName(gameCode, code);
     return new WeaponUsage()
+        .setGameCode(gameCode)
         .setCode(code)
         .setName(weaponOrVehicleName)
         .setTimesUsed(timesUsed)
@@ -301,8 +304,9 @@ public class PlayerService {
   }
 
   public List<KitUsage> getKitUsages(int playerId) {
-    Result<Record2<String, Integer>> records = getDslContext().select(ROUND_PLAYER_PICKUP_KIT.KIT, DSL.count().as("times_used"))
+    Result<Record3<String, String, Integer>> records = getDslContext().select(ROUND.GAME_CODE, ROUND_PLAYER_PICKUP_KIT.KIT, DSL.count().as("times_used"))
         .from(ROUND_PLAYER_PICKUP_KIT)
+        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_PICKUP_KIT.ROUND_ID))
         .where(ROUND_PLAYER_PICKUP_KIT.PLAYER_ID.eq(playerId))
         .groupBy(ROUND_PLAYER_PICKUP_KIT.KIT)
         .orderBy(DSL.count().desc())
@@ -320,22 +324,26 @@ public class PlayerService {
 
   private static KitUsage toKitUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);
+    String gameCode = r.get(ROUND.GAME_CODE);
     String code = r.get(ROUND_PLAYER_PICKUP_KIT.KIT);
     return new KitUsage()
+        .setGameCode(gameCode)
         .setCode(code)
-        .setName(KitService.kitName(code))
+        .setName(KitService.kitName(gameCode, code))
         .setTimesUsed(timesUsed)
         .setPercentage(percentage(timesUsed, totalTimesUsed));
   }
 
   public List<VehicleUsage> getVehicleUsages(int playerId) {
-    Result<Record3<String, BigDecimal, Integer>> records = getDslContext()
+    Result<Record4<String, String, BigDecimal, Integer>> records = getDslContext()
         .select(
+            ROUND.GAME_CODE,
             ROUND_PLAYER_VEHICLE.VEHICLE,
             DSL.sum(ROUND_PLAYER_VEHICLE.DURATION_SECONDS).as("total_duration"),
             DSL.count().as("times_used")
         )
         .from(ROUND_PLAYER_VEHICLE)
+        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_VEHICLE.ROUND_ID))
         .where(ROUND_PLAYER_VEHICLE.PLAYER_ID.eq(playerId))
         .groupBy(ROUND_PLAYER_VEHICLE.VEHICLE)
         .orderBy(DSL.field("total_duration").desc())
@@ -353,12 +361,13 @@ public class PlayerService {
   private static VehicleUsage toVehicleUsage(Record r, int totalVehiclesDriveTimeInSeconds) {
     int driveTime = r.get("total_duration", Integer.class);
     String code = r.get(ROUND_PLAYER_VEHICLE.VEHICLE);
+    String gameCode = r.get(ROUND.GAME_CODE);
     String codeWithoutModifiers = withoutModifiers(code);
     if (codeWithoutModifiers.isEmpty()) {
       codeWithoutModifiers = code;
     }
 
-    String vehicleName = TranslationUtil.getVehicleName(codeWithoutModifiers);
+    String vehicleName = TranslationUtil.getVehicleName(gameCode, codeWithoutModifiers);
     if (code.length() > codeWithoutModifiers.length()) {
       String modifierName = code.substring(codeWithoutModifiers.length());
       modifierName = removePCO(modifierName);
@@ -368,6 +377,7 @@ public class PlayerService {
     }
 
     return new VehicleUsage()
+        .setGameCode(gameCode)
         .setCode(code)
         .setName(vehicleName)
         .setDriveTime(convertSecondsToLocalTime(driveTime).format(HM_FORMAT)) // seconds

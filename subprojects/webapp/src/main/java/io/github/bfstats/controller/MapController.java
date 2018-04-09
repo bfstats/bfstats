@@ -36,14 +36,14 @@ public class MapController extends Controller {
 
     getResponse()
         .bind("map", basicMapInfo)
-        .bind("mapEventsUrlPath", "maps/json/" + mapCode + "/events")
+        .bind("mapEventsUrlPath", "maps/json/" + gameCode + "/" + mapCode + "/events")
         .render("maps/details");
   }
 
-  @GET("json/{mapCode}/events")
+  @GET("json/{gameCode}/{mapCode}/events")
   @Produces(Produces.JSON)
-  public void mapEventsJson(@Param("mapCode") String mapCode) {
-    MapEvents mapEvents = mapService.getMapEvents("bfvietnam", mapCode, null, null, false);
+  public void mapEventsJson(@Param("gameCode") String gameCode, @Param("mapCode") String mapCode) {
+    MapEvents mapEvents = mapService.getMapEvents(gameCode, mapCode, null, null, false);
     getRouteContext().json().send(mapEvents);
   }
 }

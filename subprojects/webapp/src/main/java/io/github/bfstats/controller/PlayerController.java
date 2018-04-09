@@ -80,21 +80,21 @@ public class PlayerController extends Controller {
         .render("players/details");
   }
 
-  @GET("/{id: [0-9]+}/map/{mapCode}")
-  public void mapStats(@Param("id") int playerId, @Param("mapCode") String mapCode) {
+  @GET("/{id: [0-9]+}/map/{gameCode}/{mapCode}")
+  public void mapStats(@Param("id") int playerId, @Param("gameCode") String gameCode, @Param("mapCode") String mapCode) {
     Player player = playerService.getPlayer(playerId);
-    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo("bfvietnam", mapCode);
+    BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(gameCode, mapCode);
 
     getResponse()
         .bind("player", player)
         .bind("map", basicMapInfo)
-        .bind("mapEventsUrlPath", "players/json/" + player.getId() + "/map/" + mapCode + "/events")
+        .bind("mapEventsUrlPath", "players/json/" + player.getId() + "/map/" + basicMapInfo.getGameCode() + "/" + basicMapInfo.getMapCode() + "/events")
         .render("players/map");
   }
 
-  @GET("json/{id: [0-9]+}/map/{mapCode}/events")
-  public void mapEventsJson(@Param("id") int playerId, @Param("mapCode") String mapCode) {
-    MapEvents mapEvents = mapService.getMapEvents("bfvietnam", mapCode, playerId, null, true);
+  @GET("json/{id: [0-9]+}/map/{gameCode}/{mapCode}/events")
+  public void mapEventsJson(@Param("id") int playerId, @Param("gameCode") String gameCode, @Param("mapCode") String mapCode) {
+    MapEvents mapEvents = mapService.getMapEvents(gameCode, mapCode, playerId, null, true);
     getRouteContext().json().send(mapEvents);
   }
 }

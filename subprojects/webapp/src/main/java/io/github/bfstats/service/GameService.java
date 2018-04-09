@@ -49,15 +49,16 @@ public class GameService {
   }
 
   private static Game toGame(@Nonnull GameRecord gameRecord) {
+    String gameCode = gameRecord.getGameCode();
     String mapCode = gameRecord.getMapCode();
-    String mapName = TranslationUtil.getMapName(mapCode);
-    String modeName = TranslationUtil.getModeName(gameRecord.getGameMode());
+    String mapName = TranslationUtil.getMapName(gameCode, mapCode);
+    String modeName = TranslationUtil.getModeName(gameCode, gameRecord.getGameMode());
 
     LocalDateTime startTime = toUserZone(gameRecord.getStartTime().toLocalDateTime());
 
     return new Game()
         .setId(gameRecord.getId())
-        .setGameCode(gameRecord.getGameCode())
+        .setGameCode(gameCode)
         .setMapCode(mapCode)
         .setMapName(mapName)
         .setModeName(modeName)
@@ -71,7 +72,7 @@ public class GameService {
         .setModId(gameRecord.getModId())
         .setGameCode(gameRecord.getGameCode())
         .setGameModeCode(gameRecord.getGameMode())
-        .setGameModeName(TranslationUtil.getModeName(gameRecord.getGameMode()))
+        .setGameModeName(TranslationUtil.getModeName(gameRecord.getGameCode(), gameRecord.getGameMode()))
         .setMaxGameTime(gameRecord.getMaxGameTime())
         .setMaxPlayers(gameRecord.getMaxPlayers())
         .setScoreLimit(gameRecord.getScoreLimit())

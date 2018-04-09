@@ -13,7 +13,7 @@
   {% for weapon in weapons %}
   <tr>
     <td>{{ loop.index + 1 }}</td>
-    <td class="left"><a href="{{appPath}}/weapons/{{ weapon.code }}">{{ weapon.name }}</a></td>
+    <td class="left"><a href="{{appPath}}/weapons/{{ weapon.gameCode }}/{{ weapon.code }}">{{ weapon.name }}</a></td>
     <td>{{ weapon.timesUsed }}</td>
     <td class="percent">{{ weapon.percentage | numberformat("0.0") }}
       <div class="meter">

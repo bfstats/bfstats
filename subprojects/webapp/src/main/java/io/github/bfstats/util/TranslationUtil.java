@@ -29,28 +29,13 @@ public class TranslationUtil {
   }
 
   @Nonnull
-  public static String getMapName(@Nonnull String mapCode) {
-    return getMapName("bfvietnam", mapCode);
-  }
-
-  @Nonnull
   public static String getModeName(@Nonnull String gameCode, @Nonnull String modeCode) {
     return modeNameByCodeByGameCode.get(gameCode).getOrDefault(modeCode, modeCode);
   }
 
   @Nonnull
-  public static String getModeName(@Nonnull String modeCode) {
-    return getModeName("bfvietnam", modeCode);
-  }
-
-  @Nonnull
   public static String getVehicleName(@Nonnull String gameCode, @Nonnull String vehicleCode) {
     return vehicleNameByCodeByGameCode.get(gameCode).getOrDefault(vehicleCode, vehicleCode);
-  }
-
-  @Nonnull
-  public static String getVehicleName(@Nonnull String vehicleCode) {
-    return getVehicleName("bfvietnam", vehicleCode);
   }
 
   @Nonnull
@@ -69,11 +54,6 @@ public class TranslationUtil {
     return weaponNameByCodeByGameCode.get(gameCode).getOrDefault(weaponCode, weaponCode);
   }
 
-  @Nonnull
-  public static String getWeaponName(@Nonnull String weaponCode) {
-    return getWeaponName("bfvietnam", weaponCode);
-  }
-
   @Nullable
   public static String getWeaponNameStrict(@Nonnull String gameCode, String weaponCode) {
     return weaponNameByCodeByGameCode.get(gameCode).get(weaponCode);
@@ -86,10 +66,5 @@ public class TranslationUtil {
       weaponName = TranslationUtil.getVehicleName(gameCode, weaponOrVehicleCode);
     }
     return weaponName;
-  }
-
-  @Nonnull
-  public static String getWeaponOrVehicleName(@Nonnull String weaponOrVehicleCode) {
-    return getWeaponOrVehicleName("bfvietnam", weaponOrVehicleCode);
   }
 }
