@@ -6,7 +6,7 @@
 There are no rounds.
 {% else %}
   {% for entry in rounds %}
-    <strong>{{ entry.key | dt("dd-MM-yyyy") }}</strong>
+    <h3 class="rounds-list-heading">{{ entry.key | dt("dd-MM-yyyy") }}</h3>
     <ul>
     {% for round in entry.value %}
     <li>

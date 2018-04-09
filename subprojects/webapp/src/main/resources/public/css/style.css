@@ -174,7 +174,8 @@ h3 .less-important {
 }
 
 #content {
-  margin-left: 120px;
+  margin: 0 auto;
+  width: 80%;
   padding-top: 20px;
 }
 
@@ -205,7 +206,8 @@ h3 .less-important {
   }
 
   #content {
-    margin-left: 0;
+    margin: 0;
+    width: auto;
   }
 }
 
@@ -263,6 +265,8 @@ th .sorted {
 }
 
 .styled_table caption {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
   text-align: left;
   font-weight: bold;
   font-size: 1.5em;
@@ -600,4 +604,12 @@ tr.team-3 .name, .name.team-3 {
     float: left;
     margin-right: 8px;
     opacity: 0.7;
+}
+
+
+.rounds-list-heading {
+  background-color: #3D3D3D;
+  padding: 8px;
+  font-weight: normal;
+  font-size: inherit;
 }
