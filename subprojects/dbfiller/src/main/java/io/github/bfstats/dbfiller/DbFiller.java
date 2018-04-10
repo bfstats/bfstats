@@ -167,20 +167,32 @@ public class DbFiller {
         continue;
       }
 
-      String filePath = fileI.getPath();
-      filePath = extractIfNecessary(filePath);
-      if (filePath != null) {
+      String xmlFilePath = extractIfNecessary(fileI.getPath());
+      if (xmlFilePath != null) {
         try {
-          addFromXmlFile(filePath, !probablyLiveFile, gameServerAddress, logFileZoneId);
+          addFromXmlFile(xmlFilePath, !probablyLiveFile, gameServerAddress, logFileZoneId);
           lastValidDateTimeStr = dateTimeStr;
+          // xml files waste a lot of space, let's keep only the zxml variant
+          if (hasZxmlCounterpart(xmlFilePath)) {
+            deleteXmlFile(xmlFilePath);
+          }
         } catch (RuntimeException e) {
-          log.warn("Could not parse " + filePath, e);
+          log.warn("Could not parse " + xmlFilePath, e);
         }
       }
     }
 
     if (lastValidDateTimeStr != null) {
       updateLatestAddedLogFileTime(gameServerAddress, gameServerPort, lastValidDateTimeStr);
+    }
+  }
+
+  private static void deleteXmlFile(String xmlFilePath) {
+    try {
+      Path path = Paths.get(xmlFilePath);
+      Files.delete(path);
+    } catch (IOException e) {
+      log.warn("Could not delete xml file " + xmlFilePath, e);
     }
   }
 
@@ -210,8 +222,7 @@ public class DbFiller {
 
   private static String extractIfNecessary(String filePath) {
     if (filePath.endsWith(".xml")) {
-      Path checkablePath = Paths.get(filePath.substring(0, filePath.length() - 4) + ".zxml");
-      boolean hasZxmlCounterpart = Files.exists(checkablePath);
+      boolean hasZxmlCounterpart = hasZxmlCounterpart(filePath);
       if (hasZxmlCounterpart) {
         // TODO: maybe vice-versa - should ignore zxml files instead
         log.info("ignoring " + filePath + " because zxml will be extracted again");
@@ -235,6 +246,11 @@ public class DbFiller {
       }
     }
     return null;
+  }
+
+  private static boolean hasZxmlCounterpart(String filePath) {
+    Path checkablePath = Paths.get(filePath.substring(0, filePath.length() - 4) + ".zxml");
+    return Files.exists(checkablePath);
   }
 
   private static void prepareConnection(String url) {
@@ -1027,7 +1043,7 @@ else: repair; number of repairs
       roundPlayerDeathRecord.setKillType(scoreType); // Kill or TK
 
       String weapon = killEvent.getStringParamValueByName(ScoreEventParams.weapon.name());
-      if ("(none)" .equals(weapon)) {
+      if ("(none)".equals(weapon)) {
         weapon = null;
       }
       roundPlayerDeathRecord.setKillWeapon(weapon);
