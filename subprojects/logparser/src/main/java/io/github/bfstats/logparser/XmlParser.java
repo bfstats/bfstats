@@ -6,10 +6,8 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.UnmarshallerHandler;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.io.FileReader;
@@ -25,23 +23,17 @@ public class XmlParser {
       throw new IOException("skipping empty file");
     }
 
-    JAXBContext context = JAXBContext.newInstance(BfLog.class);
-    // Create the XMLFilter
-
+    XMLReader xmlReader = SAXParserFactory.newInstance()
+        .newSAXParser()
+        .getXMLReader();
     XMLFilter namespaceFilter = new NamespaceFilter();
-
-    // Set the parent XMLReader on the XMLFilter
-    SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-    SAXParser saxParser = saxParserFactory.newSAXParser();
-    XMLReader xmlReader = saxParser.getXMLReader();
     namespaceFilter.setParent(xmlReader);
 
-    // Set UnmarshallerHandler as ContentHandler on XMLFilter
-    Unmarshaller um = context.createUnmarshaller();
-    UnmarshallerHandler unmarshallerHandler = um.getUnmarshallerHandler();
+    UnmarshallerHandler unmarshallerHandler = JAXBContext.newInstance(BfLog.class)
+        .createUnmarshaller()
+        .getUnmarshallerHandler();
     namespaceFilter.setContentHandler(unmarshallerHandler);
 
-    // Parse the XML
     try {
       return unmarshal(file, namespaceFilter, unmarshallerHandler);
     } catch (SAXParseException e) {
