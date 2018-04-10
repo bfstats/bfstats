@@ -22,9 +22,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.math.BigDecimal;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.PathMatcher;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -55,6 +56,8 @@ public class DbFiller {
   public static final int FAKE_BOT_TEAM = -1;
 
   public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
+  public static final PathMatcher XML_PATH_MATCHER = FileSystems.getDefault().getPathMatcher("glob:*.xml");
+  public static final PathMatcher ZXML_PATH_MATCHER = FileSystems.getDefault().getPathMatcher("glob:*.zxml");
 
   private static DSLContext dslContext;
   private static Connection connection;
@@ -167,7 +170,7 @@ public class DbFiller {
         continue;
       }
 
-      String xmlFilePath = extractIfNecessary(fileI.getPath());
+      Path xmlFilePath = extractIfNecessary(fileI.toPath());
       if (xmlFilePath != null) {
         try {
           addFromXmlFile(xmlFilePath, !probablyLiveFile, gameServerAddress, logFileZoneId);
@@ -187,10 +190,12 @@ public class DbFiller {
     }
   }
 
-  private static void deleteXmlFile(String xmlFilePath) {
+  private static void deleteXmlFile(Path xmlFilePath) {
+    if (!XML_PATH_MATCHER.matches(xmlFilePath.getFileName())) {
+      throw new IllegalArgumentException("deleteXmlFile should be be given only .xml files, you gave: " + xmlFilePath);
+    }
     try {
-      Path path = Paths.get(xmlFilePath);
-      Files.delete(path);
+      Files.delete(xmlFilePath);
     } catch (IOException e) {
       log.warn("Could not delete xml file " + xmlFilePath, e);
     }
@@ -220,8 +225,8 @@ public class DbFiller {
     server.update();
   }
 
-  private static String extractIfNecessary(String filePath) {
-    if (filePath.endsWith(".xml")) {
+  private static Path extractIfNecessary(Path filePath) {
+    if (XML_PATH_MATCHER.matches(filePath.getFileName())) {
       boolean hasZxmlCounterpart = hasZxmlCounterpart(filePath);
       if (hasZxmlCounterpart) {
         // TODO: maybe vice-versa - should ignore zxml files instead
@@ -231,14 +236,15 @@ public class DbFiller {
       } else {
         return filePath;
       }
-    } else if (filePath.endsWith(".zxml")) {
-      String xmlFilePath = filePath.substring(0, filePath.length() - 5) + ".xml";
+    } else if (ZXML_PATH_MATCHER.matches(filePath.getFileName())) {
+      Path xmlFilePath = changeFileExtension(filePath, "zxml", "xml");
 
       try {
-        return decompress(filePath); // replace with .xml counterpart
+        decompress(filePath, xmlFilePath);
+        return xmlFilePath;
       } catch (IOException e) {
         log.warn("looks like " + filePath + " is not complete. " + e.getMessage());
-        File xmlFile = new File(xmlFilePath);
+        File xmlFile = xmlFilePath.toFile();
         if (xmlFile.length() == 0) {
           return null;
         }
@@ -248,8 +254,21 @@ public class DbFiller {
     return null;
   }
 
-  private static boolean hasZxmlCounterpart(String filePath) {
-    Path checkablePath = Paths.get(filePath.substring(0, filePath.length() - 4) + ".zxml");
+  private static Path changeFileExtension(Path oldFilePath, String oldExtension, String newExtension) {
+    if (oldExtension.startsWith(".")) {
+      throw new IllegalArgumentException("please specify oldExtension without preceding dot for given " + oldExtension);
+    }
+    if (newExtension.startsWith(".")) {
+      throw new IllegalArgumentException("please specify oldExtension without preceding dot for given " + newExtension);
+    }
+    String oldFileName = oldFilePath.getFileName().toString();
+    String newFileName = oldFileName.substring(0, oldFileName.length() - (oldExtension.length())) + newExtension;
+
+    return oldFilePath.getParent().resolve(newFileName);
+  }
+
+  private static boolean hasZxmlCounterpart(Path xmlFilePath) {
+    Path checkablePath = changeFileExtension(xmlFilePath, "xml", "zxml");
     return Files.exists(checkablePath);
   }
 
@@ -271,11 +290,11 @@ public class DbFiller {
     }
   }
 
-  private static void addFromXmlFile(String xmlFilePath, boolean tryFixing, String gameServerAddress, ZoneId logFileZoneId) {
+  private static void addFromXmlFile(Path xmlFilePath, boolean tryFixing, String gameServerAddress, ZoneId logFileZoneId) {
     try {
       log.info("Parsing " + xmlFilePath);
-      File file = new File(xmlFilePath);
-      BfLog bfLog = XmlParser.parseXmlLogFile(file, tryFixing);
+      File xmlFile = xmlFilePath.toFile();
+      BfLog bfLog = XmlParser.parseXmlLogFile(xmlFile, tryFixing);
       DbFiller dbFiller = new DbFiller(bfLog, gameServerAddress, logFileZoneId);
       dbFiller.fillDb();
     } catch (JAXBException | IOException | SAXException | ParserConfigurationException e) {
@@ -283,11 +302,9 @@ public class DbFiller {
     }
   }
 
-  public static String decompress(String compressedFilepath) throws IOException {
-    String outputFilepath = compressedFilepath.substring(0, compressedFilepath.length() - 5) + ".xml";
-
-    File compressedFile = new File(compressedFilepath);
-    File outputFile = new File(outputFilepath);
+  public static void decompress(Path compressedFilePath, Path outputFilePath) throws IOException {
+    File compressedFile = compressedFilePath.toFile();
+    File outputFile = outputFilePath.toFile();
 
     // power of 2 recommended, 8192 = 2^13
     int blockSize = 8192;
@@ -300,8 +317,6 @@ public class DbFiller {
         out.write(buffer, 0, length);
       }
     }
-
-    return outputFile.getAbsolutePath();
   }
 
   private void fillDb() {
