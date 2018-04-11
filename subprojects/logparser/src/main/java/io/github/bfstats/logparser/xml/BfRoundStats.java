@@ -154,7 +154,7 @@ public class BfRoundStats {
   }
 
   @Getter
-  @EqualsAndHashCode(of = {"name", "value"})
+  @EqualsAndHashCode(of = {"name"})
   public static class BfStatParam {
     @XmlAttribute(name = "name", required = true)
     private String name;
