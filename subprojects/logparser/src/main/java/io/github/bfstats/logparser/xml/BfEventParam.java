@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
 import java.util.List;
 
 // similar to BfStatParam, but with type
@@ -21,7 +22,7 @@ public class BfEventParam {
   // can also contain just bf:nonprint children
   @XmlElementRef(name = "root", type = BfNonPrint.class)
   @XmlMixed
-  private List<Object> mixedContent;
+  private List<Object> mixedContent = new ArrayList<>(1);
 
   @XmlTransient
   private String value; // "T54", "1", "498.28/56.171/406.15"
@@ -47,12 +48,7 @@ public class BfEventParam {
           return null;
         }
 
-        String[] coordinates = value.split("/", 3);
-        String coordinate1 = coordinates[0];
-        String coordinate2 = coordinates[1];
-        String coordinate3 = coordinates[2];
-        // TODO: create special Vector3 class or Coordinates class
-        return coordinates;
+        return value.split("/", 3);
     }
 
     return null;

@@ -27,7 +27,7 @@ public class BfRound {
 
   @XmlElementWrapper(name = "server")
   @XmlElement(name = "setting")
-  private List<BfSetting> settings;
+  private List<BfSetting> settings = new ArrayList<>(40);
 
   @XmlTransient
   private Map<String, String> settingsMap;

@@ -162,19 +162,14 @@ public class BfRoundStats {
     // can also contain just bf:nonprint children
     @XmlElementRef(name = "root", type = BfNonPrint.class)
     @XmlMixed
-    private List<Object> mixedContent;
+    private List<Object> mixedContent = new ArrayList<>(1);
 
-    @XmlTransient
-    private String value;
-
-    // specially named method afterUnmarshal is called by JAXB
-    @SuppressWarnings("unused")
-    void afterUnmarshal(Unmarshaller u, Object parent) {
-      this.value = BfNonPrint.mixedContentToString(mixedContent);
+    public String getValue() {
+      return BfNonPrint.mixedContentToString(mixedContent);
     }
 
     public String toString() {
-      return name + "=" + value;
+      return name + "=" + getValue();
     }
   }
 }

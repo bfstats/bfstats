@@ -29,7 +29,7 @@ public class BfEvent {
   // initializing with non-null, because jaxb would otherwise keep it null if there are no events
   // params are missing for gamePaused and gameUnpaused events
   @XmlElement(name = "param", type = BfEventParam.class)
-  private List<BfEventParam> params = new ArrayList<>();
+  private List<BfEventParam> params = new ArrayList<>(5);
 
   @XmlTransient
   private Map<String, Object> typeConvertedParameters;
