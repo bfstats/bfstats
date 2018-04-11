@@ -6,8 +6,10 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.UnmarshallerHandler;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.io.FileReader;
@@ -18,37 +20,50 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class XmlParser {
-  public static BfLog parseXmlLogFile(File file, boolean tryFixing) throws IOException, JAXBException, ParserConfigurationException, SAXException {
+  private static NamespaceFilter namespaceFilter = createXmlFilter();
+
+  private static NamespaceFilter createXmlFilter() {
+    try {
+      SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+      saxParserFactory.setNamespaceAware(false);
+
+      SAXParser saxParser = saxParserFactory.newSAXParser();
+      XMLReader xmlReader = saxParser.getXMLReader();
+
+      JAXBContext context = JAXBContext.newInstance(BfLog.class);
+      Unmarshaller unmarshaller = context.createUnmarshaller();
+      UnmarshallerHandler unmarshallerHandler = unmarshaller.getUnmarshallerHandler();
+
+      NamespaceFilter namespaceFilter = new NamespaceFilter();
+      namespaceFilter.setParent(xmlReader);
+      namespaceFilter.setContentHandler(unmarshallerHandler);
+      return namespaceFilter;
+    } catch (SAXException | ParserConfigurationException | JAXBException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static BfLog parseXmlLogFile(File file, boolean tryFixing) throws IOException, JAXBException, SAXException {
     if (file.length() == 0) {
       throw new IOException("skipping empty file");
     }
 
-    XMLReader xmlReader = SAXParserFactory.newInstance()
-        .newSAXParser()
-        .getXMLReader();
-    XMLFilter namespaceFilter = new NamespaceFilter();
-    namespaceFilter.setParent(xmlReader);
-
-    UnmarshallerHandler unmarshallerHandler = JAXBContext.newInstance(BfLog.class)
-        .createUnmarshaller()
-        .getUnmarshallerHandler();
-    namespaceFilter.setContentHandler(unmarshallerHandler);
-
     try {
-      return unmarshal(file, namespaceFilter, unmarshallerHandler);
+      return unmarshal(file, namespaceFilter);
     } catch (SAXParseException e) {
       if (tryFixing) {
         File fixedFile = fixFileEnding(file);
-        return unmarshal(fixedFile, namespaceFilter, unmarshallerHandler);
+        return unmarshal(fixedFile, namespaceFilter);
       }
       throw e;
     }
   }
 
-  private static BfLog unmarshal(File file, XMLFilter namespaceFilter, UnmarshallerHandler unmarshallerHandler) throws IOException, SAXException, JAXBException {
+  private static BfLog unmarshal(File file, XMLFilter namespaceFilter) throws IOException, SAXException, JAXBException {
     InputSource xml = new InputSource(new FileReader(file));
     namespaceFilter.parse(xml);
-    Object result = unmarshallerHandler.getResult();
+    UnmarshallerHandler contentHandler = (UnmarshallerHandler) namespaceFilter.getContentHandler();
+    Object result = contentHandler.getResult();
     BfLog bfLog = (BfLog) result;
     if (bfLog.isTimestampMissing()) {
       String timestampString = extractTimestampStringFromFilename(file);
