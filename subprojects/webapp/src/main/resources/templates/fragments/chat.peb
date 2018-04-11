@@ -7,11 +7,9 @@
 {% if chatMessages is empty %}
 There are no chat messages
 {% else %}
-{% for entry in chatMessages %}
-<strong>{{ entry.key | dt("dd-MM-yyyy") }}</strong>
 <table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
-  {% for chatMessage in entry.value %}
+  {% for chatMessage in chatMessages %}
   <tr class="chat-team team-{{ chatMessage.playerTeam }}">
     <td class="time"><a href="{{appPath}}/rounds/{{ chatMessage.roundId }}">{{ chatMessage.time | dt('HH:mm') }}</a></td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ chatMessage.playerId }}">{{ chatMessage.playerName }}</a> {{ teamName(chatMessage.toTeam) }}:</td>
@@ -20,9 +18,4 @@ There are no chat messages
   {% endfor %}
   </tbody>
 </table>
-{% endfor %}
-
-{% import "fragments/pagination" %}
-{{ pagination(totalMessagesCount, 50, page, currentPage)}}
-
 {% endif %}

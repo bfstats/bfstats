@@ -30,13 +30,13 @@ public class ChatController extends Controller {
 
     List<ChatMessage> chatMessages = chatService.getChatMessages(null, page);
 
-    Map<LocalDate, List<ChatMessage>> messagesByDay = chatMessages.stream()
+    Map<LocalDate, List<ChatMessage>> chatMessagesPerDay = chatMessages.stream()
         .collect(Collectors.groupingBy(r -> r.getTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
 
     int totalMessagesCount = chatService.getTotalMessagesCount();
 
     getResponse()
-        .bind("chatMessages", messagesByDay)
+        .bind("chatMessagesPerDay", chatMessagesPerDay)
         .bind("totalMessagesCount", totalMessagesCount)
         .bind("currentPage", page)
         .render("chat/list");

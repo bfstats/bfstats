@@ -4,6 +4,16 @@
 
 {% block content %}
 
-{% include "fragments/chat" %}
+{% if chatMessagesPerDay is empty %}
+There are no chat messages
+{% else %}
+{% for entry in chatMessagesPerDay %}
+<h3 class="list-heading">{{ entry.key | dt("dd-MM-yyyy") }}</h3>
+{% include "fragments/chat" with {"chatMessages" : entry.value} %}
+{% endfor %}
+
+{% import "fragments/pagination" %}
+{{ pagination(totalMessagesCount, 50, page, currentPage)}}
+{% endif %}
 
 {% endblock %}

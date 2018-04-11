@@ -6,7 +6,7 @@
 There are no games.
 {% else %}
 {% for entry in games %}
-<strong>{{ entry.key | dt("dd-MM-yyyy") }}</strong>
+<h3 class="list-heading">{{ entry.key | dt("dd-MM-yyyy") }}</h3>
 <ul>
   {% for game in entry.value %}
   <li>

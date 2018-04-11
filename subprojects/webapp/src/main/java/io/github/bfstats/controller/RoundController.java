@@ -11,7 +11,7 @@ import ro.pippo.controller.extractor.Param;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,14 +75,12 @@ public class RoundController extends Controller {
 
     BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(round.getGameCode(), round.getMapCode());
     List<ChatMessage> chatMessages = chatService.getChatMessages(roundId, 1);
-    Map<LocalDate, List<ChatMessage>> messagesByDay = chatMessages.stream()
-        .collect(Collectors.groupingBy(r -> r.getTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
 
     getResponse()
         .bind("round", round)
         .bind("playerStats", roundPlayerStats)
         .bind("map", basicMapInfo)
-        .bind("chatMessages", messagesByDay)
+        .bind("chatMessages", chatMessages)
         .render("rounds/details");
   }
 
@@ -109,7 +107,7 @@ public class RoundController extends Controller {
         .bind("playerStats", roundPlayerStats)
         .bind("map", basicMapInfo)
         .bind("mapEventsUrlPath", "rounds/json/" + round.getId() + "/players/" + player.getId() + "/events")
-        .bind("chatMessages", new HashMap<>())
+        .bind("chatMessages", new ArrayList<ChatMessage>())
         .render("rounds/player");
   }
 

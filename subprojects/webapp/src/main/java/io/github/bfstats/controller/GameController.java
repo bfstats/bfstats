@@ -69,18 +69,14 @@ public class GameController extends Controller {
     Map<Integer, List<RoundService.RoundPlayerStats>> statsPerRound = rounds.stream()
         .collect(toMap(Round::getId, r -> roundService.getRoundPlayerStats(r.getId())));
 
-    Map<Integer, Map<LocalDate, List<ChatMessage>>> messagesByDayPerRound = rounds.stream()
-        .collect(toMap(Round::getId, round -> {
-          List<ChatMessage> chatMessages = chatService.getChatMessages(round.getId(), 1);
-          return chatMessages.stream()
-              .collect(Collectors.groupingBy(r -> r.getTime().toLocalDate(), LinkedHashMap::new, Collectors.toList()));
-        }));
+    Map<Integer, List<ChatMessage>> messagesByDayPerRound = rounds.stream()
+        .collect(toMap(Round::getId, round -> chatService.getChatMessages(round.getId(), 1)));
 
     getResponse()
         .bind("game", game)
         .bind("rounds", rounds)
         .bind("statsPerRound", statsPerRound)
-        .bind("messagesByDayPerRound", messagesByDayPerRound)
+        .bind("chatMessagesPerRound", messagesByDayPerRound)
         .bind("map", basicMapInfo)
         .render("games/details");
   }
