@@ -21,6 +21,8 @@ public class BfNonPrint {
   @XmlTransient
   private String strValue;
 
+  // specially named method afterUnmarshal is called by JAXB
+  @SuppressWarnings("unused")
   void afterUnmarshal(Unmarshaller u, Object parent) {
     this.strValue = valueAsString();
   }

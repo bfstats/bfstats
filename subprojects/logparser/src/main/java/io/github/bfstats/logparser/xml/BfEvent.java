@@ -26,10 +26,6 @@ public class BfEvent {
   @XmlAttribute(name = "timestamp", required = true)
   private String timestamp; // 9.143
 
-  public Duration getDurationSinceLogStart() {
-    return toDuration(timestamp);
-  }
-
   // initializing with non-null, because jaxb would otherwise keep it null if there are no events
   // params are missing for gamePaused and gameUnpaused events
   @XmlElement(name = "param", type = BfEventParam.class)
@@ -39,9 +35,14 @@ public class BfEvent {
   private Map<String, Object> typeConvertedParameters;
 
   // specially named method afterUnmarshal is called by JAXB
+  @SuppressWarnings("unused")
   void afterUnmarshal(Unmarshaller u, Object parent) {
     this.typeConvertedParameters = getParams().stream()
         .collect(Collectors.toMap(BfEventParam::getName, BfEventParam::getTypeAwareValue));
+  }
+
+  public Duration getDurationSinceLogStart() {
+    return toDuration(timestamp);
   }
 
   public String getStringParamValueByName(String paramName) {
@@ -70,10 +71,6 @@ public class BfEvent {
     } catch (IllegalArgumentException e) {
       return EventName.UNKNOWN_EVENT;
     }
-  }
-
-  public boolean isEvent(EventName eventName) {
-    return getName().equals(eventName.name());
   }
 
   // nullable

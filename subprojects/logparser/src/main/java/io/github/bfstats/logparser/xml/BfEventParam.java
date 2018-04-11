@@ -26,6 +26,12 @@ public class BfEventParam {
   @XmlTransient
   private String value; // "T54", "1", "498.28/56.171/406.15"
 
+  // specially named method afterUnmarshal is called by JAXB
+  @SuppressWarnings("unused")
+  void afterUnmarshal(Unmarshaller u, Object parent) {
+    this.value = BfNonPrint.mixedContentToString(mixedContent);
+  }
+
   public Object getTypeAwareValue() {
     if (value == null) {
       return null;
@@ -50,10 +56,6 @@ public class BfEventParam {
     }
 
     return null;
-  }
-
-  void afterUnmarshal(Unmarshaller u, Object parent) {
-    this.value = BfNonPrint.mixedContentToString(mixedContent);
   }
 
   public String toString() {

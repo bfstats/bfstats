@@ -146,6 +146,7 @@ public class BfRoundStats {
     }
 
     // specially named method afterUnmarshal is called by JAXB
+    @SuppressWarnings("unused")
     void afterUnmarshal(Unmarshaller u, Object parent) {
       this.parameters = getStatParams().stream()
           .collect(Collectors.toMap(BfStatParam::getName, BfStatParam::getValue));
@@ -166,6 +167,8 @@ public class BfRoundStats {
     @XmlTransient
     private String value;
 
+    // specially named method afterUnmarshal is called by JAXB
+    @SuppressWarnings("unused")
     void afterUnmarshal(Unmarshaller u, Object parent) {
       this.value = BfNonPrint.mixedContentToString(mixedContent);
     }

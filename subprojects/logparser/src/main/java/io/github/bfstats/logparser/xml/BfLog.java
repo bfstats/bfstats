@@ -10,7 +10,6 @@ import java.util.List;
 
 import static java.util.Optional.ofNullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "log")
 @Getter
 @ToString(of = {"engine", "timestamp"})
@@ -20,18 +19,13 @@ public class BfLog {
   public static final String NAMESPACE = "http://www.dice.se/xmlns/bf/1.0";
 
   // bf1942: <bf:log version="1.1" xmlns:bf="http://www.dice.se/xmlns/bf/1.1">
-  public static final String NAMESPACE_11 = "http://www.dice.se/xmlns/bf/1.1";
+  //public static final String NAMESPACE_11 = "http://www.dice.se/xmlns/bf/1.1";
 
   @XmlAttribute(name = "engine", required = true)
   private String engine; // BFVietnam v1.21
 
   @XmlAttribute(name = "timestamp", required = true)
   private String timestamp; // 20161224_0825 // YYYYMMDD_HHMM
-
-  public LocalDateTime getTimestampAsDate() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
-    return LocalDateTime.parse(timestamp, formatter);
-  }
 
   @XmlMixed
   @XmlElementRefs({
@@ -42,6 +36,11 @@ public class BfLog {
 
   public String getEngine() {
     return ofNullable(engine).orElse("bf1942");
+  }
+
+  public LocalDateTime getTimestampAsDate() {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
+    return LocalDateTime.parse(timestamp, formatter);
   }
 
   public BfRound getFirstRound() {

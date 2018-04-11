@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 import static io.github.bfstats.logparser.xml.Helpers.toDuration;
 import static java.util.Optional.ofNullable;
 
-@ToString(of = {"timestamp"})
 @XmlRootElement(name = "round")
 @Getter
+@ToString(of = {"timestamp"})
 public class BfRound {
   @XmlAttribute(name = "timestamp", required = true)
   private String timestamp; // 9.143
@@ -40,6 +40,7 @@ public class BfRound {
   private BfRoundStats roundStats;
 
   // specially named method afterUnmarshal is called by JAXB
+  @SuppressWarnings("unused")
   void afterUnmarshal(Unmarshaller u, Object parent) {
     this.settingsMap = getSettings().stream()
         .collect(Collectors.toMap(BfSetting::getName, BfSetting::getValue));
