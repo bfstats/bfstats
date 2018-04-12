@@ -36,6 +36,7 @@
 <nav id="navigation">
   <a href="{{appPath}}/ranking" class="{{homePageNavigationClass(currentPath)}} {{navigationClass(currentPath, '/ranking')}}">Ranks</a>
   <a href="{{appPath}}/rounds/active" class="{{navigationClass(currentPath, '/rounds')}}">Rounds</a>
+  <a href="{{appPath}}/games/active" class="{{navigationClass(currentPath, '/games')}}">Games</a>
   <a href="{{appPath}}/maps" class="{{navigationClass(currentPath, '/maps')}}">Maps</a>
   <a href="{{appPath}}/chat" class="{{navigationClass(currentPath, '/chat')}}">Chat</a>
   <a href="{{appPath}}/graphs" class="{{navigationClass(currentPath, '/graphs')}}">Graphs</a>
