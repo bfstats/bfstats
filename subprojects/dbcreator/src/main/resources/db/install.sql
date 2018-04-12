@@ -339,7 +339,7 @@ SELECT
   (sum(round_end_stats_player.score) / count( * ) ) average_score,
   sum(round_end_stats_player.kills) kills,
   sum(round_end_stats_player.deaths) deaths,
-  (CAST (sum(round_end_stats_player.kills) AS REAL) / sum(round_end_stats_player.deaths) ) kdrate,
+  (CAST (sum(round_end_stats_player.kills) AS REAL) / CASE sum(round_end_stats_player.deaths) WHEN 0 THEN 1 ELSE sum(round_end_stats_player.deaths) END ) kdrate,
   sum(round_end_stats_player.tks) tks,
   sum(round_end_stats_player.captures) captures,
   sum(round_end_stats_player.attacks) attacks,
