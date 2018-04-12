@@ -8,4 +8,4 @@ mainClass="io.github.bfstats.dbcreator.DBCreator"
 
 echo Now starting to run $projectName
 
-java -classpath $projectPath/lib/*:$projectPath/build/classes/java/main:$projectPath/build/resources/main $mainClass
+java -classpath $projectPath/lib/*:$projectPath/build/classes/java/main:$projectPath/build/resources/main $mainClass updateviews

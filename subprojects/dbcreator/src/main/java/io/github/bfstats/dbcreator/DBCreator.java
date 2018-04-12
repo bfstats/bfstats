@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class DBCreator {
 
@@ -16,6 +17,16 @@ public class DBCreator {
     String dbUrl = props.getProperty("databaseUrl", "jdbc:sqlite:database.db");
     DriverManager.registerDriver(new org.sqlite.JDBC());
     Connection connection = DriverManager.getConnection(dbUrl);
+
+    boolean updatePlayerViewContents = Stream.of(args).anyMatch("updateviews"::equals);
+    if (updatePlayerViewContents) {
+      Statement statement = connection.createStatement();
+      statement.execute("DROP VIEW IF EXISTS player_summary_no_rank;");
+      statement.execute("DROP VIEW IF EXISTS player_points;");
+      statement.close();
+      System.out.println("Dropped views so they will be recreated");
+    }
+
     InputStream is = DBCreator.class.getResourceAsStream("/db/install.sql");
     importSQL(connection, is);
   }
