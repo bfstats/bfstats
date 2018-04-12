@@ -12,12 +12,33 @@ import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static io.github.bfstats.dbstats.jooq.Tables.GAME;
+import static io.github.bfstats.dbstats.jooq.Tables.*;
 import static io.github.bfstats.util.DateTimeUtils.toUserZone;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static java.util.stream.Collectors.toList;
 
 public class GameService {
+  public List<Game> getActiveGames(int page) {
+    Result<GameRecord> gameRecords = getActiveGameRecords(page);
+    return gameRecords.stream()
+        .map(GameService::toGame)
+        .collect(toList());
+  }
+
+  private static Result<GameRecord> getActiveGameRecords(int page) {
+    int numberOfRows = 50;
+    int firstRowIndex = (page - 1) * numberOfRows;
+
+    return getDslContext()
+        .selectFrom(GAME)
+        .where(DSL.exists(getDslContext().selectOne().from(ROUND_PLAYER_DEATH)
+            .innerJoin(ROUND).on(ROUND.GAME_ID.eq(GAME.ID))
+            .where(ROUND_PLAYER_DEATH.ROUND_ID.eq(ROUND.ID))))
+        .orderBy(GAME.START_TIME.desc())
+        .limit(firstRowIndex, numberOfRows)
+        .fetch();
+  }
+
   public List<Game> getGames(int page) {
     Result<GameRecord> gameRecords = getGameRecords(null, page);
     return gameRecords.stream()
@@ -86,6 +107,15 @@ public class GameService {
         .setTicketRatio(gameRecord.getTicketRatio())
         .setTeamKillPunish(gameRecord.getTeamKillPunish() == 1)
         .setPunkbusterEnabled(gameRecord.getPunkbusterEnabled() == 1);
+  }
+
+  public int getTotalActiveGamesCount() {
+    return getDslContext().selectCount().from(GAME)
+        .where(DSL.exists(getDslContext().selectOne()
+            .from(ROUND_PLAYER_DEATH)
+            .innerJoin(ROUND).on(ROUND.GAME_ID.eq(GAME.ID))
+            .where(ROUND_PLAYER_DEATH.ROUND_ID.eq(ROUND.ID))))
+        .fetchOne(0, int.class);
   }
 
   public int getTotalGamesCount() {

@@ -40,6 +40,24 @@ public class GameController extends Controller {
     this.chatService = chatService;
   }
 
+  @GET("active/?")
+  public void activeGamesList() {
+    int page = SortUtils.getPageFromRequest(getRequest());
+
+    List<Game> games = gameService.getActiveGames(page);
+
+    Map<LocalDate, List<Game>> gamesByDay = games.stream()
+        .collect(Collectors.groupingBy(g -> g.getStartTime().toLocalDate(), LinkedHashMap::new, toList()));
+
+    int totalGamesCount = gameService.getTotalActiveGamesCount();
+
+    getResponse()
+        .bind("games", gamesByDay)
+        .bind("totalGamesCount", totalGamesCount)
+        .bind("currentPage", page)
+        .render("games/list");
+  }
+
   @GET("/?")
   public void list() {
     int page = SortUtils.getPageFromRequest(getRequest());
