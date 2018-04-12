@@ -1,3 +1,5 @@
+<select>May</select>
+
 <div id="players-graph" style="margin-top: 60px; height:300px;"></div>
 
 <script>

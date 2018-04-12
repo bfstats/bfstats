@@ -45,7 +45,12 @@ Nicknames:
  <span class="silver">🥈</span>{{ playerStats.silverCount }}
  <span class="bronze">🥉</span>{{ playerStats.bronzeCount }}
 </span>
-<span class="additional"><span class="icon-heals"></span> {{ playerStats.otherHeals }} 🔧{{ playerStats.otherRepairs }}</span>
+ <span class="additional">
+  <span title="Heal count to self"><span class="icon-heals"></span>{{ playerStats.selfHeals }}</span>
+  <span title="Repair count to self">🔧{{ playerStats.selfRepairs }}</span>
+  <span title="Heal count to others"><span class="icon-heals"></span>{{ playerStats.otherHeals }}</span>
+  <span title="Repair count to others">🔧{{ playerStats.otherRepairs }}</span>
+ </span>
 </div>
 
 <div class="detail">

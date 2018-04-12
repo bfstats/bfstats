@@ -1,106 +1,10 @@
-::-webkit-scrollbar {
-  display: block;
-  width: 21px;
-  background: transparent url('../img/scrollbar/scroll_bg.png') repeat-y top left;
-  background-size: 100% 100%;
-  background-color: #252826; /* chrome renders white background sometimes after refresh if transparent*/
-}
-::-webkit-scrollbar-corner {
-  background-color: inherit;
-}
-::-webkit-scrollbar-button:vertical {
-  background: transparent url('../img/scrollbar/scroll_up.png') no-repeat 1px 0;
-}
-::-webkit-scrollbar-button:vertical:decrement {
-  background-image: url('../img/scrollbar/scroll_up.png');
-}
-::-webkit-scrollbar-button:vertical:decrement:hover {
-  background-image: url('../img/scrollbar/scroll_up_b.png');
-}
-::-webkit-scrollbar-button:vertical:increment {
-  background-image: url('../img/scrollbar/scroll_down.png');
-}
-::-webkit-scrollbar-button:vertical:increment:hover {
-  background-image: url('../img/scrollbar/scroll_down_b.png');
-}
-::-webkit-scrollbar-thumb:vertical {
-  min-height: 50px;
-  width: 3px;
-  border: 6px solid transparent;
-  background-clip: content-box;
-  background-color: #817046;
-}
-::-webkit-scrollbar-thumb:vertical:hover, ::-webkit-scrollbar-thumb:vertical:active {
-  background-color: #917e4e;
-}
-
-::-webkit-scrollbar:horizontal {
-  height: 21px;
-  background: transparent url('../img/scrollbar/scroll_bg_horizontal.png') repeat-y top left;
-  background-size: 100% 100%;
-}
-::-webkit-scrollbar-button:horizontal {
-  background: transparent url('../img/scrollbar/scroll_left.png') no-repeat 0 0;
-}
-::-webkit-scrollbar-button:horizontal:decrement {
-  background-image: url('../img/scrollbar/scroll_left.png');
-}
-::-webkit-scrollbar-button:horizontal:decrement:hover {
-  background-image: url('../img/scrollbar/scroll_left_b.png');
-}
-::-webkit-scrollbar-button:horizontal:increment {
-  background-image: url('../img/scrollbar/scroll_right.png');
-}
-::-webkit-scrollbar-button:horizontal:increment:hover {
-  background-image: url('../img/scrollbar/scroll_right_b.png');
-}
-::-webkit-scrollbar-thumb:horizontal {
-  min-width: 30px;
-  width: 3px;
-  border: 6px solid transparent;
-  background-clip: content-box;
-  background-color: #817046;
-}
-::-webkit-scrollbar-thumb:horizontal:hover, ::-webkit-scrollbar-thumb:horizontal:active {
-  background-color: #917e4e;
-}
-
-
-@font-face {
-  font-family: bfchat;
-  src: url('../fonts/st9_regular.woff') format('woff');
-}
-@font-face {
-  font-family: bfchat;
-  font-weight: bold;
-  src: url('../fonts/st9_bold.woff') format('woff');
-}
-
 body {
   margin: 0;
-
-  background-color: #252826;
-
-  background-color: #000;
-  background-image: url('../img/bg/bg.png');
-  background-position: top right;
-  background-size: contain;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+  background-color: #252830;
   color: #f0f0f0;
   font-family: Helvetica;
-  font-size: 12px;
-
-  xfont-family: bfchat;
-  xfont-size: 8px; /* for this font only use 8px, 16px, ..., in reality the font is 9px */
-}
-
-body.bg1 {
-  background-image: url('../img/bg/bg.png'), url('../img/bg/khe_sahn.jpg');
-}
-
-body.bg2 {
-  background-image: url('../img/bg/bg.png'), url('../img/bg/hue_alt.jpg');
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 a {
@@ -118,10 +22,11 @@ a.inherit {
 table {
   border-collapse: collapse;
   font-size: inherit;
+
 }
 
 table td, th {
-  border: 1px solid #FFFFFF;
+  border: 1px solid #202020;
 }
 
 th {
@@ -140,37 +45,46 @@ h3 .less-important {
   left: 0;
   bottom: 0;
   height: 100%;
-  width: 90px;
-  line-height: 20px;
-  margin: 0 10px 0 0;
-  font-weight: bold;
+  width: 100px;
+  margin: 0 10px 0 10px;
 }
 
 #navigation a {
   display: block;
-  padding: 5px;
-  padding-left: 10px;
-  background-color: rgba(50,50,10,0.3);
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
   text-decoration: none;
-  text-transform: uppercase;
-  transition: background-color 200ms linear;
+  color: #cfd2da;
+  transition: color 100ms linear;
 }
 
 #navigation a.active {
-  background-color: rgba(50,50,10, 1);
+  background-color: #1997c6;
+  color: #fff;
 }
 
 #navigation a:hover {
-  background-color: rgba(50,50,10,0.6);
+  color: #fff;
 }
 
 #navigation input, #navigation select {
   width: 100%;
   font-size: 0.9em;
-  padding: 5px;
-  padding-left: 10px;
-  border: 0;
-  background-color: rgba(255,255,255,0.8);
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #434857;
+  border-radius: 0.25rem;
+  background-color: #434857;
+  color: #fff;
+  line-height: 1.5;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#navigation input:focus, #navigation select:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #71cced;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(25, 151, 198, 0.25);
 }
 
 #content {
@@ -211,48 +125,36 @@ h3 .less-important {
   }
 }
 
-.meter {
-  display: inline-block;
-	height: 7px;  /* Can be anything */
+td.percent-with-meter {
+  position: relative; /* has absolutely positioned element inside as percentage bar */
+  text-align: right;
   width: 70px;
-	background: #555;
-	padding: 2px;
+}
+
+.meter {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  width: 100%;
 }
 
 .meter > span {
   display: block;
   height: 100%;
-  background-color: rgb(43,194,83);
-  background-image: linear-gradient(
-    center bottom,
-    rgb(43,194,83) 37%,
-    rgb(84,240,84) 69%
-  );
-  overflow: hidden;
+  background-color: #bcbcbc;
+  border-radius: 2px;
 }
 
-th .sorted {
-  position: absolute;
-  top: -14px;
-  right: 0;
-  text-indent: -100px;
-  width: 15px;
-  height: 12px;
-  overflow: hidden;
-
-  background-repeat: no-repeat;
-  background-size: 15px 12px;
+.styled_table {
+  border: 1px solid #202020;
+  border-radius: 3px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.8rem;
 }
-
-.sorted.order-descending {
-  background-image: url('../img/descending4.png');
-}
-
-.sorted.order-ascending {
-  background-image: url('../img/ascending4.png');
-}
-
-
 
 .styled_table.half {
   float: left;
@@ -280,13 +182,38 @@ th .sorted {
   background-color: rgba(0,0,0,0.5);
 }
 
-.styled_table td {
-  border-color: rgba(255,255,255,0.1);
-  border-top: 0;
-  border-bottom: 0;
-  text-align: right;
-  padding: 1px 2px;
+.styled_table td, .styled_table th {
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #545454;
 }
+
+.styled_table td {
+  text-align: right;
+  padding: 8px 6px;
+}
+
+.styled_table th {
+  border-bottom: 2px solid #1997c6;
+  padding: 7px 7px 8px;
+  text-transform: uppercase;
+  text-align: left;
+  font-weight: bold;
+}
+
+th .sorted-label {
+  color: #1997c6;
+}
+
+th .sorted-label a {
+  color: inherit;
+}
+
+th .sorted-indicator {
+  display: inline-block;
+  width: 15px;
+  height: 12px;
+}
+
 .styled_table td.left {
   text-align: left;
 }
@@ -295,69 +222,7 @@ th .sorted {
   text-align: center;
 }
 
-.styled_table td:first-child {
-  border-left: 0;
-}
-.styled_table td:last-child {
-  border-right: 0;
-}
-.styled_table td.percent {
-  text-align: right;
-}
-
-.styled_table th {
-  border: 0 solid transparent;
-  padding: 0;
-  padding-top: 10px;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-.styled_table th div {
-  display: flex;
-}
-
-.styled_table th div:before, .styled_table th div:after {
-  content: "";
-  flex: 1 1 auto;
-  min-width: 5px;
-  height: 10px;
-  margin-top: 10px;
-  border-top: 1px solid #fff;
-  background-color: rgba(35, 57, 66, 0.75);
-}
-
-.styled_table th:first-child div:before {
-  border-left: 1px solid #fff;
-}
-
-.styled_table th:last-child div:after {
-  border-right: 1px solid #fff;
-}
-
-/* adds 4px to width */
-.styled_table th div span.label {
-  flex: 0 1 auto;
-  padding: 0 2px;
-  height: inherit;
-  line-height: 1.5em;
-  background-color: rgba(255, 245, 255, 0.54);
-  border: 1px solid rgba(0, 0, 0, 0.83);
-  color: black;
-  position: relative; /* so that sorting icon can be position to top of this label*/
-  white-space: nowrap;
-  box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.2), -2px 2px 2px 0 rgba(0, 0, 0, 0.19);
-  /* translated3d is for font smoothing (though also blurries it)*/
-  /*xtransform: rotate(-0.5deg) translate3d( 0, 0, 0);*/
-  /*backface-visibility: hidden;
-  transform: rotate(-0.5deg);*/
-  font-family: 'Trebuchet MS';
-  font-size: 12px;
-  font-weight: bold;
-}
-
 .styled_table th span.label a {
-  color: #030008;
   text-decoration: none;
 }
 
@@ -520,19 +385,17 @@ tr.team-3 .name, .name.team-3 {
   color: #b9b9b9;
 }
 
-.player-overwiew .icon-heals {
+.player-overwiew .icon-heals::after {
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  background-color: transparent;
-  background-position: center center;
-  background-repeat: no-repeat;
-
-  background-image: url('../img/icons/map_medic.png');
-  line-height: 1em;
-  vertical-align: middle;
+  line-height: 1;
+  font-size: 0.9em;
+  width: 1em;
+  height: 1em;
+  background-color: white;
+  content: '✚';
+  color: #da291c;
+  margin-right: 3px;
 }
-
 
 
 .score-team-left {

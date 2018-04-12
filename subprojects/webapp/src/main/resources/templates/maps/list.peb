@@ -23,7 +23,8 @@ There are no maps.
     <td>{{ loop.index + 1 }}</td>
     <td class="left"> <a href="{{appPath}}/maps/{{ map.gameCode }}/{{ map.code }}">{{ map.name }}</a></td>
     <td>{{ map.timesUsed }}</td>
-    <td class="percent">{{ map.percentage | numberformat("0.0") }}
+
+    <td class="percent-with-meter">{{ map.percentage | numberformat("0.0") }}%
       <div class="meter">
         <span style="width: {{ map.percentage }}%"></span>
       </div>

@@ -13,15 +13,15 @@
 {% macro sortingIndicator(columnName, sortingColumn, sortingOrder) %}
 {% if sortingColumn == columnName %}
   {% if sortingOrder == "ASC" %}
-  <span class="sorted order-ascending">▲</span>
+  <span class="sorted-indicator order-ascending">▲</span>
   {% else %}
-  <span class="sorted order-descending">▼</span>
+  <span class="sorted-indicator order-descending">▼</span>
   {% endif %}
 {% endif %}
 {% endmacro %}
 
 {% macro sortableLink(description, columnName, sortingColumn, sortingOrder) %}
-<div><span class="label"><a href="?{{sortingUrl(columnName,sortingColumn,sortingOrder)}}">{{description}}</a>
+<div><span class="label {% if sortingColumn == columnName %}sorted-label{% endif %}"><a href="?{{sortingUrl(columnName,sortingColumn,sortingOrder)}}">{{description}}</a>
 {{sortingIndicator(columnName, sortingColumn, sortingOrder)}}
 </span></div>
 {% endmacro %}
@@ -42,9 +42,9 @@ There are no players.
     <th title="Kills">{{sortableLink('K','kills',sortingColumn,sortingOrder)}}</th>
     <th title="Deaths">{{sortableLink('D','deaths',sortingColumn,sortingOrder)}}</th>
     <th title="Kill/death ratio">{{sortableLink('K/D','kdrate',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of gold medals" class="icon icon-gold">{{sortableLink('Gold','gold_count',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of silver medals" class="icon icon-silver">{{sortableLink('Silver','silver_count',sortingColumn,sortingOrder)}}</th>
-    <th title="Number of bronze medals" class="icon icon-bronze">{{sortableLink('Bronze','bronze_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of gold medals">{{sortableLink('🥇','gold_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of silver medals">{{sortableLink('🥈','silver_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Number of bronze medals">{{sortableLink('🥉','bronze_count',sortingColumn,sortingOrder)}}</th>
     <th title="Team kills">{{sortableLink('TKs','tks',sortingColumn,sortingOrder)}}</th>
     <th title="Captured control points">{{sortableLink('Captures','captures',sortingColumn,sortingOrder)}}</th>
     <th title="Rounds played">{{sortableLink('Rounds','rounds_played',sortingColumn,sortingOrder)}}</th>
