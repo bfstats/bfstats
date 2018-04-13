@@ -26,7 +26,6 @@ import io.github.bfstats.dbstats.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerVehicle;
 import io.github.bfstats.dbstats.jooq.tables.Server;
-import io.github.bfstats.dbstats.jooq.tables.Topid;
 
 import javax.annotation.Generated;
 
@@ -153,9 +152,4 @@ public class Tables {
      * The table <code>server</code>.
      */
     public static final Server SERVER = io.github.bfstats.dbstats.jooq.tables.Server.SERVER;
-
-    /**
-     * The table <code>topid</code>.
-     */
-    public static final Topid TOPID = io.github.bfstats.dbstats.jooq.tables.Topid.TOPID;
 }

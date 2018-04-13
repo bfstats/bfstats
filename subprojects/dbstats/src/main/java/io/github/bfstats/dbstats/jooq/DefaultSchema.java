@@ -26,7 +26,6 @@ import io.github.bfstats.dbstats.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerVehicle;
 import io.github.bfstats.dbstats.jooq.tables.Server;
-import io.github.bfstats.dbstats.jooq.tables.Topid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +51,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 1973260273;
+    private static final long serialVersionUID = -407305872;
 
     /**
      * The reference instance of <code></code>
@@ -170,11 +169,6 @@ public class DefaultSchema extends SchemaImpl {
     public final Server SERVER = io.github.bfstats.dbstats.jooq.tables.Server.SERVER;
 
     /**
-     * The table <code>topid</code>.
-     */
-    public final Topid TOPID = io.github.bfstats.dbstats.jooq.tables.Topid.TOPID;
-
-    /**
      * No further instances allowed
      */
     private DefaultSchema() {
@@ -220,7 +214,6 @@ public class DefaultSchema extends SchemaImpl {
             RoundPlayerScoreEvent.ROUND_PLAYER_SCORE_EVENT,
             RoundPlayerTeam.ROUND_PLAYER_TEAM,
             RoundPlayerVehicle.ROUND_PLAYER_VEHICLE,
-            Server.SERVER,
-            Topid.TOPID);
+            Server.SERVER);
     }
 }
