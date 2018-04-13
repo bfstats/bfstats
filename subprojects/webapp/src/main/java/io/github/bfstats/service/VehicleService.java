@@ -122,6 +122,7 @@ public class VehicleService {
     code = StringUtils.removeEnd(code, "Right");
 
     code = StringUtils.removeEnd(code, "Funner");
+    code = StringUtils.removeEnd(code, "FrontGunner");
     code = StringUtils.removeEnd(code, "RearGunner");
     code = StringUtils.removeEnd(code, "Gunner");
     code = StringUtils.removeEnd(code, "ArmedPassenger");

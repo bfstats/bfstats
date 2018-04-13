@@ -43,9 +43,23 @@ public class TranslationUtil {
     switch (vehicleModifierCode) {
       case "CoPilot":
         return "co-pilot";
+      case "FrontGunner":
+        return "front gunner";
+      case "RearGunner":
+        return "rear gunner";
       case "Gunner":
         return "gunner";
+      case "Funner":
+        // Funner is a typo in bfvietnam
+        return "gunner";
+      case "ArmedPassenger":
+        return "armed passenger";
+      case "Passenger":
+        return "passenger";
+      case "Passenger2":
+        return "passenger";
     }
+
     return vehicleModifierCode;
   }
 
