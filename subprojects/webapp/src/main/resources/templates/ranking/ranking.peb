@@ -39,8 +39,8 @@ There are no players.
     <th>{{sortableLink('Points','points',sortingColumn,sortingOrder)}}</th>
     <th title="Average score per round">{{sortableLink('S/R','average_score',sortingColumn,sortingOrder)}}</th>
     <th>{{sortableLink('Score','score',sortingColumn,sortingOrder)}}</th>
-    <th title="Kills">{{sortableLink('K','kills',sortingColumn,sortingOrder)}}</th>
-    <th title="Deaths">{{sortableLink('D','deaths',sortingColumn,sortingOrder)}}</th>
+    <th title="Kills">{{sortableLink('Kills','kills',sortingColumn,sortingOrder)}}</th>
+    <th title="Deaths">{{sortableLink('Deaths','deaths',sortingColumn,sortingOrder)}}</th>
     <th title="Kill/death ratio">{{sortableLink('K/D','kdrate',sortingColumn,sortingOrder)}}</th>
     <th title="Number of gold medals">{{sortableLink('🥇','gold_count',sortingColumn,sortingOrder)}}</th>
     <th title="Number of silver medals">{{sortableLink('🥈','silver_count',sortingColumn,sortingOrder)}}</th>
@@ -49,7 +49,7 @@ There are no players.
     <th title="Captured control points">{{sortableLink('Captures','captures',sortingColumn,sortingOrder)}}</th>
     <th title="Rounds played">{{sortableLink('Rounds','rounds_played',sortingColumn,sortingOrder)}}</th>
     <th title="Heals" class="icon icon-heals">{{sortableLink('Heals','heals_all_count',sortingColumn,sortingOrder)}}</th>
-    <th title="Repairs" class="icon icon-repairs">{{sortableLink('Repairs','repairs_all_count',sortingColumn,sortingOrder)}}</th>
+    <th title="Repairs">{{sortableLink('🔧','repairs_all_count',sortingColumn,sortingOrder)}}</th>
   </tr>
   </thead>
   <tbody>

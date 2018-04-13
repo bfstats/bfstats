@@ -232,35 +232,26 @@ th .sorted-indicator {
   text-decoration: none;
 }
 
-.ranking_table th.icon a {
+.ranking_table th.icon-heals a::after {
   display: inline-block;
+  float: left;
+  margin: 0;
+  padding: 0;
   width: 12px;
-  text-indent: -300px;
-  overflow: hidden;
-  filter: drop-shadow(0 0 2px #000);
-  background-color: transparent;
-  background-position: center center;
-  background-repeat: no-repeat;
+  height: 12px;
+  line-height: 12px;
+  font-size: 10px;
+  text-indent: 0;
+  background-color: white;
+  content: '✚';
+  color: #da291c;
+  text-align: center;
 }
 
-.ranking_table th.icon-gold a {
-  filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 2px #000);
-  background-image: url('../img/icons/gold.png');
-}
-.ranking_table th.icon-silver a {
-  filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 2px #000);
-  background-image: url('../img/icons/silver.png');
-}
-.ranking_table th.icon-bronze a {
-  filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 2px #000);
-  background-image: url('../img/icons/bronze.png');
-}
-.ranking_table th.icon-heals a {
-  background-image: url('../img/icons/map_medic.png');
-  xbackground-image: url('../img/icons/health_3dmap.png');
-}
-.ranking_table th.icon-repairs a {
-  background-image: url('../img/icons/map_engineer.png');
+.ranking_table th.icon a {
+  display: inline-block;
+  text-indent: -300px;
+  overflow: hidden;
 }
 
 .chat_table {
@@ -401,6 +392,7 @@ tr.team-3 .name, .name.team-3 {
   content: '✚';
   color: #da291c;
   margin-right: 3px;
+  text-align: center;
 }
 
 
