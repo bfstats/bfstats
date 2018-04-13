@@ -8,6 +8,7 @@ import ro.pippo.controller.Path;
 import ro.pippo.controller.extractor.Param;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Path("/weapons")
 public class WeaponController extends Controller {
@@ -16,6 +17,12 @@ public class WeaponController extends Controller {
   @Inject
   public WeaponController(WeaponService weaponService) {
     this.weaponService = weaponService;
+  }
+
+  @GET("/?")
+  public void list() {
+    List<WeaponUsage> weapons = weaponService.getWeaponUsages();
+    getResponse().bind("weapons", weapons).render("weapons/list");
   }
 
   @GET("/{gameCode}/{code}")

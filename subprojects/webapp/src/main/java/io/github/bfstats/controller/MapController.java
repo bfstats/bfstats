@@ -25,9 +25,8 @@ public class MapController extends Controller {
 
   @GET("/?")
   public void list() {
-    List<MapUsage> mapUsagesForPlayer = mapService.getMapUsages();
-
-    getResponse().bind("maps", mapUsagesForPlayer).render("maps/list");
+    List<MapUsage> maps = mapService.getMapUsages();
+    getResponse().bind("maps", maps).render("maps/list");
   }
 
   @GET("/{gameCode}/{mapCode}")

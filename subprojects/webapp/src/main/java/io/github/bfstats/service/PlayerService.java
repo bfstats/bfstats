@@ -4,11 +4,12 @@ import io.github.bfstats.dbstats.jooq.tables.records.GamePlayerRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerNicknameRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerRecord;
 import io.github.bfstats.exceptions.NotFoundException;
-import io.github.bfstats.model.*;
-import io.github.bfstats.util.TranslationUtil;
+import io.github.bfstats.model.NicknameUsage;
+import io.github.bfstats.model.Player;
+import io.github.bfstats.model.PlayerAndTotal;
+import io.github.bfstats.model.PlayerDetails;
 import org.jooq.*;
 import org.jooq.impl.DSL;
-import ro.pippo.core.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,7 +19,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -34,7 +34,7 @@ import static java.util.stream.Collectors.toList;
 public class PlayerService {
 
   private static final int BOT_PLAYER_ID = 1;
-  private static final int LIMIT_PLAYER_STATS = 10;
+  public static final int LIMIT_PLAYER_STATS = 10;
   public static final DateTimeFormatter HM_FORMAT = DateTimeFormatter.ofPattern("H'h' mm'm'");
 
   public List<Player> getPlayers() {
@@ -269,178 +269,4 @@ public class PlayerService {
     ).collect(toList());
   }
 
-  public List<WeaponUsage> getWeaponUsages(int playerId) {
-    Result<Record3<String, String, Integer>> records = getDslContext().select(ROUND.GAME_CODE, ROUND_PLAYER_DEATH.KILL_WEAPON, DSL.count().as("times_used"))
-        .from(ROUND_PLAYER_DEATH)
-        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
-        .where(ROUND_PLAYER_DEATH.KILL_WEAPON.isNotNull())
-        .and(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID.eq(playerId))
-        .groupBy(ROUND_PLAYER_DEATH.KILL_WEAPON)
-        .orderBy(DSL.count().desc())
-        .limit(LIMIT_PLAYER_STATS)
-        .fetch();
-
-    Integer totalTimesUsed = records.stream()
-        .map(r -> r.get("times_used", Integer.class))
-        .reduce(0, Integer::sum);
-
-    return records.stream()
-        .map(r -> toWeaponUsage(r, totalTimesUsed))
-        .collect(toList());
-  }
-
-  public List<WeaponUsage> getKilledByWeapons(int playerId) {
-    Result<Record3<String, String, Integer>> records = getDslContext().select(ROUND.GAME_CODE, ROUND_PLAYER_DEATH.KILL_WEAPON, DSL.count().as("times_used"))
-        .from(ROUND_PLAYER_DEATH)
-        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
-        .where(ROUND_PLAYER_DEATH.KILL_WEAPON.isNotNull())
-        .and(ROUND_PLAYER_DEATH.PLAYER_ID.eq(playerId))
-        .groupBy(ROUND_PLAYER_DEATH.KILL_WEAPON)
-        .orderBy(DSL.count().desc())
-        .limit(LIMIT_PLAYER_STATS)
-        .fetch();
-
-    Integer totalTimesUsed = records.stream()
-        .map(r -> r.get("times_used", Integer.class))
-        .reduce(0, Integer::sum);
-
-    return records.stream()
-        .map(r -> toWeaponUsage(r, totalTimesUsed))
-        .collect(toList());
-  }
-
-  private static WeaponUsage toWeaponUsage(Record r, int totalTimesUsed) {
-    Integer timesUsed = r.get("times_used", Integer.class);
-    String gameCode = r.get(ROUND.GAME_CODE);
-    String code = r.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
-    String weaponOrVehicleName = TranslationUtil.getWeaponOrVehicleName(gameCode, code);
-    return new WeaponUsage()
-        .setGameCode(gameCode)
-        .setCode(code)
-        .setName(weaponOrVehicleName)
-        .setTimesUsed(timesUsed)
-        .setPercentage(percentage(timesUsed, totalTimesUsed));
-  }
-
-  public List<KitUsage> getKitUsages(int playerId) {
-    Result<Record3<String, String, Integer>> records = getDslContext().select(ROUND.GAME_CODE, ROUND_PLAYER_PICKUP_KIT.KIT, DSL.count().as("times_used"))
-        .from(ROUND_PLAYER_PICKUP_KIT)
-        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_PICKUP_KIT.ROUND_ID))
-        .where(ROUND_PLAYER_PICKUP_KIT.PLAYER_ID.eq(playerId))
-        .groupBy(ROUND_PLAYER_PICKUP_KIT.KIT)
-        .orderBy(DSL.count().desc())
-        .limit(LIMIT_PLAYER_STATS)
-        .fetch();
-
-    Integer totalTimesUsed = records.stream()
-        .map(r -> r.get("times_used", Integer.class))
-        .reduce(0, Integer::sum);
-
-    return records.stream()
-        .map(r -> toKitUsage(r, totalTimesUsed))
-        .collect(toList());
-  }
-
-  private static KitUsage toKitUsage(Record r, int totalTimesUsed) {
-    Integer timesUsed = r.get("times_used", Integer.class);
-    String gameCode = r.get(ROUND.GAME_CODE);
-    String code = r.get(ROUND_PLAYER_PICKUP_KIT.KIT);
-    KitService.KitNameAndWeapons kitNameAndWeapons = KitService.findKitNameAndWeapons(gameCode, code);
-    return new KitUsage()
-        .setGameCode(gameCode)
-        .setCode(code)
-        .setName(kitNameAndWeapons.getName())
-        .setWeapons(kitNameAndWeapons.getWeapons())
-        .setTimesUsed(timesUsed)
-        .setPercentage(percentage(timesUsed, totalTimesUsed));
-  }
-
-  public List<VehicleUsage> getVehicleUsages(int playerId) {
-    Result<Record4<String, String, BigDecimal, Integer>> records = getDslContext()
-        .select(
-            ROUND.GAME_CODE,
-            ROUND_PLAYER_VEHICLE.VEHICLE,
-            DSL.sum(ROUND_PLAYER_VEHICLE.DURATION_SECONDS).as("total_duration"),
-            DSL.count().as("times_used")
-        )
-        .from(ROUND_PLAYER_VEHICLE)
-        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_VEHICLE.ROUND_ID))
-        .where(ROUND_PLAYER_VEHICLE.PLAYER_ID.eq(playerId))
-        .groupBy(ROUND_PLAYER_VEHICLE.VEHICLE)
-        .orderBy(DSL.field("total_duration").desc())
-        .limit(LIMIT_PLAYER_STATS)
-        .fetch();
-
-    int totalVehiclesDriveTimeInSeconds = records.stream()
-        .map(r -> r.get("total_duration", Integer.class))
-        .reduce(0, Integer::sum);
-
-    return records.stream().map(r -> toVehicleUsage(r, totalVehiclesDriveTimeInSeconds))
-        .collect(toList());
-  }
-
-  private static VehicleUsage toVehicleUsage(Record r, int totalVehiclesDriveTimeInSeconds) {
-    int driveTime = r.get("total_duration", Integer.class);
-    String code = r.get(ROUND_PLAYER_VEHICLE.VEHICLE);
-    String gameCode = r.get(ROUND.GAME_CODE);
-    String codeWithoutModifiers = withoutModifiers(code);
-    if (codeWithoutModifiers.isEmpty()) {
-      codeWithoutModifiers = code;
-    }
-
-    String vehicleName = TranslationUtil.getVehicleName(gameCode, codeWithoutModifiers);
-    if (code.length() > codeWithoutModifiers.length()) {
-      String modifierName = code.substring(codeWithoutModifiers.length());
-      modifierName = removePCO(modifierName);
-      modifierName = StringUtils.removeStart(modifierName, "_");
-      modifierName = TranslationUtil.getVehicleModifier(modifierName);
-      vehicleName += " " + modifierName;
-    }
-
-    return new VehicleUsage()
-        .setGameCode(gameCode)
-        .setCode(code)
-        .setName(vehicleName)
-        .setDriveTime(convertSecondsToLocalTime(driveTime).format(HM_FORMAT)) // seconds
-        .setPercentage(percentage(driveTime, totalVehiclesDriveTimeInSeconds))
-        .setTimesUsed(r.get("times_used", Integer.class));
-  }
-
-  private static String removePCO(String code) {
-    code = StringUtils.removeEnd(code, "PCO6");
-    code = StringUtils.removeEnd(code, "PCO5");
-    code = StringUtils.removeEnd(code, "PCO4");
-    code = StringUtils.removeEnd(code, "PCO3");
-    code = StringUtils.removeEnd(code, "PCO2");
-    code = StringUtils.removeEnd(code, "PCO1");
-    code = StringUtils.removeEnd(code, "PCO");
-
-    code = StringUtils.removeEnd(code, "_");
-    return code;
-  }
-
-  private static String withoutModifiers(String code) {
-    code = removePCO(code);
-
-    code = StringUtils.removeEnd(code, "Left");
-    code = StringUtils.removeEnd(code, "Right");
-
-    code = StringUtils.removeEnd(code, "Funner");
-    code = StringUtils.removeEnd(code, "RearGunner");
-    code = StringUtils.removeEnd(code, "Gunner");
-    code = StringUtils.removeEnd(code, "ArmedPassenger");
-    code = StringUtils.removeEnd(code, "Passenger2");
-    code = StringUtils.removeEnd(code, "Passenger");
-    code = StringUtils.removeEnd(code, "CoPilot");
-    code = StringUtils.removeEnd(code, "MG"); // Machine gun
-    code = StringUtils.removeEnd(code, "TOW"); // Tube-launched, Optically tracked, Wire-guided; weapon of MuttTOW = BGM-71 TOW
-
-    code = StringUtils.removeEnd(code, "_");
-
-    return code;
-  }
-
-  private static LocalTime convertSecondsToLocalTime(int nSecondTime) {
-    return LocalTime.MIN.plusSeconds(nSecondTime);
-  }
 }

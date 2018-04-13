@@ -1,0 +1,6 @@
+{% extends "layout" %}
+
+{% block title %} Vehicle List {% endblock %}
+
+{% block content %}
+{% endblock %}

@@ -3,8 +3,21 @@ package io.github.bfstats.service;
 import com.google.common.collect.ImmutableMap;
 import io.github.bfstats.model.KitUsage;
 import lombok.Data;
+import org.jooq.Record;
+import org.jooq.Record3;
+import org.jooq.Result;
+import org.jooq.impl.DSL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
+import static io.github.bfstats.dbstats.jooq.Tables.ROUND;
+import static io.github.bfstats.dbstats.jooq.Tables.ROUND_PLAYER_PICKUP_KIT;
+import static io.github.bfstats.service.PlayerService.LIMIT_PLAYER_STATS;
+import static io.github.bfstats.util.DbUtils.getDslContext;
+import static io.github.bfstats.util.Utils.percentage;
+import static java.util.stream.Collectors.toList;
 
 public class KitService {
   private static Map<String, String> teamNameByCodeBf1942 = ImmutableMap.<String, String>builder()
@@ -177,5 +190,42 @@ public class KitService {
         .setCode(kitCode)
         .setName(kitNameAndWeapons.getName())
         .setWeapons(kitNameAndWeapons.getWeapons());
+  }
+
+  public List<KitUsage> getKitUsages() {
+    return new ArrayList<>();
+  }
+
+  public List<KitUsage> getKitUsagesForPlayer(int playerId) {
+    Result<Record3<String, String, Integer>> records = getDslContext().select(ROUND.GAME_CODE, ROUND_PLAYER_PICKUP_KIT.KIT, DSL.count().as("times_used"))
+        .from(ROUND_PLAYER_PICKUP_KIT)
+        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_PICKUP_KIT.ROUND_ID))
+        .where(ROUND_PLAYER_PICKUP_KIT.PLAYER_ID.eq(playerId))
+        .groupBy(ROUND_PLAYER_PICKUP_KIT.KIT)
+        .orderBy(DSL.count().desc())
+        .limit(LIMIT_PLAYER_STATS)
+        .fetch();
+
+    Integer totalTimesUsed = records.stream()
+        .map(r -> r.get("times_used", Integer.class))
+        .reduce(0, Integer::sum);
+
+    return records.stream()
+        .map(r -> toKitUsage(r, totalTimesUsed))
+        .collect(toList());
+  }
+
+  private static KitUsage toKitUsage(Record r, int totalTimesUsed) {
+    Integer timesUsed = r.get("times_used", Integer.class);
+    String gameCode = r.get(ROUND.GAME_CODE);
+    String code = r.get(ROUND_PLAYER_PICKUP_KIT.KIT);
+    KitService.KitNameAndWeapons kitNameAndWeapons = KitService.findKitNameAndWeapons(gameCode, code);
+    return new KitUsage()
+        .setGameCode(gameCode)
+        .setCode(code)
+        .setName(kitNameAndWeapons.getName())
+        .setWeapons(kitNameAndWeapons.getWeapons())
+        .setTimesUsed(timesUsed)
+        .setPercentage(percentage(timesUsed, totalTimesUsed));
   }
 }

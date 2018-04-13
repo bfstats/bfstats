@@ -1,10 +1,7 @@
 package io.github.bfstats.controller;
 
 import io.github.bfstats.model.*;
-import io.github.bfstats.service.MapService;
-import io.github.bfstats.service.PlayerService;
-import io.github.bfstats.service.RankingService;
-import io.github.bfstats.service.RoundService;
+import io.github.bfstats.service.*;
 import io.github.bfstats.util.Sort;
 import ro.pippo.controller.Controller;
 import ro.pippo.controller.GET;
@@ -19,17 +16,25 @@ import java.util.List;
 @Path("/players")
 public class PlayerController extends Controller {
 
-  private PlayerService playerService;
-  private MapService mapService;
-  private RankingService rankingService;
-  private RoundService roundService;
+  private final PlayerService playerService;
+  private final MapService mapService;
+  private final RankingService rankingService;
+  private final RoundService roundService;
+  private final WeaponService weaponService;
+  private final KitService kitService;
+  private final VehicleService vehicleService;
 
   @Inject
-  public PlayerController(PlayerService playerService, MapService mapService, RankingService rankingService, RoundService roundService) {
+  public PlayerController(PlayerService playerService, MapService mapService, RankingService rankingService,
+                          RoundService roundService, WeaponService weaponService, KitService kitService,
+                          VehicleService vehicleService) {
     this.playerService = playerService;
     this.mapService = mapService;
     this.rankingService = rankingService;
     this.roundService = roundService;
+    this.weaponService = weaponService;
+    this.kitService = kitService;
+    this.vehicleService = vehicleService;
   }
 
   @GET({"/?", "/search"})
@@ -56,10 +61,10 @@ public class PlayerController extends Controller {
     PlayerAchievements playerAchievements = rankingService.getPlayerAchievements(playerId);
     PlayerDetails playerDetails = playerService.getPlayerDetails(playerId);
 
-    List<WeaponUsage> killedByWeapons = playerService.getWeaponUsages(playerId);
-    List<WeaponUsage> deathsByWeapons = playerService.getKilledByWeapons(playerId);
-    List<KitUsage> kits = playerService.getKitUsages(playerId);
-    List<VehicleUsage> vehicles = playerService.getVehicleUsages(playerId);
+    List<WeaponUsage> killedByWeapons = weaponService.getWeaponUsagesForPlayer(playerId);
+    List<WeaponUsage> deathsByWeapons = weaponService.getKilledByWeaponsForPlayer(playerId);
+    List<KitUsage> kits = kitService.getKitUsagesForPlayer(playerId);
+    List<VehicleUsage> vehicles = vehicleService.getVehicleUsagesForPlayer(playerId);
     List<MapUsage> maps = mapService.getMapUsagesForPlayer(playerId);
 
     List<PlayerAndTotal> killsByVictims = playerService.getKillsByVictims(playerId);

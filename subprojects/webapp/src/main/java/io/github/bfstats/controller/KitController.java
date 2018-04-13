@@ -8,6 +8,7 @@ import ro.pippo.controller.Path;
 import ro.pippo.controller.extractor.Param;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Path("/kits")
 public class KitController extends Controller {
@@ -16,6 +17,12 @@ public class KitController extends Controller {
   @Inject
   public KitController(KitService kitService) {
     this.kitService = kitService;
+  }
+
+  @GET("/?")
+  public void list() {
+    List<KitUsage> kits = kitService.getKitUsages();
+    getResponse().bind("kits", kits).render("kits/list");
   }
 
   @GET("/{gameCode}/{code}")

@@ -34,10 +34,13 @@
 {% endmacro %}
 
 <nav id="navigation">
-  <a href="{{appPath}}/ranking" class="{{homePageNavigationClass(currentPath)}} {{navigationClass(currentPath, '/ranking')}}">Ranks</a>
+  <a href="{{appPath}}/ranking" class="{{homePageNavigationClass(currentPath)}} {{navigationClass(currentPath, '/ranking')}}  {{navigationClass(currentPath, '/players')}}">Ranks</a>
   <a href="{{appPath}}/rounds/active" class="{{navigationClass(currentPath, '/rounds')}}">Rounds</a>
   <a href="{{appPath}}/games/active" class="{{navigationClass(currentPath, '/games')}}">Games</a>
   <a href="{{appPath}}/maps" class="{{navigationClass(currentPath, '/maps')}}">Maps</a>
+  <a href="{{appPath}}/weapons" class="{{navigationClass(currentPath, '/weapons')}}">Weapons</a>
+  <a href="{{appPath}}/vehicles" class="{{navigationClass(currentPath, '/vehicles')}}">Vehicles</a>
+  <a href="{{appPath}}/kits" class="{{navigationClass(currentPath, '/kits')}}">Kits</a>
   <a href="{{appPath}}/chat" class="{{navigationClass(currentPath, '/chat')}}">Chat</a>
   <a href="{{appPath}}/graphs" class="{{navigationClass(currentPath, '/graphs')}}">Graphs</a>
 
