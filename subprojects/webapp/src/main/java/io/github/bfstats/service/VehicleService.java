@@ -115,6 +115,7 @@ public class VehicleService {
     return code;
   }
 
+  // if updating this, also update translation map in TranslationUtil.getVehicleModifier
   private static String withoutModifiers(String code) {
     code = removePCO(code);
 
@@ -124,6 +125,7 @@ public class VehicleService {
     code = StringUtils.removeEnd(code, "Funner");
     code = StringUtils.removeEnd(code, "FrontGunner");
     code = StringUtils.removeEnd(code, "RearGunner");
+    code = StringUtils.removeEnd(code, "FlakGunner"); // e.g ZSU_FlakGunner_PCO1
     code = StringUtils.removeEnd(code, "Gunner");
     code = StringUtils.removeEnd(code, "ArmedPassenger");
     code = StringUtils.removeEnd(code, "Passenger2");

@@ -38,6 +38,7 @@ public class TranslationUtil {
     return vehicleNameByCodeByGameCode.get(gameCode).getOrDefault(vehicleCode, vehicleCode);
   }
 
+  // if updating this, also update modifier identification map in VehicleService.withoutModifiers
   @Nonnull
   public static String getVehicleModifier(@Nonnull String vehicleModifierCode) {
     switch (vehicleModifierCode) {
@@ -49,6 +50,8 @@ public class TranslationUtil {
         return "rear gunner";
       case "Gunner":
         return "gunner";
+      case "FlakGunner":
+        return "Flak gunner";
       case "Funner":
         // Funner is a typo in bfvietnam
         return "gunner";
