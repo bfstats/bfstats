@@ -76,7 +76,10 @@ h3 .less-important {
   background-color: #434857;
   color: #fff;
   line-height: 1.5;
-  transition: background-color 0.1s ease-in-out, border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+  height: 2.5em;
+  transition: background-color 0.1s ease-in-out,
+    border-color 0.1s ease-in-out,
+    box-shadow 0.1s ease-in-out;
 }
 
 #navigation input:focus, #navigation select:focus {
@@ -88,6 +91,7 @@ h3 .less-important {
 }
 
 #content {
+  clear: both;
   margin: 0 auto;
   width: 80%;
   padding-top: 20px;
