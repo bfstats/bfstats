@@ -2,6 +2,7 @@ package io.github.bfstats.service;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.bfstats.model.KitUsage;
+import lombok.Data;
 
 import java.util.Map;
 
@@ -128,10 +129,24 @@ public class KitService {
       .put("bfvietnam", weaponsByKitCodeBfVietnam)
       .build();
 
-  public static String kitName(String gameCode, String kitCode) {
+  @Data
+  public static class KitNameAndWeapons {
+    String name;
+    String weapons;
+
+    @Override
+    public String toString() {
+      return name + " (" + weapons + ")";
+    }
+  }
+
+  public static KitNameAndWeapons findKitNameAndWeapons(String gameCode, String kitCode) {
     String[] parts = kitCode.split("_");
     if (parts.length < 2) {
-      return "???";
+      KitNameAndWeapons kitNameAndWeapons = new KitNameAndWeapons();
+      kitNameAndWeapons.setName(kitCode);
+      kitNameAndWeapons.setWeapons(kitCode);
+      return kitNameAndWeapons;
     }
 
     String teamCode = parts[0];
@@ -140,27 +155,27 @@ public class KitService {
     String categoryCode = parts[1];
     String categoryName = categoryNameByCodeByGameCode.get(gameCode).getOrDefault(categoryCode, categoryCode);
 
-    String line = teamName + " " + categoryName;
+    String kitName = teamName + " " + categoryName;
 
     if (parts.length > 2) {
       String categoryAlt = parts[2];
-      line += " " + categoryAlt;
+      kitName += " " + categoryAlt;
     }
 
-    String weapons = weaponsByKitCodeByGameCode.get(gameCode).get(kitCode);
-    if (weapons != null) {
-      line += " (" + weapons + ")";
-    } else {
-      line = kitCode;
-    }
+    KitNameAndWeapons kitNameAndWeapons = new KitNameAndWeapons();
+    kitNameAndWeapons.setName(kitName);
 
-    return line;
+    String weapons = weaponsByKitCodeByGameCode.get(gameCode).getOrDefault(kitCode, kitCode);
+    kitNameAndWeapons.setWeapons(weapons);
+    return kitNameAndWeapons;
   }
 
   public KitUsage getKit(String gameCode, String kitCode) {
+    KitNameAndWeapons kitNameAndWeapons = findKitNameAndWeapons(gameCode, kitCode);
     return new KitUsage()
         .setGameCode(gameCode)
         .setCode(kitCode)
-        .setName(kitName(gameCode, kitCode));
+        .setName(kitNameAndWeapons.getName())
+        .setWeapons(kitNameAndWeapons.getWeapons());
   }
 }

@@ -1,9 +1,8 @@
 {% if vehicles is not empty %}
 <table class="styled_table half">
-  <caption>Vehicles with most driving time</caption>
+  <caption>Most driven vehicles</caption>
   <thead>
   <tr>
-    <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Vehicle</span></div></th>
     <th><div><span class="label">Duration</span></div></th>
     <th><div><span class="label">Used</span></div></th>
@@ -13,7 +12,6 @@
   <tbody>
   {% for vehicle in vehicles %}
   <tr>
-    <td>{{ loop.index + 1 }}</td>
     <td class="left"><a href="{{appPath}}/vehicles/{{ vehicle.gameCode }}/{{ vehicle.code }}">{{ vehicle.name }}</a></td>
     <td>{{ vehicle.driveTime }}</td>
     <td>{{ vehicle.timesUsed }}</td>

@@ -326,10 +326,12 @@ public class PlayerService {
     Integer timesUsed = r.get("times_used", Integer.class);
     String gameCode = r.get(ROUND.GAME_CODE);
     String code = r.get(ROUND_PLAYER_PICKUP_KIT.KIT);
+    KitService.KitNameAndWeapons kitNameAndWeapons = KitService.findKitNameAndWeapons(gameCode, code);
     return new KitUsage()
         .setGameCode(gameCode)
         .setCode(code)
-        .setName(KitService.kitName(gameCode, code))
+        .setName(kitNameAndWeapons.getName())
+        .setWeapons(kitNameAndWeapons.getWeapons())
         .setTimesUsed(timesUsed)
         .setPercentage(percentage(timesUsed, totalTimesUsed));
   }

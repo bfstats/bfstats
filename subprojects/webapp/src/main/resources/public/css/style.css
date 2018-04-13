@@ -59,7 +59,7 @@ h3 .less-important {
 }
 
 #navigation a.active {
-  background-color: #1997c6;
+  background-color: #8c7c3d;
   color: #fff;
 }
 
@@ -76,13 +76,13 @@ h3 .less-important {
   background-color: #434857;
   color: #fff;
   line-height: 1.5;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: background-color 0.1s ease-in-out, border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
 }
 
 #navigation input:focus, #navigation select:focus {
   color: #495057;
   background-color: #fff;
-  border-color: #71cced;
+  border-color: #8c7c3d;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(25, 151, 198, 0.25);
 }
@@ -170,8 +170,10 @@ td.percent-with-meter {
   margin-top: 1em;
   margin-bottom: 0.5em;
   text-align: left;
-  font-weight: bold;
   font-size: 1.5em;
+  font-weight: normal;
+  color: #e0e0e0;
+  text-transform: uppercase;
 }
 
 .styled_table tbody {
@@ -193,7 +195,7 @@ td.percent-with-meter {
 }
 
 .styled_table th {
-  border-bottom: 2px solid #1997c6;
+  border-bottom: 2px solid #8c7c3d;
   padding: 7px 7px 8px;
   text-transform: uppercase;
   text-align: left;
@@ -201,7 +203,7 @@ td.percent-with-meter {
 }
 
 th .sorted-label {
-  color: #1997c6;
+  color: #8c7c3d;
 }
 
 th .sorted-label a {

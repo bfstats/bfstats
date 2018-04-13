@@ -3,7 +3,7 @@
   <caption>Latest Rounds</caption>
   <thead>
   <tr>
-    <th title="Round"><div><span class="label">R</span></div></th>
+    <th title="Round"><div><span class="label">#</span></div></th>
     <th><div><span class="label">Map</span></div></th>
     <th><div><span class="label">Start</span></div></th>
     <th title="Duration"><div><span class="label">Dur</span></div></th>

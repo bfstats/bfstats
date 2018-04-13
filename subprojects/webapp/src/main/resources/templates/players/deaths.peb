@@ -3,7 +3,6 @@
   <caption>{{ player.name }}'s Enemies</caption>
   <thead>
   <tr>
-    <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Killed by</span></div></th>
     <th><div><span class="label">Deaths</span></div></th>
     <th><div><span class="label">%</span></div></th>
@@ -12,8 +11,7 @@
   <tbody>
   {% for playerAndTotal in deathsByKillers %}
   <tr>
-    <td>{{ loop.index + 1 }}</td>
-    <td class="left"><a href="{{appPath}}/players/{{ playerAndTotal.playerId }}">{{ playerAndTotal.playerName }}</a></td>
+    <td class="left" style="width:60%"><a href="{{appPath}}/players/{{ playerAndTotal.playerId }}">{{ playerAndTotal.playerName }}</a></td>
     <td>{{ playerAndTotal.total }}</td>
     <td class="percent-with-meter">
       {{ playerAndTotal.percentage | numberformat("0.0") }}%

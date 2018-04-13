@@ -1,19 +1,17 @@
 {% if weapons is not empty %}
 <table class="styled_table half">
-  <caption>Most used weapons</caption>
+  <caption>Most successful weapons</caption>
   <thead>
   <tr>
-    <th><div><span class="label">#</span></div></th>
     <th><div><span class="label">Weapon</span></div></th>
-    <th><div><span class="label">Used</span></div></th>
+    <th><div><span class="label">Kills</span></div></th>
     <th><div><span class="label">%</span></div></th>
   </tr>
   </thead>
   <tbody>
   {% for weapon in weapons %}
   <tr>
-    <td>{{ loop.index + 1 }}</td>
-    <td class="left"><a href="{{appPath}}/weapons/{{ weapon.gameCode }}/{{ weapon.code }}">{{ weapon.name }}</a></td>
+    <td class="left" style="width:50%"><a href="{{appPath}}/weapons/{{ weapon.gameCode }}/{{ weapon.code }}">{{ weapon.name }}</a></td>
     <td>{{ weapon.timesUsed }}</td>
     <td class="percent-with-meter">{{ weapon.percentage | numberformat("0.0") }}%
       <div class="meter">

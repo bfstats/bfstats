@@ -2,21 +2,8 @@
 
 {% block title %} Player {{ player.name }} {% endblock %}
 
-{% macro nicknamesTitle(nicknames) %}
-{% if nicknames is not empty %}
-Nicknames:
-{% for nickname in nicknames %}
-{{ nickname.name }} x {{ nickname.timesUsed }}
-{% if loop.index < loop.length-1 %}, {% endif %}
-{% endfor %}
-{% endif %}
-{% endmacro %}
-
 {% block content %}
-
-<h3>{{ player.name }} <span class="less-important">(#{{ player.partialKeyHash }})</span></h3>
-
-<div>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</div>
+<div>Last seen: <strong>{{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</strong></div>
 
 <div class="player-overview">
 
@@ -53,6 +40,10 @@ Nicknames:
 
  {% if playerAchievements.maxRepairsAllCount %}
   <span title="Top repairer">🔧</span>
+ {% endif %}
+
+ {% if playerAchievements.achievementsCount == 0%}
+  none
  {% endif %}
 </span>
 <span class="additional">{{playerAchievements.achievementsCount }} achievements</span>
@@ -111,7 +102,15 @@ Nicknames:
 </div>
 
 <div class="clear">
- {{ nicknamesTitle(nicknames) }}
+ #{{ player.partialKeyHash }}
+
+ {% if nicknames is not empty %}
+ nicknames:
+ {% for nickname in nicknames %}
+ {{ nickname.name }} x {{ nickname.timesUsed }}
+ {% if loop.index < loop.length-1 %}, {% endif %}
+ {% endfor %}
+ {% endif %}
 </div>
 
 {% endblock %}
