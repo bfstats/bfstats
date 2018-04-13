@@ -1,0 +1,25 @@
+{% if deathsByWeapons is not empty %}
+<table class="styled_table half">
+  <caption>Most feared weapons</caption>
+  <thead>
+  <tr>
+    <th><div><span class="label">Weapon</span></div></th>
+    <th><div><span class="label">Deaths</span></div></th>
+    <th><div><span class="label">%</span></div></th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for weapon in deathsByWeapons %}
+  <tr>
+    <td class="left" style="width:50%"><a href="{{appPath}}/weapons/{{ weapon.gameCode }}/{{ weapon.code }}">{{ weapon.name }}</a></td>
+    <td>{{ weapon.timesUsed }}</td>
+    <td class="percent-with-meter">{{ weapon.percentage | numberformat("0.0") }}%
+      <div class="meter">
+        <span style="width: {{ weapon.percentage }}%"></span>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}

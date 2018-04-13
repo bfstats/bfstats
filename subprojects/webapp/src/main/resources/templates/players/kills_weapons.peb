@@ -1,4 +1,4 @@
-{% if weapons is not empty %}
+{% if killedByWeapons is not empty %}
 <table class="styled_table half">
   <caption>Most successful weapons</caption>
   <thead>
@@ -9,7 +9,7 @@
   </tr>
   </thead>
   <tbody>
-  {% for weapon in weapons %}
+  {% for weapon in killedByWeapons %}
   <tr>
     <td class="left" style="width:50%"><a href="{{appPath}}/weapons/{{ weapon.gameCode }}/{{ weapon.code }}">{{ weapon.name }}</a></td>
     <td>{{ weapon.timesUsed }}</td>

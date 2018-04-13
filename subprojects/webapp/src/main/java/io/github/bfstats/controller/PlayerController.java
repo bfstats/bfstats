@@ -56,7 +56,8 @@ public class PlayerController extends Controller {
     PlayerAchievements playerAchievements = rankingService.getPlayerAchievements(playerId);
     PlayerDetails playerDetails = playerService.getPlayerDetails(playerId);
 
-    List<WeaponUsage> weapons = playerService.getWeaponUsages(playerId);
+    List<WeaponUsage> killedByWeapons = playerService.getWeaponUsages(playerId);
+    List<WeaponUsage> deathsByWeapons = playerService.getKilledByWeapons(playerId);
     List<KitUsage> kits = playerService.getKitUsages(playerId);
     List<VehicleUsage> vehicles = playerService.getVehicleUsages(playerId);
     List<MapUsage> maps = mapService.getMapUsagesForPlayer(playerId);
@@ -74,7 +75,8 @@ public class PlayerController extends Controller {
         .bind("playerDetails", playerDetails)
         .bind("killsByVictims", killsByVictims)
         .bind("deathsByKillers", deathsByKillers)
-        .bind("weapons", weapons)
+        .bind("killedByWeapons", killedByWeapons)
+        .bind("deathsByWeapons", deathsByWeapons)
         .bind("kits", kits)
         .bind("vehicles", vehicles)
         .bind("maps", maps)

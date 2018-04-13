@@ -289,6 +289,25 @@ public class PlayerService {
         .collect(toList());
   }
 
+  public List<WeaponUsage> getKilledByWeapons(int playerId) {
+    Result<Record3<String, String, Integer>> records = getDslContext().select(ROUND.GAME_CODE, ROUND_PLAYER_DEATH.KILL_WEAPON, DSL.count().as("times_used"))
+        .from(ROUND_PLAYER_DEATH)
+        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
+        .where(ROUND_PLAYER_DEATH.KILL_WEAPON.isNotNull())
+        .and(ROUND_PLAYER_DEATH.PLAYER_ID.eq(playerId))
+        .groupBy(ROUND_PLAYER_DEATH.KILL_WEAPON)
+        .orderBy(DSL.count().desc())
+        .limit(LIMIT_PLAYER_STATS)
+        .fetch();
+
+    Integer totalTimesUsed = records.stream()
+        .map(r -> r.get("times_used", Integer.class))
+        .reduce(0, Integer::sum);
+
+    return records.stream()
+        .map(r -> toWeaponUsage(r, totalTimesUsed))
+        .collect(toList());
+  }
 
   private static WeaponUsage toWeaponUsage(Record r, int totalTimesUsed) {
     Integer timesUsed = r.get("times_used", Integer.class);

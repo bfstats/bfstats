@@ -94,7 +94,9 @@
 {% include "players/kills" %}
 {% include "players/deaths" %}
 
-{% include "players/weapons" %}
+{% include "players/kills_weapons" %}
+{% include "players/deaths_weapons" %}
+
 {% include "players/kits" %}
 {% include "players/vehicles" %}
 {% include "players/maps" %}
