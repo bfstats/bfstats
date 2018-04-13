@@ -23,6 +23,7 @@ public class DBCreator {
       Statement statement = connection.createStatement();
       statement.execute("DROP VIEW IF EXISTS player_summary_no_rank;");
       statement.execute("DROP VIEW IF EXISTS player_points;");
+      statement.execute("DROP VIEW IF EXISTS player_top_stats;");
       statement.close();
       System.out.println("Dropped views so they will be recreated");
     }

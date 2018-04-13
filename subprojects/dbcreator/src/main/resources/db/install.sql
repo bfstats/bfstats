@@ -396,3 +396,27 @@ ORDER BY pp.points DESC;
 CREATE VIEW IF NOT EXISTS player_summary AS
 SELECT pr.player_rank, pr.points, ps.* FROM player_summary_no_rank ps
 INNER JOIN player_rank pr ON pr.player_id = ps.player_id;
+
+
+CREATE VIEW IF NOT EXISTS player_top_stats AS
+SELECT p.player_id,
+  CASE p.points WHEN maxes.points THEN 1 ELSE 0 END is_max_points,
+  CASE p.score WHEN maxes.score THEN 1 ELSE 0 END is_max_score,
+  CASE p.gold_count WHEN maxes.gold_count THEN 1 ELSE 0 END is_max_gold_count,
+  CASE p.silver_count WHEN maxes.silver_count THEN 1 ELSE 0 END is_max_silver_count,
+  CASE p.bronze_count WHEN maxes.bronze_count THEN 1 ELSE 0 END is_max_bronze_count,
+  CASE p.heals_all_count WHEN maxes.heals_all_count THEN 1 ELSE 0 END is_max_heals_all_count,
+  CASE p.repairs_all_count WHEN maxes.repairs_all_count THEN 1 ELSE 0 END is_max_repairs_all_count,
+  CASE p.captures WHEN maxes.captures THEN 1 ELSE 0 END is_max_captures
+FROM player_summary p,
+(
+  SELECT max(points) points,
+    max(score) score,
+    max(gold_count) gold_count,
+    max(silver_count) silver_count,
+    max(bronze_count) bronze_count,
+    max(heals_all_count) heals_all_count,
+    max(repairs_all_count) repairs_all_count,
+    max(captures) captures
+  FROM player_summary
+) maxes;

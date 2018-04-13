@@ -1,9 +1,12 @@
 package io.github.bfstats.service;
 
 import io.github.bfstats.dbstats.jooq.tables.records.PlayerSummaryRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.PlayerTopStatsRecord;
+import io.github.bfstats.model.PlayerAchievements;
 import io.github.bfstats.model.PlayerStats;
 import io.github.bfstats.util.Sort;
 import org.jooq.Field;
+import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
@@ -11,9 +14,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.github.bfstats.dbstats.jooq.Tables.PLAYER_SUMMARY;
+import static io.github.bfstats.dbstats.jooq.Tables.PLAYER_TOP_STATS;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static io.github.bfstats.util.SortUtils.getJooqSortOrder;
 import static io.github.bfstats.util.SortUtils.getSortableField;
@@ -40,6 +45,41 @@ public class RankingService {
     return playerSummaryRecords.stream()
         .map(RankingService::toPlayerStats)
         .collect(Collectors.toList());
+  }
+
+  public PlayerAchievements getPlayerAchievements(int playerId) {
+    PlayerTopStatsRecord playerTopStatsRecord = getDslContext().selectFrom(PLAYER_TOP_STATS)
+        .where(PLAYER_TOP_STATS.PLAYER_ID.eq(playerId))
+        .fetchOne();
+
+    return toPlayerAchievements(playerTopStatsRecord);
+  }
+
+  private static boolean getAsBoolean(Record record, String columnName) {
+    Integer value = record.get(columnName, Integer.class);
+    return value != null && value.equals(1);
+  }
+
+  private static PlayerAchievements toPlayerAchievements(PlayerTopStatsRecord r) {
+    Map<String, Object> achievementsMap = r.intoMap();
+    achievementsMap.remove("player_id");
+    long achievementsCount = achievementsMap.values().stream()
+        .filter(value -> {
+          Integer valueInt = (Integer) value;
+          return valueInt != null && valueInt.equals(1);
+        })
+        .count();
+
+    return new PlayerAchievements()
+        .setAchievementsCount(achievementsCount)
+        .setMaxPoints(getAsBoolean(r, "is_max_points"))
+        .setMaxScore(getAsBoolean(r, "is_max_score"))
+        .setMaxGoldCount(getAsBoolean(r, "is_max_gold_count"))
+        .setMaxSilverCount(getAsBoolean(r, "is_max_silver_count"))
+        .setMaxBronzeCount(getAsBoolean(r, "is_max_bronze_count"))
+        .setMaxHealsAllCount(getAsBoolean(r, "is_max_heals_all_count"))
+        .setMaxRepairsAllCount(getAsBoolean(r, "is_max_repairs_all_count"))
+        .setMaxCaptures(getAsBoolean(r, "is_max_captures"));
   }
 
   private static PlayerStats toPlayerStats(PlayerSummaryRecord r) {

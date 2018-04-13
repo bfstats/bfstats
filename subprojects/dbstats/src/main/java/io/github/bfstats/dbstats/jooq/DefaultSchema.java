@@ -12,6 +12,7 @@ import io.github.bfstats.dbstats.jooq.tables.PlayerPoints;
 import io.github.bfstats.dbstats.jooq.tables.PlayerRank;
 import io.github.bfstats.dbstats.jooq.tables.PlayerSummary;
 import io.github.bfstats.dbstats.jooq.tables.PlayerSummaryNoRank;
+import io.github.bfstats.dbstats.jooq.tables.PlayerTopStats;
 import io.github.bfstats.dbstats.jooq.tables.Round;
 import io.github.bfstats.dbstats.jooq.tables.RoundChatLog;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
@@ -25,6 +26,7 @@ import io.github.bfstats.dbstats.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerVehicle;
 import io.github.bfstats.dbstats.jooq.tables.Server;
+import io.github.bfstats.dbstats.jooq.tables.Topid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +52,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -929493423;
+    private static final long serialVersionUID = 1973260273;
 
     /**
      * The reference instance of <code></code>
@@ -96,6 +98,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>player_summary_no_rank</code>.
      */
     public final PlayerSummaryNoRank PLAYER_SUMMARY_NO_RANK = io.github.bfstats.dbstats.jooq.tables.PlayerSummaryNoRank.PLAYER_SUMMARY_NO_RANK;
+
+    /**
+     * The table <code>player_top_stats</code>.
+     */
+    public final PlayerTopStats PLAYER_TOP_STATS = io.github.bfstats.dbstats.jooq.tables.PlayerTopStats.PLAYER_TOP_STATS;
 
     /**
      * The table <code>round</code>.
@@ -163,6 +170,11 @@ public class DefaultSchema extends SchemaImpl {
     public final Server SERVER = io.github.bfstats.dbstats.jooq.tables.Server.SERVER;
 
     /**
+     * The table <code>topid</code>.
+     */
+    public final Topid TOPID = io.github.bfstats.dbstats.jooq.tables.Topid.TOPID;
+
+    /**
      * No further instances allowed
      */
     private DefaultSchema() {
@@ -195,6 +207,7 @@ public class DefaultSchema extends SchemaImpl {
             PlayerRank.PLAYER_RANK,
             PlayerSummary.PLAYER_SUMMARY,
             PlayerSummaryNoRank.PLAYER_SUMMARY_NO_RANK,
+            PlayerTopStats.PLAYER_TOP_STATS,
             Round.ROUND,
             RoundChatLog.ROUND_CHAT_LOG,
             RoundEndStats.ROUND_END_STATS,
@@ -207,6 +220,7 @@ public class DefaultSchema extends SchemaImpl {
             RoundPlayerScoreEvent.ROUND_PLAYER_SCORE_EVENT,
             RoundPlayerTeam.ROUND_PLAYER_TEAM,
             RoundPlayerVehicle.ROUND_PLAYER_VEHICLE,
-            Server.SERVER);
+            Server.SERVER,
+            Topid.TOPID);
     }
 }

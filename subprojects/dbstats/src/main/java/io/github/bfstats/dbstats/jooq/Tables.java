@@ -12,6 +12,7 @@ import io.github.bfstats.dbstats.jooq.tables.PlayerPoints;
 import io.github.bfstats.dbstats.jooq.tables.PlayerRank;
 import io.github.bfstats.dbstats.jooq.tables.PlayerSummary;
 import io.github.bfstats.dbstats.jooq.tables.PlayerSummaryNoRank;
+import io.github.bfstats.dbstats.jooq.tables.PlayerTopStats;
 import io.github.bfstats.dbstats.jooq.tables.Round;
 import io.github.bfstats.dbstats.jooq.tables.RoundChatLog;
 import io.github.bfstats.dbstats.jooq.tables.RoundEndStats;
@@ -25,6 +26,7 @@ import io.github.bfstats.dbstats.jooq.tables.RoundPlayerScoreEvent;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerVehicle;
 import io.github.bfstats.dbstats.jooq.tables.Server;
+import io.github.bfstats.dbstats.jooq.tables.Topid;
 
 import javax.annotation.Generated;
 
@@ -81,6 +83,11 @@ public class Tables {
      * The table <code>player_summary_no_rank</code>.
      */
     public static final PlayerSummaryNoRank PLAYER_SUMMARY_NO_RANK = io.github.bfstats.dbstats.jooq.tables.PlayerSummaryNoRank.PLAYER_SUMMARY_NO_RANK;
+
+    /**
+     * The table <code>player_top_stats</code>.
+     */
+    public static final PlayerTopStats PLAYER_TOP_STATS = io.github.bfstats.dbstats.jooq.tables.PlayerTopStats.PLAYER_TOP_STATS;
 
     /**
      * The table <code>round</code>.
@@ -146,4 +153,9 @@ public class Tables {
      * The table <code>server</code>.
      */
     public static final Server SERVER = io.github.bfstats.dbstats.jooq.tables.Server.SERVER;
+
+    /**
+     * The table <code>topid</code>.
+     */
+    public static final Topid TOPID = io.github.bfstats.dbstats.jooq.tables.Topid.TOPID;
 }

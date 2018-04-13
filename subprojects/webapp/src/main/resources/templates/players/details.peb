@@ -18,7 +18,45 @@ Nicknames:
 
 <div>Last seen: {{ playerDetails.lastSeen | dt("dd-MM-yyyy HH:mm") }}</div>
 
-<div class="player-overwiew">
+<div class="player-overview">
+
+<div class="detail">
+ <span class="label">Achievements</span>
+ <span class="value">
+ {% if playerAchievements.maxPoints %}
+  <span title="First place in ranking table">🏆</span>
+ {% endif %}
+
+ {% if playerAchievements.maxScore %}
+  <span title="Highest total score">💮</span>
+ {% endif %}
+
+ {% if playerAchievements.maxCaptures %}
+  <span title="Highest number of total flag captures">🚩</span>
+ {% endif %}
+
+ {% if playerAchievements.maxGoldCount %}
+  <span class="gold" title="Most first places">🥇</span>
+ {% endif %}
+
+ {% if playerAchievements.maxSilverCount %}
+  <span class="silver" title="Most second places">🥈</span>
+ {% endif %}
+
+ {% if playerAchievements.maxBronzeCount %}
+  <span class="bronze" title="Most third places">🥉</span>
+ {% endif %}
+
+ {% if playerAchievements.maxHealsAllCount %}
+  <span class="icon-heals" title="Top healer"></span>
+ {% endif %}
+
+ {% if playerAchievements.maxRepairsAllCount %}
+  <span title="Top repairer">🔧</span>
+ {% endif %}
+</span>
+<span class="additional">{{playerAchievements.achievementsCount }} achievements</span>
+</div>
 
 <div class="detail">
 <span class="label">Rank <strong>{{ playerStats.rank }}</strong></span>

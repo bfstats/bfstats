@@ -348,11 +348,11 @@ tr.team-3 .name, .name.team-3 {
   color: rgb(205,127,50);
 }
 
-.player-overwiew {
+.player-overview {
   overflow: hidden;
 }
 
-.player-overwiew .detail {
+.player-overview .detail {
   float: left;
   margin: 4px;
   padding: 4px;
@@ -360,14 +360,14 @@ tr.team-3 .name, .name.team-3 {
   border: 1px solid rgba(255,255,255,0.3);
 }
 
-.player-overwiew .detail .label {
+.player-overview .detail .label {
   display: block;
   text-transform: uppercase;
   text-align: center;
   color: #b9b9b9;
 }
 
-.player-overwiew .detail .value {
+.player-overview .detail .value {
   display: block;
   text-transform: uppercase;
   text-align: center;
@@ -377,7 +377,7 @@ tr.team-3 .name, .name.team-3 {
   padding: 2px 0;
 }
 
-.player-overwiew .detail .additional {
+.player-overview .detail .additional {
   display: block;
   text-align: center;
   font-size: 0.9em;
@@ -385,7 +385,7 @@ tr.team-3 .name, .name.team-3 {
   color: #b9b9b9;
 }
 
-.player-overwiew .icon-heals::after {
+.player-overview .icon-heals::after {
   display: inline-block;
   line-height: 1;
   font-size: 0.9em;

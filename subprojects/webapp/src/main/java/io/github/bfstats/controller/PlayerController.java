@@ -53,6 +53,7 @@ public class PlayerController extends Controller {
     List<NicknameUsage> nicknameUsages = playerService.getNicknameUsages(playerId);
     Sort dummySort = new Sort("player_rank", Sort.SortOrder.ASC);
     PlayerStats playerStats = rankingService.getRankings(dummySort, 1, playerId).stream().findFirst().orElse(null);
+    PlayerAchievements playerAchievements = rankingService.getPlayerAchievements(playerId);
     PlayerDetails playerDetails = playerService.getPlayerDetails(playerId);
 
     List<WeaponUsage> weapons = playerService.getWeaponUsages(playerId);
@@ -69,6 +70,7 @@ public class PlayerController extends Controller {
         .bind("player", player)
         .bind("nicknames", nicknameUsages)
         .bind("playerStats", playerStats)
+        .bind("playerAchievements", playerAchievements)
         .bind("playerDetails", playerDetails)
         .bind("killsByVictims", killsByVictims)
         .bind("deathsByKillers", deathsByKillers)
