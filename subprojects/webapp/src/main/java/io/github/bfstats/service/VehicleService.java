@@ -10,7 +10,6 @@ import ro.pippo.core.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static io.github.bfstats.dbstats.jooq.Tables.ROUND;
@@ -31,7 +30,25 @@ public class VehicleService {
   }
 
   public List<VehicleUsage> getVehicleUsages() {
-    return new ArrayList<>();
+    Result<Record4<String, String, BigDecimal, Integer>> records = getDslContext()
+        .select(
+            ROUND.GAME_CODE,
+            ROUND_PLAYER_VEHICLE.VEHICLE,
+            DSL.sum(ROUND_PLAYER_VEHICLE.DURATION_SECONDS).as("total_duration"),
+            DSL.count().as("times_used")
+        )
+        .from(ROUND_PLAYER_VEHICLE)
+        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_VEHICLE.ROUND_ID))
+        .groupBy(ROUND_PLAYER_VEHICLE.VEHICLE)
+        .orderBy(DSL.field("total_duration").desc())
+        .fetch();
+
+    int totalVehiclesDriveTimeInSeconds = records.stream()
+        .map(r -> r.get("total_duration", Integer.class))
+        .reduce(0, Integer::sum);
+
+    return records.stream().map(r -> toVehicleUsage(r, totalVehiclesDriveTimeInSeconds))
+        .collect(toList());
   }
 
   public List<VehicleUsage> getVehicleUsagesForPlayer(int playerId) {

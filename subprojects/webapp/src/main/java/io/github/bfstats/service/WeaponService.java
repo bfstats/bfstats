@@ -7,7 +7,6 @@ import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static io.github.bfstats.dbstats.jooq.Tables.ROUND;
@@ -26,7 +25,21 @@ public class WeaponService {
   }
 
   public List<WeaponUsage> getWeaponUsages() {
-    return new ArrayList<>();
+    Result<Record3<String, String, Integer>> records = getDslContext().select(ROUND.GAME_CODE, ROUND_PLAYER_DEATH.KILL_WEAPON, DSL.count().as("times_used"))
+        .from(ROUND_PLAYER_DEATH)
+        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
+        .where(ROUND_PLAYER_DEATH.KILL_WEAPON.isNotNull())
+        .groupBy(ROUND_PLAYER_DEATH.KILL_WEAPON)
+        .orderBy(DSL.count().desc())
+        .fetch();
+
+    Integer totalTimesUsed = records.stream()
+        .map(r -> r.get("times_used", Integer.class))
+        .reduce(0, Integer::sum);
+
+    return records.stream()
+        .map(r -> toWeaponUsage(r, totalTimesUsed))
+        .collect(toList());
   }
 
   public List<WeaponUsage> getWeaponUsagesForPlayer(int playerId) {

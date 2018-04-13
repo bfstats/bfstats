@@ -8,7 +8,6 @@ import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -193,7 +192,20 @@ public class KitService {
   }
 
   public List<KitUsage> getKitUsages() {
-    return new ArrayList<>();
+    Result<Record3<String, String, Integer>> records = getDslContext().select(ROUND.GAME_CODE, ROUND_PLAYER_PICKUP_KIT.KIT, DSL.count().as("times_used"))
+        .from(ROUND_PLAYER_PICKUP_KIT)
+        .innerJoin(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_PICKUP_KIT.ROUND_ID))
+        .groupBy(ROUND_PLAYER_PICKUP_KIT.KIT)
+        .orderBy(DSL.count().desc())
+        .fetch();
+
+    Integer totalTimesUsed = records.stream()
+        .map(r -> r.get("times_used", Integer.class))
+        .reduce(0, Integer::sum);
+
+    return records.stream()
+        .map(r -> toKitUsage(r, totalTimesUsed))
+        .collect(toList());
   }
 
   public List<KitUsage> getKitUsagesForPlayer(int playerId) {

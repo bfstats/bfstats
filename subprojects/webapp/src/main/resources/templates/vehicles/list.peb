@@ -3,4 +3,30 @@
 {% block title %} Vehicle List {% endblock %}
 
 {% block content %}
+<table class="styled_table">
+  <thead>
+  <tr>
+    <th><div><span class="label">#</span></div></th>
+    <th><div><span class="label">Vehicle</span></div></th>
+    <th><div><span class="label">Duration</span></div></th>
+    <th><div><span class="label">Used</span></div></th>
+    <th><div><span class="label">%</span></div></th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for vehicle in vehicles %}
+  <tr>
+    <td>{{ loop.index + 1 }}</td>
+    <td class="left"><a href="{{appPath}}/vehicles/{{ vehicle.gameCode }}/{{ vehicle.code }}">{{ vehicle.name }}</a></td>
+    <td>{{ vehicle.driveTime }}</td>
+    <td>{{ vehicle.timesUsed }}</td>
+    <td class="percent-with-meter">{{ vehicle.percentage | numberformat("0.0") }}%
+      <div class="meter">
+        <span style="width: {{ vehicle.percentage }}%"></span>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
