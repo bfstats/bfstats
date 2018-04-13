@@ -162,8 +162,12 @@ td.percent-with-meter {
 
 .styled_table.half {
   float: left;
-  width: 30%;
+  min-width: 250px;
+  width: 45%;
   margin-right: 2%;
+}
+.styled_table.half:nth-child(odd) {
+  clear: left;
 }
 
 .styled_table.sortable {
