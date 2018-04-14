@@ -87,8 +87,9 @@ public class VehicleService {
     String vehicleName = TranslationUtil.getVehicleName(gameCode, codeWithoutModifiers);
     if (code.length() > codeWithoutModifiers.length()) {
       String modifierName = code.substring(codeWithoutModifiers.length());
-      modifierName = removePCO(modifierName);
       modifierName = StringUtils.removeStart(modifierName, "_");
+      modifierName = removePCO(modifierName);
+      modifierName = withoutSeatPosition(modifierName);
       modifierName = TranslationUtil.getVehicleModifier(modifierName);
       vehicleName += " " + modifierName;
     }
@@ -115,12 +116,17 @@ public class VehicleService {
     return code;
   }
 
+  private static String withoutSeatPosition(String code) {
+    code = StringUtils.removeEnd(code, "Left");
+    code = StringUtils.removeEnd(code, "Right");
+    code = StringUtils.removeEnd(code, "_");
+    return code;
+  }
+
   // if updating this, also update translation map in TranslationUtil.getVehicleModifier
   private static String withoutModifiers(String code) {
     code = removePCO(code);
-
-    code = StringUtils.removeEnd(code, "Left");
-    code = StringUtils.removeEnd(code, "Right");
+    code = withoutSeatPosition(code);
 
     code = StringUtils.removeEnd(code, "Funner");
     code = StringUtils.removeEnd(code, "FrontGunner");
@@ -129,6 +135,7 @@ public class VehicleService {
     code = StringUtils.removeEnd(code, "Gunner");
     code = StringUtils.removeEnd(code, "ArmedPassenger");
     code = StringUtils.removeEnd(code, "Passenger2");
+    code = StringUtils.removeEnd(code, "Passenger1");
     code = StringUtils.removeEnd(code, "Passenger");
     code = StringUtils.removeEnd(code, "CoPilot");
     code = StringUtils.removeEnd(code, "MG"); // Machine gun

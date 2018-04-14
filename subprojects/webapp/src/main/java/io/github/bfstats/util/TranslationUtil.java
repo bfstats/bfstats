@@ -59,7 +59,11 @@ public class TranslationUtil {
         return "armed passenger";
       case "Passenger":
         return "passenger";
+      case "Passenger1":
       case "Passenger2":
+      case "Passenger3":
+      case "Passenger4":
+      case "Passenger5":
         return "passenger";
     }
 
