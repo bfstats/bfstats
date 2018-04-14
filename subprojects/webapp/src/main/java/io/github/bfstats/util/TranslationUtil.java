@@ -42,6 +42,8 @@ public class TranslationUtil {
   @Nonnull
   public static String getVehicleModifier(@Nonnull String vehicleModifierCode) {
     switch (vehicleModifierCode) {
+      case "Cannon":
+        return "cannon";
       case "CoPilot":
         return "co-pilot";
       case "FrontGunner":
@@ -65,6 +67,8 @@ public class TranslationUtil {
       case "Passenger4":
       case "Passenger5":
         return "passenger";
+      case "QuadMG":
+        return "Quad MG";
     }
 
     return vehicleModifierCode;

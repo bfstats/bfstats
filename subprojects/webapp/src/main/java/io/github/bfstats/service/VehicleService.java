@@ -128,16 +128,21 @@ public class VehicleService {
     code = removePCO(code);
     code = withoutSeatPosition(code);
 
+    code = StringUtils.removeEnd(code, "Cannon");
     code = StringUtils.removeEnd(code, "Funner");
     code = StringUtils.removeEnd(code, "FrontGunner");
     code = StringUtils.removeEnd(code, "RearGunner");
     code = StringUtils.removeEnd(code, "FlakGunner"); // e.g ZSU_FlakGunner_PCO1
     code = StringUtils.removeEnd(code, "Gunner");
     code = StringUtils.removeEnd(code, "ArmedPassenger");
+    code = StringUtils.removeEnd(code, "Passenger5");
+    code = StringUtils.removeEnd(code, "Passenger4");
+    code = StringUtils.removeEnd(code, "Passenger3");
     code = StringUtils.removeEnd(code, "Passenger2");
     code = StringUtils.removeEnd(code, "Passenger1");
     code = StringUtils.removeEnd(code, "Passenger");
     code = StringUtils.removeEnd(code, "CoPilot");
+    code = StringUtils.removeEnd(code, "QuadMG"); // Machine gun
     code = StringUtils.removeEnd(code, "MG"); // Machine gun
     code = StringUtils.removeEnd(code, "TOW"); // Tube-launched, Optically tracked, Wire-guided; weapon of MuttTOW = BGM-71 TOW
 
