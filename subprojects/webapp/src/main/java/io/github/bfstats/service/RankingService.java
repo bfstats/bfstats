@@ -60,7 +60,11 @@ public class RankingService {
     return value != null && value.equals(1);
   }
 
-  private static PlayerAchievements toPlayerAchievements(PlayerTopStatsRecord r) {
+  @Nonnull
+  private static PlayerAchievements toPlayerAchievements(@Nullable PlayerTopStatsRecord r) {
+    if (r == null) {
+      return new PlayerAchievements();
+    }
     Map<String, Object> achievementsMap = r.intoMap();
     achievementsMap.remove("player_id");
     long achievementsCount = achievementsMap.values().stream()
