@@ -1,7 +1,5 @@
-{% macro teamName(teamId) %}
-{{ teamId == 3 ? '[SPECTATORS] ' : '' }}
-{{ teamId == 2 ? '[USA] ' : '' }}
-{{ teamId == 1 ? '[NVA] ' : '' }}
+{% macro teamName(targetTeamName) %}
+{% if targetTeamName != null %}[{{ targetTeamName }}]{% endif %}
 {% endmacro %}
 
 {% if chatMessages is empty %}
@@ -12,7 +10,7 @@ There are no chat messages
   {% for chatMessage in chatMessages %}
   <tr class="chat-team team-{{ chatMessage.playerTeam }}">
     <td class="time"><a href="{{appPath}}/rounds/{{ chatMessage.roundId }}">{{ chatMessage.time | dt('HH:mm') }}</a></td>
-    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ chatMessage.playerId }}">{{ chatMessage.playerName }}</a> {{ teamName(chatMessage.toTeam) }}:</td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ chatMessage.playerId }}">{{ chatMessage.playerName }}</a> {{ teamName(chatMessage.targetTeamName) }}:</td>
     <td class="message left">{{ chatMessage.text }}</td>
   </tr>
   {% endfor %}

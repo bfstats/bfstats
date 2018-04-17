@@ -3,6 +3,7 @@ package io.github.bfstats.model;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,7 +14,10 @@ public class ChatMessage {
   private Location location;
   private String text;
   private LocalDateTime time;
-  private Integer toTeam;
+  @Nullable
+  private Integer targetTeamId;
+  @Nullable
+  private String targetTeamName;
   private Integer playerTeam;
   private Integer roundId;
 }

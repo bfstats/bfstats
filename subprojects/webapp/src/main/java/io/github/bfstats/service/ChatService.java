@@ -5,6 +5,7 @@ import io.github.bfstats.model.Location;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -52,15 +53,34 @@ public class ChatService {
     BigDecimal z = r.get(ROUND_CHAT_LOG.PLAYER_LOCATION_Z);
     Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
 
+    Integer targetTeamId = r.get(ROUND_CHAT_LOG.TO_TEAM);
+
     return new ChatMessage()
         .setPlayerId(r.get(ROUND_CHAT_LOG.PLAYER_ID, Integer.class))
         .setPlayerName(r.get(PLAYER.NAME, String.class))
         .setLocation(location)
         .setText(r.get(ROUND_CHAT_LOG.MESSAGE, String.class))
         .setTime(toUserZone(toLocalDateTime(eventTimeDate)))
-        .setToTeam(r.get(ROUND_CHAT_LOG.TO_TEAM))
+        .setTargetTeamId(targetTeamId)
+        .setTargetTeamName(toTeamName(targetTeamId))
         .setPlayerTeam(r.get(ROUND_PLAYER_TEAM.TEAM))
         .setRoundId(r.get(ROUND_CHAT_LOG.ROUND_ID));
+  }
+
+  @Nullable
+  private static String toTeamName(int teamId) {
+    if (teamId == 0) {
+      return null;
+    }
+    switch (teamId) {
+      case 1:
+        return "NVA";
+      case 2:
+        return "USA";
+      case 3:
+        return "SPECTATORS";
+    }
+    return "UNKNOWNTEAM" + teamId;
   }
 
   private static LocalDateTime toLocalDateTime(Date date) {
