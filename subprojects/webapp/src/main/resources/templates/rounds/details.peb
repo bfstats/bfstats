@@ -14,13 +14,6 @@
   </div>
 </div>
 
-<p>
-  {% if round.winningTeam == 1 %}<strong>{%endif%}NVA {{ round.endTicketsTeam1 }} {% if round.winningTeam == 1 %}</strong>{%endif%}
-  :
-  {% if round.winningTeam == 2 %}<strong>{%endif%}{{ round.endTicketsTeam2 }}  USA {% if round.winningTeam == 2 %}</strong>{%endif%}
-</p>
-<!--<li>Victory type: {{ round.victoryType }}</li>-->
-
 {% include "rounds/score" %}
 
 {% include "rounds/serversettings" with {"serverSettings":round.serverSettings} %}

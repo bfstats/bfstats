@@ -1,10 +1,12 @@
+{% if round.winningTeam == team %}<strong>{%endif%}
 {% if team == 1 %}
-NVA
+  NVA {{ round.endTicketsTeam1 }}
 {% endif %}
 
 {% if team == 2 %}
-USA
+USA {{ round.endTicketsTeam2 }}
 {% endif %}
+{% if round.winningTeam == team %}</strong>{%endif%}
 <table class="styled_table">
   <thead>
   <tr>
