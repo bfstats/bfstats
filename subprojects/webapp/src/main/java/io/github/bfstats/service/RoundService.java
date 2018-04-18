@@ -1,30 +1,42 @@
 package io.github.bfstats.service;
 
+import io.github.bfstats.dbstats.jooq.tables.RoundPlayerTeam;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundEndStatsPlayerRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundEndStatsRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerDeathRecord;
 import io.github.bfstats.dbstats.jooq.tables.records.RoundRecord;
 import io.github.bfstats.exceptions.NotFoundException;
-import io.github.bfstats.model.Round;
-import io.github.bfstats.model.ServerSettings;
+import io.github.bfstats.model.*;
 import io.github.bfstats.util.TranslationUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.TableField;
 import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static io.github.bfstats.dbstats.jooq.Tables.*;
 import static io.github.bfstats.util.DateTimeUtils.toUserZone;
 import static io.github.bfstats.util.DbUtils.getDslContext;
+import static java.util.Optional.ofNullable;
+import static org.jooq.impl.DSL.trueCondition;
 
 public class RoundService {
+  private static final io.github.bfstats.dbstats.jooq.tables.Player KILLER_PLAYER_TABLE = PLAYER.as("killerPlayer");
+  private static final RoundPlayerTeam KILLER_PLAYER_TEAM_TABLE = ROUND_PLAYER_TEAM.as("killerPlayerTeam");
+  private static final String KILL = "Kill";
+  private static final String TK = "TK";
+
   public List<Round> getActiveRounds(int page) {
     Map<RoundRecord, RoundEndStatsRecord> roundWithStats = getActiveRoundRecordsWithStats(page);
 
@@ -240,6 +252,151 @@ public class RoundService {
 
   public int getTotalRoundsCount() {
     return getDslContext().selectCount().from(ROUND).fetchOne(0, int.class);
+  }
+
+  public Result<Record> fetchKillRecords(String mapCode, Integer playerId, Integer roundId) {
+    return fetchDeathRecordsCommon(mapCode, playerId, roundId, true);
+  }
+
+  public Result<Record> fetchDeathRecords(String mapCode, Integer playerId, Integer roundId) {
+    return fetchDeathRecordsCommon(mapCode, playerId, roundId, false);
+  }
+
+  private Result<Record> fetchDeathRecordsCommon(String mapCode, Integer playerId, Integer roundId, boolean killer) {
+    TableField<RoundPlayerDeathRecord, Integer> playerIdField = killer ?
+        ROUND_PLAYER_DEATH.KILLER_PLAYER_ID :
+        ROUND_PLAYER_DEATH.PLAYER_ID;
+
+    return getDslContext()
+        .select(ROUND_PLAYER_DEATH.fields())
+        .select(PLAYER.NAME)
+        .select(KILLER_PLAYER_TABLE.NAME)
+        .select(ROUND_PLAYER_TEAM.TEAM)
+        .select(KILLER_PLAYER_TEAM_TABLE.TEAM)
+        .from(ROUND_PLAYER_DEATH)
+        .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
+        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_DEATH.PLAYER_ID))
+        .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_PLAYER_DEATH.ROUND_ID)
+            .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(ROUND_PLAYER_DEATH.PLAYER_ID))
+            .and(ROUND_PLAYER_DEATH.EVENT_TIME.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
+        )
+        .leftJoin(KILLER_PLAYER_TABLE).on(KILLER_PLAYER_TABLE.ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
+        .leftJoin(KILLER_PLAYER_TEAM_TABLE).on(KILLER_PLAYER_TEAM_TABLE.ROUND_ID.eq(ROUND_PLAYER_DEATH.ROUND_ID)
+            .and(KILLER_PLAYER_TEAM_TABLE.PLAYER_ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
+            .and(ROUND_PLAYER_DEATH.EVENT_TIME.between(KILLER_PLAYER_TEAM_TABLE.START_TIME, KILLER_PLAYER_TEAM_TABLE.END_TIME))
+        )
+        .where(ROUND.MAP_CODE.eq(mapCode))
+        .and(playerId == null ? playerIdField.isNotNull() : playerIdField.eq(playerId))
+        .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
+        .fetch();
+  }
+
+  public MapEvent toDeathEvent(String gameCode, Record deathRecord, Location deathLocation) {
+    BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
+    BigDecimal killerY = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
+    BigDecimal killerZ = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
+    Location killerLocation = killerX != null ?
+        new Location(killerX.floatValue(), killerY.floatValue(), killerZ.floatValue()) :
+        null;
+
+    String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
+
+    Integer killerPlayerId = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
+    Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
+    String playerName = deathRecord.get(PLAYER.NAME);
+    String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
+    Integer playerTeam = findPlayerTeam(deathRecord);
+    Integer killerPlayerTeam = findKillerTeam(deathRecord);
+
+    LocalDateTime deathTime = toUserZone(deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime());
+
+    String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
+
+    Weapon killWeapon = ofNullable(killWeaponCode)
+        .map(c -> new Weapon(gameCode, killWeaponCode, TranslationUtil.getWeaponOrVehicleName(gameCode, killWeaponCode)))
+        .orElse(null);
+
+    return new MapEvent()
+        .setLocation(deathLocation)
+        .setRelatedLocation(killerLocation)
+        .setTime(deathTime)
+        .setKillerPlayerId(killerPlayerId)
+        .setKillerPlayerName(killerPlayerName)
+        .setKillerPlayerTeam(killerPlayerTeam)
+        .setPlayerId(playerId)
+        .setPlayerName(playerName)
+        .setPlayerTeam(playerTeam)
+        .setKillWeapon(killWeapon)
+        .setKillType(killType);
+  }
+
+  public MapEvent toKillEvent(String gameCode, Record deathRecord, Location killerLocation) {
+    BigDecimal deathX = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_X);
+    BigDecimal deathY = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Y);
+    BigDecimal deathZ = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Z);
+    Location deathLocation = new Location(deathX.floatValue(), deathY.floatValue(), deathZ.floatValue());
+
+    String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
+
+    Integer killerPlayerId = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID);
+    Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
+    String playerName = deathRecord.get(PLAYER.NAME);
+    String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
+
+    Integer playerTeam = findPlayerTeam(deathRecord);
+    Integer killerPlayerTeam = findKillerTeam(deathRecord);
+
+    LocalDateTime deathTime = toUserZone(deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime());
+    String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
+
+    Weapon killWeapon = ofNullable(killWeaponCode)
+        .map(c -> new Weapon(gameCode, killWeaponCode, TranslationUtil.getWeaponOrVehicleName(gameCode, killWeaponCode)))
+        .orElse(null);
+
+    return new MapEvent()
+        .setLocation(killerLocation)
+        .setRelatedLocation(deathLocation)
+        .setTime(deathTime)
+        .setKillerPlayerId(killerPlayerId)
+        .setKillerPlayerName(killerPlayerName)
+        .setKillerPlayerTeam(killerPlayerTeam)
+        .setPlayerId(playerId)
+        .setPlayerName(playerName)
+        .setPlayerTeam(playerTeam)
+        .setKillWeapon(killWeapon)
+        .setKillType(killType);
+  }
+
+  private static Integer findPlayerTeam(Record deathRecord) {
+    Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
+    if (playerTeam == null && deathRecord.get(PLAYER.NAME) != null) {
+      String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
+      // we don't store bot team, so guessing it instead
+      if (KILL.equals(killType)) {
+        Integer killerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
+        playerTeam = Objects.equals(killerTeam, 1) ? 2 : 1;
+      } else if (TK.equals(killType)) {
+        Integer killerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
+        playerTeam = Objects.equals(killerTeam, 1) ? 1 : 2;
+      }
+    }
+    return playerTeam;
+  }
+
+  private static Integer findKillerTeam(Record deathRecord) {
+    Integer killerPlayerTeam = deathRecord.get(KILLER_PLAYER_TEAM_TABLE.TEAM);
+    if (killerPlayerTeam == null && deathRecord.get(KILLER_PLAYER_TABLE.NAME) != null) {
+      String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
+      // we don't store bot team, so guessing it instead
+      if (KILL.equals(killType)) {
+        Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
+        killerPlayerTeam = Objects.equals(playerTeam, 1) ? 2 : 1;
+      } else if (TK.equals(killType)) {
+        Integer playerTeam = deathRecord.get(ROUND_PLAYER_TEAM.TEAM);
+        killerPlayerTeam = Objects.equals(playerTeam, 1) ? 1 : 2;
+      }
+    }
+    return killerPlayerTeam;
   }
 
   @Data
