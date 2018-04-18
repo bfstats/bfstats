@@ -4,6 +4,9 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+
+import static java.util.Optional.ofNullable;
 
 @Data
 @Accessors(chain = true)
@@ -26,5 +29,32 @@ public class RoundEvent {
     }
 
     return getLocation().distance(getRelatedLocation());
+  }
+
+  public Integer getTeam() {
+    if (getKillerPlayerName() == null) {
+      return 0;
+    }
+    return killerPlayerTeam;
+  }
+
+  public Integer getKillerOrDeathPlayerId() {
+    return getKillerPlayerId() != null ? getKillerPlayerId() : getPlayerId();
+  }
+
+  public String killerOrDeathPlayerName() {
+    return getKillerPlayerName() != null ? getKillerPlayerName() : getPlayerName();
+  }
+
+  public String getMessage() {
+    String killWeaponName = ofNullable(getKillWeapon()).map(Weapon::getName).orElse("killed");
+
+    if (getKillerPlayerId() == null) {
+      return "is no more";
+    } else {
+      String distance = String.format("%.0f", Math.floor(getDistance()));
+      String teamKill = Objects.equals(getKillerPlayerTeam(), getPlayerTeam()) ? " TK" : "";
+      return "[" + killWeaponName + "] " + getPlayerName() + " (" + distance + ")" + teamKill;
+    }
   }
 }
