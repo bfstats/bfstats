@@ -5,7 +5,7 @@ There are no round events
   <tbody>
   {% for roundEvent in roundEvents %}
   <tr class="chat-team team-{{ roundEvent.killerOrDeathTeamId }}">
-    <td class="time">{{ roundEvent.time | dt('HH:mm') }}</td>
+    <td class="time">{{ roundEvent.time | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ roundEvent.killerOrDeathPlayerId }}">{{ roundEvent.killerOrDeathPlayerName }}</a></td>
     <td class="message left">{{ roundEvent.message }}</td>
   </tr>
