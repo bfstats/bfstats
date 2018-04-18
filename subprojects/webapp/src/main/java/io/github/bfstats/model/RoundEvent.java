@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Accessors(chain = true)
-public class MapEvent {
+public class RoundEvent {
   private Location location;
   private Location relatedLocation;
   private LocalDateTime time;

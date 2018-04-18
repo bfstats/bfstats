@@ -291,7 +291,7 @@ public class RoundService {
         .fetch();
   }
 
-  public MapEvent toDeathEvent(String gameCode, Record deathRecord, Location deathLocation) {
+  public RoundEvent toDeathEvent(String gameCode, Record deathRecord, Location deathLocation) {
     BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
     BigDecimal killerY = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
     BigDecimal killerZ = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
@@ -316,7 +316,7 @@ public class RoundService {
         .map(c -> new Weapon(gameCode, killWeaponCode, TranslationUtil.getWeaponOrVehicleName(gameCode, killWeaponCode)))
         .orElse(null);
 
-    return new MapEvent()
+    return new RoundEvent()
         .setLocation(deathLocation)
         .setRelatedLocation(killerLocation)
         .setTime(deathTime)
@@ -330,7 +330,7 @@ public class RoundService {
         .setKillType(killType);
   }
 
-  public MapEvent toKillEvent(String gameCode, Record deathRecord, Location killerLocation) {
+  public RoundEvent toKillEvent(String gameCode, Record deathRecord, Location killerLocation) {
     BigDecimal deathX = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_X);
     BigDecimal deathY = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Y);
     BigDecimal deathZ = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Z);
@@ -353,7 +353,7 @@ public class RoundService {
         .map(c -> new Weapon(gameCode, killWeaponCode, TranslationUtil.getWeaponOrVehicleName(gameCode, killWeaponCode)))
         .orElse(null);
 
-    return new MapEvent()
+    return new RoundEvent()
         .setLocation(killerLocation)
         .setRelatedLocation(deathLocation)
         .setTime(deathTime)

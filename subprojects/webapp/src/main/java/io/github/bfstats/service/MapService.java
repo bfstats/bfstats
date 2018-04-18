@@ -73,7 +73,7 @@ public class MapService {
       feature.geometry = new PointGeometry(new float[]{killerLocation.getX(), killerLocation.getZ()});
 
       if (withProps) {
-        MapEvent killEvent = roundService.toKillEvent(gameCode, deathRecord, killerLocation);
+        RoundEvent killEvent = roundService.toKillEvent(gameCode, deathRecord, killerLocation);
         feature.properties = createProps(killEvent, true);
       }
 
@@ -92,7 +92,7 @@ public class MapService {
       feature.geometry = new PointGeometry(new float[]{deathLocation.getX(), deathLocation.getZ()});
 
       if (withProps) {
-        MapEvent deathEvent = roundService.toDeathEvent(gameCode, deathRecord, deathLocation);
+        RoundEvent deathEvent = roundService.toDeathEvent(gameCode, deathRecord, deathLocation);
         feature.properties = createProps(deathEvent, false);
       }
 
@@ -113,36 +113,36 @@ public class MapService {
   }
 
 
-  private static String createPopupContent(@Nonnull MapEvent mapEvent, boolean kill) {
-    String time = mapEvent.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME);
+  private static String createPopupContent(@Nonnull RoundEvent roundEvent, boolean kill) {
+    String time = roundEvent.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME);
 
-    String killWeaponName = ofNullable(mapEvent.getKillWeapon()).map(Weapon::getName).orElse("killed");
+    String killWeaponName = ofNullable(roundEvent.getKillWeapon()).map(Weapon::getName).orElse("killed");
 
     String styleBold = "style='font-weight: bold;font-size:1.2em'";
 
-    if (mapEvent.getKillerPlayerName() == null) {
-      String victim = String.format("<span class='name team-%d'" + (!kill ? styleBold : "") + ">%s</span> died", mapEvent.getPlayerTeam(), mapEvent.getPlayerName());
+    if (roundEvent.getKillerPlayerName() == null) {
+      String victim = String.format("<span class='name team-%d'" + (!kill ? styleBold : "") + ">%s</span> died", roundEvent.getPlayerTeam(), roundEvent.getPlayerName());
       return String.format("%s %s", time, victim);
     } else {
-      String killer = String.format("<span class='name team-%d'" + (kill ? styleBold : "") + ">%s</span>", mapEvent.getKillerPlayerTeam(), mapEvent.getKillerPlayerName());
-      String victim = String.format("<span class='name team-%d'" + (!kill ? styleBold : "") + ">%s</span>", mapEvent.getPlayerTeam(), mapEvent.getPlayerName());
+      String killer = String.format("<span class='name team-%d'" + (kill ? styleBold : "") + ">%s</span>", roundEvent.getKillerPlayerTeam(), roundEvent.getKillerPlayerName());
+      String victim = String.format("<span class='name team-%d'" + (!kill ? styleBold : "") + ">%s</span>", roundEvent.getPlayerTeam(), roundEvent.getPlayerName());
 
-      String cssClass = "team-color-" + mapEvent.getKillerPlayerTeam();
-      String distance = String.format("%.0f", Math.floor(mapEvent.getDistance()));
+      String cssClass = "team-color-" + roundEvent.getKillerPlayerTeam();
+      String distance = String.format("%.0f", Math.floor(roundEvent.getDistance()));
       return String.format("<span class='%s'>%s [%s] %s<br>%s (%s meters)</span>", cssClass, killer, killWeaponName, victim, time, distance);
     }
   }
 
-  private static Map<String, Object> createProps(@Nonnull MapEvent mapEvent, boolean kill) {
+  private static Map<String, Object> createProps(@Nonnull RoundEvent roundEvent, boolean kill) {
     Map<String, Object> props = new HashMap<>();
     props.put("type", kill ? "kill" : "death");
-    props.put("time", mapEvent.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME));
-    props.put("killerName", mapEvent.getKillerPlayerName());
-    props.put("killerTeam", mapEvent.getKillerPlayerTeam());
-    props.put("killWeaponName", ofNullable(mapEvent.getKillWeapon()).map(Weapon::getName).orElse(null));
-    props.put("victimName", mapEvent.getPlayerName());
-    props.put("victimTeam", mapEvent.getPlayerTeam());
-    props.put("popupContent", createPopupContent(mapEvent, kill));
+    props.put("time", roundEvent.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME));
+    props.put("killerName", roundEvent.getKillerPlayerName());
+    props.put("killerTeam", roundEvent.getKillerPlayerTeam());
+    props.put("killWeaponName", ofNullable(roundEvent.getKillWeapon()).map(Weapon::getName).orElse(null));
+    props.put("victimName", roundEvent.getPlayerName());
+    props.put("victimTeam", roundEvent.getPlayerTeam());
+    props.put("popupContent", createPopupContent(roundEvent, kill));
     return props;
   }
 
