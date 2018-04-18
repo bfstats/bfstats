@@ -76,11 +76,14 @@ public class RoundController extends Controller {
     BasicMapInfo basicMapInfo = mapService.getBasicMapInfo(round.getGameCode(), round.getMapCode());
     List<ChatMessage> chatMessages = chatService.getChatMessages(roundId, 1);
 
+    List<RoundEvent> roundEvents = roundService.getRoundEvents(round.getGameCode(), roundId);
+
     getResponse()
         .bind("round", round)
         .bind("playerStats", roundPlayerStats)
         .bind("map", basicMapInfo)
         .bind("chatMessages", chatMessages)
+        .bind("roundEvents", roundEvents)
         .render("rounds/details");
   }
 

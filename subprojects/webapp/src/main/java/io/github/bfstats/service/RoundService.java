@@ -23,12 +23,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static io.github.bfstats.dbstats.jooq.Tables.*;
 import static io.github.bfstats.util.DateTimeUtils.toUserZone;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 import static org.jooq.impl.DSL.trueCondition;
 
 public class RoundService {
@@ -42,7 +42,7 @@ public class RoundService {
 
     return roundWithStats.entrySet().stream()
         .map(e -> toRound(e.getKey(), e.getValue()))
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   private static Map<RoundRecord, RoundEndStatsRecord> getActiveRoundRecordsWithStats(int page) {
@@ -68,7 +68,7 @@ public class RoundService {
 
     return roundWithStats.entrySet().stream()
         .map(e -> toRound(e.getKey(), e.getValue()))
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   private static Map<RoundRecord, RoundEndStatsRecord> getRoundRecordsWithStatsByGameId(int gameId) {
@@ -90,7 +90,7 @@ public class RoundService {
 
     return roundWithStats.entrySet().stream()
         .map(e -> toRound(e.getKey(), e.getValue()))
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   public Round getRound(int roundId) {
@@ -128,7 +128,7 @@ public class RoundService {
 
     return roundWithStats.entrySet().stream()
         .map(e -> toRound(e.getKey(), e.getValue()))
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   private static Map<RoundRecord, RoundEndStatsRecord> getRoundRecordsWithStatsForPlayer(int playerId) {
@@ -223,7 +223,7 @@ public class RoundService {
         .fetch();
 
     return roundEndStatsRecords.stream().map(RoundService::toRoundPlayerStats)
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   private static RoundPlayerStats toRoundPlayerStats(RoundEndStatsPlayerRecord r) {
@@ -254,6 +254,13 @@ public class RoundService {
     return getDslContext().selectCount().from(ROUND).fetchOne(0, int.class);
   }
 
+  public List<RoundEvent> getRoundEvents(String gameCode, int roundId) {
+    Result<Record> records = fetchDeathRecords(null, null, roundId);
+    return records.stream()
+        .map(r -> toDeathEvent(gameCode, r))
+        .collect(toList());
+  }
+
   public Result<Record> fetchKillRecords(String mapCode, Integer playerId, Integer roundId) {
     return fetchDeathRecordsCommon(mapCode, playerId, roundId, true);
   }
@@ -263,6 +270,9 @@ public class RoundService {
   }
 
   private Result<Record> fetchDeathRecordsCommon(String mapCode, Integer playerId, Integer roundId, boolean killer) {
+    if (mapCode == null && roundId == null) {
+      throw new IllegalArgumentException("Either mapCode or roundId has to be set");
+    }
     TableField<RoundPlayerDeathRecord, Integer> playerIdField = killer ?
         ROUND_PLAYER_DEATH.KILLER_PLAYER_ID :
         ROUND_PLAYER_DEATH.PLAYER_ID;
@@ -285,7 +295,7 @@ public class RoundService {
             .and(KILLER_PLAYER_TEAM_TABLE.PLAYER_ID.eq(ROUND_PLAYER_DEATH.KILLER_PLAYER_ID))
             .and(ROUND_PLAYER_DEATH.EVENT_TIME.between(KILLER_PLAYER_TEAM_TABLE.START_TIME, KILLER_PLAYER_TEAM_TABLE.END_TIME))
         )
-        .where(ROUND.MAP_CODE.eq(mapCode))
+        .where(mapCode == null ? trueCondition() : ROUND.MAP_CODE.eq(mapCode))
         .and(playerId == null ? playerIdField.isNotNull() : playerIdField.eq(playerId))
         .and(roundId == null ? trueCondition() : ROUND_PLAYER_DEATH.ROUND_ID.eq(roundId))
         .fetch();
