@@ -31,11 +31,8 @@ public class RoundEvent {
     return getLocation().distance(getRelatedLocation());
   }
 
-  public Integer getTeam() {
-    if (getKillerPlayerName() == null) {
-      return 0;
-    }
-    return killerPlayerTeam;
+  public Integer getKillerOrDeathTeamId() {
+    return getKillerPlayerTeam() != null ? getKillerPlayerTeam() : getPlayerTeam();
   }
 
   public Integer getKillerOrDeathPlayerId() {
