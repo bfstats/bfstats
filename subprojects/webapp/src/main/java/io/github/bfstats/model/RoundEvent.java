@@ -54,7 +54,7 @@ public class RoundEvent {
     } else {
       String distance = String.format("%.0f", Math.floor(getDistance()));
       String teamKill = Objects.equals(getKillerPlayerTeam(), getPlayerTeam()) ? " TK" : "";
-      return "[" + killWeaponName + "] " + getPlayerName() + " (" + distance + ")" + teamKill;
+      return "[" + killWeaponName + "] " + getPlayerName() + " (" + distance + " meters)" + teamKill;
     }
   }
 }

@@ -78,6 +78,8 @@ public class RoundController extends Controller {
 
     List<RoundEvent> roundEvents = roundService.getRoundEvents(round.getGameCode(), roundId);
 
+    // TODO: mix chatMessages and roundEvents together
+
     getResponse()
         .bind("round", round)
         .bind("playerStats", roundPlayerStats)

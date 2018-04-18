@@ -12,6 +12,10 @@
   <div style="overflow-y: auto; max-height: 400px;">
     {% include "fragments/chat" %}
   </div>
+
+  <div style="overflow-y: auto; max-height: 400px;">
+    {% include "fragments/events" %}
+  </div>
 </div>
 
 {% include "rounds/score" %}

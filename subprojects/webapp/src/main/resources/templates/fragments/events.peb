@@ -1,0 +1,15 @@
+{% if roundEvents is empty %}
+There are no round events
+{% else %}
+<table class="styled_table chat_table" style="margin: 0 0 10px 0">
+  <tbody>
+  {% for roundEvent in roundEvents %}
+  <tr class="chat-team team-{{ roundEvent.team }}">
+    <td class="time">{{ roundEvent.time | dt('HH:mm') }}</td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ roundEvent.killerOrDeathPlayerId }}">{{ roundEvent.killerOrDeathPlayerName }}</a></td>
+    <td class="message left">{{ roundEvent.message }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
