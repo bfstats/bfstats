@@ -64,16 +64,13 @@ public class MapService {
   private MapEvents toMapEvents(String gameCode, String mapCode, Result<Record> killRecords, Result<Record> deathRecords, boolean withProps) {
     Collection<Feature> killFeatures = new ArrayList<>();
     for (Record deathRecord : killRecords) {
-      BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
-      BigDecimal killerY = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
-      BigDecimal killerZ = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
-      Location killerLocation = new Location(killerX.floatValue(), killerY.floatValue(), killerZ.floatValue());
+      Location killerLocation = RoundService.toKillerLocation(deathRecord);
 
       Feature feature = new Feature();
       feature.geometry = new PointGeometry(new float[]{killerLocation.getX(), killerLocation.getZ()});
 
       if (withProps) {
-        RoundEvent killEvent = roundService.toKillEvent(gameCode, deathRecord, killerLocation);
+        RoundEvent killEvent = RoundService.toKillEvent(gameCode, deathRecord);
         feature.properties = createProps(killEvent, true);
       }
 
@@ -83,16 +80,13 @@ public class MapService {
 
     Collection<Feature> deathFeatures = new ArrayList<>();
     for (Record deathRecord : deathRecords) {
-      BigDecimal deathX = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_X);
-      BigDecimal deathY = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Y);
-      BigDecimal deathZ = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Z);
-      Location deathLocation = new Location(deathX.floatValue(), deathY.floatValue(), deathZ.floatValue());
+      Location deathLocation = RoundService.toDeathLocation(deathRecord);
 
       Feature feature = new Feature();
       feature.geometry = new PointGeometry(new float[]{deathLocation.getX(), deathLocation.getZ()});
 
       if (withProps) {
-        RoundEvent deathEvent = roundService.toDeathEvent(gameCode, deathRecord, deathLocation);
+        RoundEvent deathEvent = RoundService.toDeathEvent(gameCode, deathRecord);
         feature.properties = createProps(deathEvent, false);
       }
 
@@ -111,7 +105,6 @@ public class MapService {
         .setKillFeatureCollection(killFeatureCollection)
         .setDeathFeatureCollection(deathFeatureCollection);
   }
-
 
   private static String createPopupContent(@Nonnull RoundEvent roundEvent, boolean kill) {
     String time = roundEvent.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME);

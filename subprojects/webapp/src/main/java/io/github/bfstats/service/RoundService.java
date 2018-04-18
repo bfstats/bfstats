@@ -291,7 +291,8 @@ public class RoundService {
         .fetch();
   }
 
-  public RoundEvent toDeathEvent(String gameCode, Record deathRecord, Location deathLocation) {
+  public static RoundEvent toDeathEvent(String gameCode, Record deathRecord) {
+    Location deathLocation = toDeathLocation(deathRecord);
     BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
     BigDecimal killerY = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
     BigDecimal killerZ = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
@@ -330,11 +331,23 @@ public class RoundService {
         .setKillType(killType);
   }
 
-  public RoundEvent toKillEvent(String gameCode, Record deathRecord, Location killerLocation) {
+  public static Location toDeathLocation(Record deathRecord) {
     BigDecimal deathX = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_X);
     BigDecimal deathY = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Y);
     BigDecimal deathZ = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_LOCATION_Z);
-    Location deathLocation = new Location(deathX.floatValue(), deathY.floatValue(), deathZ.floatValue());
+    return new Location(deathX.floatValue(), deathY.floatValue(), deathZ.floatValue());
+  }
+
+  public static Location toKillerLocation(Record deathRecord) {
+    BigDecimal killerX = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_X);
+    BigDecimal killerY = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Y);
+    BigDecimal killerZ = deathRecord.get(ROUND_PLAYER_DEATH.KILLER_LOCATION_Z);
+    return new Location(killerX.floatValue(), killerY.floatValue(), killerZ.floatValue());
+  }
+
+  public static RoundEvent toKillEvent(String gameCode, Record deathRecord) {
+    Location killerLocation = RoundService.toKillerLocation(deathRecord);
+    Location deathLocation = toDeathLocation(deathRecord);
 
     String killType = deathRecord.get(ROUND_PLAYER_DEATH.KILL_TYPE);
 
