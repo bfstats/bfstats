@@ -77,30 +77,35 @@ public class VehicleService {
 
   private static VehicleUsage toVehicleUsage(Record r, int totalVehiclesDriveTimeInSeconds) {
     int driveTime = r.get("total_duration", Integer.class);
-    String code = r.get(ROUND_PLAYER_VEHICLE.VEHICLE);
+    String vehicleCode = r.get(ROUND_PLAYER_VEHICLE.VEHICLE);
     String gameCode = r.get(ROUND.GAME_CODE);
-    String codeWithoutModifiers = withoutModifiers(code);
+    String vehicleName = vehicleNameAndSeat(gameCode, vehicleCode);
+
+    return new VehicleUsage()
+        .setGameCode(gameCode)
+        .setCode(vehicleCode)
+        .setName(vehicleName)
+        .setDriveTime(convertSecondsToLocalTime(driveTime).format(HM_FORMAT)) // seconds
+        .setPercentage(percentage(driveTime, totalVehiclesDriveTimeInSeconds))
+        .setTimesUsed(r.get("times_used", Integer.class));
+  }
+
+  public static String vehicleNameAndSeat(String gameCode, String vehicleCode) {
+    String codeWithoutModifiers = withoutModifiers(vehicleCode);
     if (codeWithoutModifiers.isEmpty()) {
-      codeWithoutModifiers = code;
+      codeWithoutModifiers = vehicleCode;
     }
 
     String vehicleName = TranslationUtil.getVehicleName(gameCode, codeWithoutModifiers);
-    if (code.length() > codeWithoutModifiers.length()) {
-      String modifierName = code.substring(codeWithoutModifiers.length());
+    if (vehicleCode.length() > codeWithoutModifiers.length()) {
+      String modifierName = vehicleCode.substring(codeWithoutModifiers.length());
       modifierName = StringUtils.removeStart(modifierName, "_");
       modifierName = removePCO(modifierName);
       modifierName = withoutSeatPosition(modifierName);
       modifierName = TranslationUtil.getVehicleModifier(modifierName);
       vehicleName += " " + modifierName;
     }
-
-    return new VehicleUsage()
-        .setGameCode(gameCode)
-        .setCode(code)
-        .setName(vehicleName)
-        .setDriveTime(convertSecondsToLocalTime(driveTime).format(HM_FORMAT)) // seconds
-        .setPercentage(percentage(driveTime, totalVehiclesDriveTimeInSeconds))
-        .setTimesUsed(r.get("times_used", Integer.class));
+    return vehicleName;
   }
 
   private static String removePCO(String code) {
