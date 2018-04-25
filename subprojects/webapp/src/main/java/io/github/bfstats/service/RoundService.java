@@ -261,6 +261,56 @@ public class RoundService {
         .collect(toList());
   }
 
+  public List<ScoreEvent> getScoreEvents(int roundId) {
+    return fetchScoreEvents(null, null, roundId).stream()
+        .map(RoundService::toScoreEvent)
+        .collect(toList());
+  }
+
+  public List<Record> fetchScoreEvents(String mapCode, Integer playerId, Integer roundId) {
+    if (mapCode == null && roundId == null) {
+      throw new IllegalArgumentException("Either mapCode or roundId has to be set");
+    }
+    return getDslContext()
+        .select(ROUND_PLAYER_SCORE_EVENT.fields())
+        .select(PLAYER.NAME)
+        .select(ROUND_PLAYER_TEAM.TEAM)
+        .from(ROUND_PLAYER_SCORE_EVENT)
+        .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_SCORE_EVENT.ROUND_ID))
+        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_SCORE_EVENT.PLAYER_ID))
+        .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_PLAYER_SCORE_EVENT.ROUND_ID)
+            .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(ROUND_PLAYER_SCORE_EVENT.PLAYER_ID))
+            .and(ROUND_PLAYER_SCORE_EVENT.EVENT_TIME.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
+        )
+        .where(mapCode == null ? trueCondition() : ROUND.MAP_CODE.eq(mapCode))
+        .and(playerId == null ? trueCondition() : ROUND_PLAYER_SCORE_EVENT.PLAYER_ID.eq(playerId))
+        .and(roundId == null ? trueCondition() : ROUND_PLAYER_SCORE_EVENT.ROUND_ID.eq(roundId))
+        .fetch();
+  }
+
+  private static ScoreEvent toScoreEvent(Record scoreRecord) {
+    BigDecimal playerX = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.PLAYER_LOCATION_X);
+    BigDecimal playerY = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.PLAYER_LOCATION_Y);
+    BigDecimal playerZ = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.PLAYER_LOCATION_Z);
+    Location location = new Location(playerX.floatValue(), playerY.floatValue(), playerZ.floatValue());
+
+    Integer playerId = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.PLAYER_ID);
+    String playerName = scoreRecord.get(PLAYER.NAME);
+    Integer playerTeam = scoreRecord.get(ROUND_PLAYER_TEAM.TEAM);
+
+    String scoreType = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.SCORE_TYPE);
+
+    LocalDateTime eventTime = toUserZone(scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.EVENT_TIME).toLocalDateTime());
+
+    return new ScoreEvent()
+        .setLocation(location)
+        .setTime(eventTime)
+        .setPlayerId(playerId)
+        .setPlayerName(playerName)
+        .setPlayerTeam(playerTeam)
+        .setScoreType(scoreType); // FlagCapture, Defence
+  }
+
   public Result<Record> fetchKillRecords(String mapCode, Integer playerId, Integer roundId) {
     return fetchDeathRecordsCommon(mapCode, playerId, roundId, true);
   }

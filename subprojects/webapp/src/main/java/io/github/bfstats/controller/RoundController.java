@@ -78,7 +78,12 @@ public class RoundController extends Controller {
 
     List<RoundEvent> roundEvents = roundService.getRoundEvents(round.getGameCode(), roundId);
 
+    List<ScoreEvent> scoreEvents = roundService.getScoreEvents(roundId);
     // TODO: mix chatMessages and roundEvents together
+    //* player join/disconnect
+    //* vehicle start-end?
+    //* player spawn (kit, team)
+    //* heal/repair
 
     getResponse()
         .bind("round", round)
@@ -86,6 +91,7 @@ public class RoundController extends Controller {
         .bind("map", basicMapInfo)
         .bind("chatMessages", chatMessages)
         .bind("roundEvents", roundEvents)
+        .bind("scoreEvents", scoreEvents)
         .render("rounds/details");
   }
 

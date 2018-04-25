@@ -13,3 +13,20 @@ There are no round events
   </tbody>
 </table>
 {% endif %}
+
+{% if scoreEvents is empty %}
+There are no score events
+{% else %}
+<table class="styled_table chat_table" style="margin: 0 0 10px 0">
+  <tbody>
+  {% for scoreEvent in scoreEvents %}
+  <tr class="chat-team team-{{ scoreEvent.playerTeam }}">
+    <td class="time">{{ scoreEvent.time | dt('HH:mm:ss') }}</td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ scoreEvent.playerId }}">{{ scoreEvent.playerName }}</a></td>
+    <td class="message left">{{ scoreEvent.scoreType }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
