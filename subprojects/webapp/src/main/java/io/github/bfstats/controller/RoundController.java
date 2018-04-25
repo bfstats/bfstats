@@ -81,11 +81,11 @@ public class RoundController extends Controller {
     List<ScoreEvent> scoreEvents = roundService.getScoreEvents(roundId);
     List<VehicleEvent> vehicleEvents = roundService.getVehicleEvents(round.getGameCode(), roundId);
     List<RepairEvent> repairEvents = roundService.getRepairEvents(round.getGameCode(), roundId);
+    List<MedPackEvent> medPackEvents = roundService.getMedPackEvents(round.getGameCode(), roundId);
 
     // TODO: mix chatMessages and roundEvents together
     //* player join/disconnect
     //* player spawn (kit, team)
-    //* heal
 
     getResponse()
         .bind("round", round)
@@ -96,6 +96,7 @@ public class RoundController extends Controller {
         .bind("scoreEvents", scoreEvents)
         .bind("vehicleEvents", vehicleEvents)
         .bind("repairEvents", repairEvents)
+        .bind("medPackEvents", medPackEvents)
         .render("rounds/details");
   }
 

@@ -366,6 +366,64 @@ public class RoundService {
         .setVehicleName(vehicleName);
   }
 
+  public List<MedPackEvent> getMedPackEvents(String gameCode, int roundId) {
+    return fetchMedPackRecords(null, null, roundId).stream()
+        .map(r -> toMedPackEvent(gameCode, r))
+        .collect(toList());
+  }
+
+  private List<Record> fetchMedPackRecords(String mapCode, Integer playerId, Integer roundId) {
+    EventTableDescriptor<RoundPlayerMedpackRecord> eventTableDescriptor = new EventTableDescriptor<>(
+        ROUND_PLAYER_MEDPACK,
+        ROUND_PLAYER_MEDPACK.ROUND_ID,
+        ROUND_PLAYER_MEDPACK.PLAYER_ID,
+        ROUND_PLAYER_MEDPACK.START_TIME
+    );
+    return fetchEventRecords(mapCode, playerId, roundId, eventTableDescriptor);
+  }
+
+  private static MedPackEvent toMedPackEvent(String gameCode, Record medPackRecord) {
+    BigDecimal playerX = medPackRecord.get(ROUND_PLAYER_MEDPACK.PLAYER_LOCATION_X);
+    BigDecimal playerY = medPackRecord.get(ROUND_PLAYER_MEDPACK.PLAYER_LOCATION_Y);
+    BigDecimal playerZ = medPackRecord.get(ROUND_PLAYER_MEDPACK.PLAYER_LOCATION_Z);
+    Location startLocation = new Location(playerX.floatValue(), playerY.floatValue(), playerZ.floatValue());
+
+    Integer playerId = medPackRecord.get(ROUND_PLAYER_MEDPACK.PLAYER_ID);
+    String playerName = medPackRecord.get(PLAYER.NAME);
+    Integer playerTeam = medPackRecord.get(ROUND_PLAYER_TEAM.TEAM);
+
+    LocalDateTime startTime = toUserZone(medPackRecord.get(ROUND_PLAYER_MEDPACK.START_TIME).toLocalDateTime());
+    LocalDateTime endTime = toUserZone(medPackRecord.get(ROUND_PLAYER_MEDPACK.END_TIME).toLocalDateTime());
+    Integer durationSeconds = medPackRecord.get(ROUND_PLAYER_MEDPACK.DURATION_SECONDS);
+
+    Integer startMedPackStatus = medPackRecord.get(ROUND_PLAYER_MEDPACK.START_MEDPACK_STATUS);
+    //  endMedPackStatus can be null because it might've ended with death event
+    Integer endMedPackStatus = medPackRecord.get(ROUND_PLAYER_MEDPACK.END_MEDPACK_STATUS);
+    Integer usedMedPackPoints = ofNullable(endMedPackStatus)
+        .map(end -> Math.abs(startMedPackStatus - end))
+        .orElse(null);
+
+    Integer healedPlayerId = medPackRecord.get(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID); // not null
+
+    BigDecimal endPlayerX = medPackRecord.get(ROUND_PLAYER_MEDPACK.END_PLAYER_LOCATION_X);
+    BigDecimal endPlayerY = medPackRecord.get(ROUND_PLAYER_MEDPACK.END_PLAYER_LOCATION_Y);
+    BigDecimal endPlayerZ = medPackRecord.get(ROUND_PLAYER_MEDPACK.END_PLAYER_LOCATION_Z);
+    if (endPlayerX != null) {
+      Location endLocation = new Location(endPlayerX.floatValue(), endPlayerY.floatValue(), endPlayerZ.floatValue());
+    }
+
+    return new MedPackEvent()
+        .setStartLocation(startLocation)
+        .setPlayerId(playerId)
+        .setPlayerName(playerName)
+        .setPlayerTeam(playerTeam)
+        .setStartTime(startTime)
+        .setEndTime(endTime)
+        .setDurationSeconds(durationSeconds)
+        .setUsedMedPackPoints(usedMedPackPoints)
+        .setHealedPlayerId(healedPlayerId);
+  }
+
   public List<RepairEvent> getRepairEvents(String gameCode, int roundId) {
     return fetchRepairRecords(null, null, roundId).stream()
         .map(r -> toRepairEvent(gameCode, r))

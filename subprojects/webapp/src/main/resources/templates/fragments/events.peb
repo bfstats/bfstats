@@ -61,3 +61,26 @@ There are no repair events
   </tbody>
 </table>
 {% endif %}
+
+
+{% if medPackEvents is empty %}
+There are no healing events
+{% else %}
+<table class="styled_table chat_table" style="margin: 0 0 10px 0">
+  <tbody>
+  {% for medPackEvent in medPackEvents %}
+  <tr class="chat-team team-{{ medPackEvent.playerTeam }}">
+    <td class="time">{{ medPackEvent.startTime | dt('HH:mm:ss') }}</td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ medPackEvent.playerId }}">{{ medPackEvent.playerName }}</a></td>
+    <td class="message left">
+      {% if medPackEvent.healedPlayerId == medPackEvent.playerId %}
+      Self-healed
+      {% else %}
+      Healed player {{ medPackEvent.healedPlayerId}}
+      {% endif %}
+      for {{ medPackEvent.durationSeconds }} seconds</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
