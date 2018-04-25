@@ -262,12 +262,12 @@ public class RoundService {
   }
 
   public List<ScoreEvent> getScoreEvents(int roundId) {
-    return fetchScoreEvents(null, null, roundId).stream()
+    return fetchScoreEventRecords(null, null, roundId).stream()
         .map(RoundService::toScoreEvent)
         .collect(toList());
   }
 
-  public List<Record> fetchScoreEvents(String mapCode, Integer playerId, Integer roundId) {
+  public List<Record> fetchScoreEventRecords(String mapCode, Integer playerId, Integer roundId) {
     if (mapCode == null && roundId == null) {
       throw new IllegalArgumentException("Either mapCode or roundId has to be set");
     }
@@ -309,6 +309,62 @@ public class RoundService {
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
         .setScoreType(scoreType); // FlagCapture, Defence
+  }
+
+  public List<VehicleEvent> getVehicleEvents(String gameCode, int roundId) {
+    return fetchVehicleEventRecords(null, null, roundId).stream()
+        .map(r -> toVehicleEvent(gameCode, r))
+        .collect(toList());
+  }
+
+  public List<Record> fetchVehicleEventRecords(String mapCode, Integer playerId, Integer roundId) {
+    if (mapCode == null && roundId == null) {
+      throw new IllegalArgumentException("Either mapCode or roundId has to be set");
+    }
+    return getDslContext()
+        .select(ROUND_PLAYER_VEHICLE.fields())
+        .select(PLAYER.NAME)
+        .select(ROUND_PLAYER_TEAM.TEAM)
+        .from(ROUND_PLAYER_VEHICLE)
+        .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_VEHICLE.ROUND_ID))
+        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_VEHICLE.PLAYER_ID))
+        .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_PLAYER_VEHICLE.ROUND_ID)
+            .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(ROUND_PLAYER_VEHICLE.PLAYER_ID))
+            .and(ROUND_PLAYER_VEHICLE.START_TIME.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
+        )
+        .where(mapCode == null ? trueCondition() : ROUND.MAP_CODE.eq(mapCode))
+        .and(playerId == null ? trueCondition() : ROUND_PLAYER_VEHICLE.PLAYER_ID.eq(playerId))
+        .and(roundId == null ? trueCondition() : ROUND_PLAYER_VEHICLE.ROUND_ID.eq(roundId))
+        .fetch();
+  }
+
+  private static VehicleEvent toVehicleEvent(String gameCode, Record vehicleEvent) {
+    BigDecimal playerX = vehicleEvent.get(ROUND_PLAYER_VEHICLE.PLAYER_LOCATION_X);
+    BigDecimal playerY = vehicleEvent.get(ROUND_PLAYER_VEHICLE.PLAYER_LOCATION_Y);
+    BigDecimal playerZ = vehicleEvent.get(ROUND_PLAYER_VEHICLE.PLAYER_LOCATION_Z);
+    Location startLocation = new Location(playerX.floatValue(), playerY.floatValue(), playerZ.floatValue());
+
+    Integer playerId = vehicleEvent.get(ROUND_PLAYER_VEHICLE.PLAYER_ID);
+    String playerName = vehicleEvent.get(PLAYER.NAME);
+    Integer playerTeam = vehicleEvent.get(ROUND_PLAYER_TEAM.TEAM);
+
+    String vehicleCode = vehicleEvent.get(ROUND_PLAYER_VEHICLE.VEHICLE);
+
+    LocalDateTime startTime = toUserZone(vehicleEvent.get(ROUND_PLAYER_VEHICLE.START_TIME).toLocalDateTime());
+    LocalDateTime endTime = toUserZone(vehicleEvent.get(ROUND_PLAYER_VEHICLE.END_TIME).toLocalDateTime());
+    Integer durationSeconds = vehicleEvent.get(ROUND_PLAYER_VEHICLE.DURATION_SECONDS);
+
+    String vehicleName = VehicleService.vehicleNameAndSeat(gameCode, vehicleCode);
+
+    return new VehicleEvent()
+        .setStartLocation(startLocation)
+        .setPlayerId(playerId)
+        .setPlayerName(playerName)
+        .setPlayerTeam(playerTeam)
+        .setStartTime(startTime)
+        .setEndTime(endTime)
+        .setVehicleCode(vehicleCode)
+        .setVehicleName(vehicleName);
   }
 
   public Result<Record> fetchKillRecords(String mapCode, Integer playerId, Integer roundId) {

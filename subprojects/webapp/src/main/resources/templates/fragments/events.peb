@@ -30,3 +30,18 @@ There are no score events
 </table>
 {% endif %}
 
+{% if vehicleEvents is empty %}
+There are no vehicle events
+{% else %}
+<table class="styled_table chat_table" style="margin: 0 0 10px 0">
+  <tbody>
+  {% for vehicleEvent in vehicleEvents %}
+  <tr class="chat-team team-{{ vehicleEvent.playerTeam }}">
+    <td class="time">{{ vehicleEvent.startTime | dt('HH:mm:ss') }}</td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ vehicleEvent.playerId }}">{{ vehicleEvent.playerName }}</a></td>
+    <td class="message left">{{ vehicleEvent.vehicleName }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
