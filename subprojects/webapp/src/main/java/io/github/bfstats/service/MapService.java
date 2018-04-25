@@ -55,13 +55,13 @@ public class MapService {
   }
 
   public MapEvents getMapEvents(String gameCode, String mapCode, Integer playerId, Integer roundId, boolean withProps) {
-    Result<Record> killRecords = roundService.fetchKillRecords(mapCode, playerId, roundId);
-    Result<Record> deathRecords = roundService.fetchDeathRecords(mapCode, playerId, roundId);
+    List<Record> killRecords = roundService.fetchKillRecords(mapCode, playerId, roundId);
+    List<Record> deathRecords = roundService.fetchDeathRecords(mapCode, playerId, roundId);
     return toMapEvents(gameCode, mapCode, killRecords, deathRecords, withProps);
   }
 
 
-  private MapEvents toMapEvents(String gameCode, String mapCode, Result<Record> killRecords, Result<Record> deathRecords, boolean withProps) {
+  private MapEvents toMapEvents(String gameCode, String mapCode, List<Record> killRecords, List<Record> deathRecords, boolean withProps) {
     Collection<Feature> killFeatures = new ArrayList<>();
     for (Record deathRecord : killRecords) {
       Location killerLocation = RoundService.toKillerLocation(deathRecord);

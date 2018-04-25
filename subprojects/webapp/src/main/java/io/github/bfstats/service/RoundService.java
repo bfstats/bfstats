@@ -256,7 +256,7 @@ public class RoundService {
   }
 
   public List<RoundEvent> getRoundEvents(String gameCode, int roundId) {
-    Result<Record> records = fetchDeathRecords(null, null, roundId);
+    List<Record> records = fetchDeathRecords(null, null, roundId);
     return records.stream()
         .map(r -> toDeathEvent(gameCode, r))
         .collect(toList());
@@ -522,15 +522,15 @@ public class RoundService {
         .fetch();
   }
 
-  public Result<Record> fetchKillRecords(String mapCode, Integer playerId, Integer roundId) {
+  public List<Record> fetchKillRecords(String mapCode, Integer playerId, Integer roundId) {
     return fetchDeathRecordsCommon(mapCode, playerId, roundId, true);
   }
 
-  public Result<Record> fetchDeathRecords(String mapCode, Integer playerId, Integer roundId) {
+  public List<Record> fetchDeathRecords(String mapCode, Integer playerId, Integer roundId) {
     return fetchDeathRecordsCommon(mapCode, playerId, roundId, false);
   }
 
-  private Result<Record> fetchDeathRecordsCommon(String mapCode, Integer playerId, Integer roundId, boolean killer) {
+  private List<Record> fetchDeathRecordsCommon(String mapCode, Integer playerId, Integer roundId, boolean killer) {
     if (mapCode == null && roundId == null) {
       throw new IllegalArgumentException("Either mapCode or roundId has to be set");
     }
