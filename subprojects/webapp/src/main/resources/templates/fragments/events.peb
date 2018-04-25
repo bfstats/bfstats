@@ -100,3 +100,19 @@ There are no team events
   </tbody>
 </table>
 {% endif %}
+
+{% if kitEvents is empty %}
+There are no kit events
+{% else %}
+<table class="styled_table chat_table" style="margin: 0 0 10px 0">
+  <tbody>
+  {% for kitEvent in kitEvents %}
+  <tr class="chat-team team-{{ kitEvent.playerTeam }}">
+    <td class="time">{{ kitEvent.time | dt('HH:mm:ss') }}</td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ kitEvent.playerId }}">{{ kitEvent.playerName }}</a></td>
+    <td class="message left"> {{ kitEvent.kitName }} </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}

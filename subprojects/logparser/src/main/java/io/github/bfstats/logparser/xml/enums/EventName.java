@@ -22,12 +22,12 @@ public enum EventName {
   scoreEvent,
   setTeam,
   spawnEvent,
-
-  // not yet validated if these are in bfv:
   beginMedPack, endMedPack,
   beginRepair, endRepair,
-  gamePaused, gameUnpaused, // no parameters
   deployObject, undeployObject, // params: type
+
+  // not yet validated if these are in bfv:
+  gamePaused, gameUnpaused, // no parameters
   attachToHook, detachFromHook // params: cargo
 }
 

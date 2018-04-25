@@ -298,13 +298,56 @@ public class RoundService {
         .setEndTime(endTime);
   }
 
+  public List<KitEvent> getKitEvents(String gameCode, int roundId) {
+    return fetchKitEventRecords(null, null, roundId).stream()
+        .map(r -> toKitEvent(gameCode, r))
+        .collect(toList());
+  }
+
+  private List<Record> fetchKitEventRecords(String mapCode, Integer playerId, Integer roundId) {
+    EventTableDescriptor<RoundPlayerPickupKitRecord> eventTableDescriptor = new EventTableDescriptor<>(
+        ROUND_PLAYER_PICKUP_KIT,
+        ROUND_PLAYER_PICKUP_KIT.ROUND_ID,
+        ROUND_PLAYER_PICKUP_KIT.PLAYER_ID,
+        ROUND_PLAYER_PICKUP_KIT.EVENT_TIME,
+        null
+    );
+    return fetchEventRecords(mapCode, playerId, roundId, eventTableDescriptor);
+  }
+
+  private static KitEvent toKitEvent(String gameCode, Record kitRecord) {
+    BigDecimal playerX = kitRecord.get(ROUND_PLAYER_PICKUP_KIT.PLAYER_LOCATION_X);
+    BigDecimal playerY = kitRecord.get(ROUND_PLAYER_PICKUP_KIT.PLAYER_LOCATION_Y);
+    BigDecimal playerZ = kitRecord.get(ROUND_PLAYER_PICKUP_KIT.PLAYER_LOCATION_Z);
+    Location location = new Location(playerX.floatValue(), playerY.floatValue(), playerZ.floatValue());
+
+    Integer playerId = kitRecord.get(ROUND_PLAYER_PICKUP_KIT.PLAYER_ID);
+    String playerName = kitRecord.get(PLAYER.NAME);
+    Integer playerTeam = kitRecord.get(ROUND_PLAYER_TEAM.TEAM);
+
+    LocalDateTime eventTime = toUserZone(kitRecord.get(ROUND_PLAYER_PICKUP_KIT.EVENT_TIME).toLocalDateTime());
+
+    String kitCode = kitRecord.get(ROUND_PLAYER_PICKUP_KIT.KIT);
+    KitService.KitNameAndWeapons kitNameAndWeapons = KitService.findKitNameAndWeapons(gameCode, kitCode);
+
+    return new KitEvent()
+        .setLocation(location)
+        .setTime(eventTime)
+        .setPlayerId(playerId)
+        .setPlayerName(playerName)
+        .setPlayerTeam(playerTeam)
+        .setKitCode(kitCode)
+        .setKitName(kitNameAndWeapons.getName())
+        .setKitWeapons(kitNameAndWeapons.getWeapons());
+  }
+
   public List<ScoreEvent> getScoreEvents(int roundId) {
     return fetchScoreEventRecords(null, null, roundId).stream()
         .map(RoundService::toScoreEvent)
         .collect(toList());
   }
 
-  public List<Record> fetchScoreEventRecords(String mapCode, Integer playerId, Integer roundId) {
+  private List<Record> fetchScoreEventRecords(String mapCode, Integer playerId, Integer roundId) {
     EventTableDescriptor<RoundPlayerScoreEventRecord> eventTableDescriptor = new EventTableDescriptor<>(
         ROUND_PLAYER_SCORE_EVENT,
         ROUND_PLAYER_SCORE_EVENT.ROUND_ID,
@@ -325,9 +368,9 @@ public class RoundService {
     String playerName = scoreRecord.get(PLAYER.NAME);
     Integer playerTeam = scoreRecord.get(ROUND_PLAYER_TEAM.TEAM);
 
-    String scoreType = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.SCORE_TYPE);
-
     LocalDateTime eventTime = toUserZone(scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.EVENT_TIME).toLocalDateTime());
+
+    String scoreType = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.SCORE_TYPE);
 
     return new ScoreEvent()
         .setLocation(location)
