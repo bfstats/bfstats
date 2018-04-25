@@ -1,10 +1,7 @@
 package io.github.bfstats.service;
 
 import io.github.bfstats.dbstats.jooq.tables.RoundPlayerTeam;
-import io.github.bfstats.dbstats.jooq.tables.records.RoundEndStatsPlayerRecord;
-import io.github.bfstats.dbstats.jooq.tables.records.RoundEndStatsRecord;
-import io.github.bfstats.dbstats.jooq.tables.records.RoundPlayerDeathRecord;
-import io.github.bfstats.dbstats.jooq.tables.records.RoundRecord;
+import io.github.bfstats.dbstats.jooq.tables.records.*;
 import io.github.bfstats.exceptions.NotFoundException;
 import io.github.bfstats.model.*;
 import io.github.bfstats.util.TranslationUtil;
@@ -12,12 +9,14 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.impl.DSL;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -365,6 +364,109 @@ public class RoundService {
         .setEndTime(endTime)
         .setVehicleCode(vehicleCode)
         .setVehicleName(vehicleName);
+  }
+
+  public List<RepairEvent> getRepairEvents(String gameCode, int roundId) {
+    return fetchRepairRecords(null, null, roundId).stream()
+        .map(r -> toRepairEvent(gameCode, r))
+        .collect(toList());
+  }
+
+  private List<Record> fetchRepairRecords(String mapCode, Integer playerId, Integer roundId) {
+    EventTableDescriptor<RoundPlayerRepairRecord> eventTableDescriptor = new EventTableDescriptor<>(
+        ROUND_PLAYER_REPAIR,
+        ROUND_PLAYER_REPAIR.ROUND_ID,
+        ROUND_PLAYER_REPAIR.PLAYER_ID,
+        ROUND_PLAYER_REPAIR.START_TIME
+    );
+    return fetchEventRecords(mapCode, playerId, roundId, eventTableDescriptor);
+  }
+
+  private static RepairEvent toRepairEvent(String gameCode, Record repairRecord) {
+    BigDecimal playerX = repairRecord.get(ROUND_PLAYER_REPAIR.PLAYER_LOCATION_X);
+    BigDecimal playerY = repairRecord.get(ROUND_PLAYER_REPAIR.PLAYER_LOCATION_Y);
+    BigDecimal playerZ = repairRecord.get(ROUND_PLAYER_REPAIR.PLAYER_LOCATION_Z);
+    Location startLocation = new Location(playerX.floatValue(), playerY.floatValue(), playerZ.floatValue());
+
+    Integer playerId = repairRecord.get(ROUND_PLAYER_REPAIR.PLAYER_ID);
+    String playerName = repairRecord.get(PLAYER.NAME);
+    Integer playerTeam = repairRecord.get(ROUND_PLAYER_TEAM.TEAM);
+
+    LocalDateTime startTime = toUserZone(repairRecord.get(ROUND_PLAYER_REPAIR.START_TIME).toLocalDateTime());
+    LocalDateTime endTime = toUserZone(repairRecord.get(ROUND_PLAYER_REPAIR.END_TIME).toLocalDateTime());
+    Integer durationSeconds = repairRecord.get(ROUND_PLAYER_REPAIR.DURATION_SECONDS);
+
+    Integer startRepairStatus = repairRecord.get(ROUND_PLAYER_REPAIR.START_REPAIR_STATUS);
+    //  endRepairStatus can be null because it might've ended with death event
+    Integer endRepairStatus = repairRecord.get(ROUND_PLAYER_REPAIR.END_REPAIR_STATUS);
+    Integer usedRepairPoints = ofNullable(endRepairStatus)
+        .map(end -> Math.abs(startRepairStatus - end))
+        .orElse(null);
+
+    String vehicleType = repairRecord.get(ROUND_PLAYER_REPAIR.VEHICLE_TYPE); // not null?
+    Integer vehiclePlayerId = repairRecord.get(ROUND_PLAYER_REPAIR.VEHICLE_PLAYER_ID); // nullable
+
+    BigDecimal endPlayerX = repairRecord.get(ROUND_PLAYER_REPAIR.END_PLAYER_LOCATION_X);
+    BigDecimal endPlayerY = repairRecord.get(ROUND_PLAYER_REPAIR.END_PLAYER_LOCATION_Y);
+    BigDecimal endPlayerZ = repairRecord.get(ROUND_PLAYER_REPAIR.END_PLAYER_LOCATION_Z);
+    if (endPlayerX != null) {
+      Location endLocation = new Location(endPlayerX.floatValue(), endPlayerY.floatValue(), endPlayerZ.floatValue());
+    }
+
+    return new RepairEvent()
+        .setStartLocation(startLocation)
+        .setPlayerId(playerId)
+        .setPlayerName(playerName)
+        .setPlayerTeam(playerTeam)
+        .setStartTime(startTime)
+        .setEndTime(endTime)
+        .setDurationSeconds(durationSeconds)
+        .setUsedRepairPoints(usedRepairPoints)
+        .setVehicleType(vehicleType);
+  }
+
+  private static class EventTableDescriptor<R extends Record> {
+    Table<R> mainTable;
+    TableField<R, Integer> roundIdField;
+    TableField<R, Integer> playerIdField;
+    TableField<R, Timestamp> timeField;
+
+    public EventTableDescriptor(Table<R> mainTable,
+                                TableField<R, Integer> roundIdField,
+                                TableField<R, Integer> playerIdField,
+                                TableField<R, Timestamp> timeField) {
+      this.mainTable = mainTable;
+      this.roundIdField = roundIdField;
+      this.playerIdField = playerIdField;
+      this.timeField = timeField;
+    }
+  }
+
+  private <R extends Record> List<Record> fetchEventRecords(String mapCode, Integer playerId, Integer roundId, EventTableDescriptor<R> eventTableDescriptor) {
+    if (mapCode == null && roundId == null) {
+      throw new IllegalArgumentException("Either mapCode or roundId has to be set");
+    }
+
+    Table<R> mainTable = eventTableDescriptor.mainTable;
+    TableField<R, Integer> roundIdField = eventTableDescriptor.roundIdField;
+    TableField<R, Integer> playerIdField = eventTableDescriptor.playerIdField;
+    TableField<R, Timestamp> timeField = eventTableDescriptor.timeField;
+
+    return getDslContext()
+        .select(mainTable.fields())
+        .select(PLAYER.NAME)
+        .select(ROUND_PLAYER_TEAM.TEAM)
+        .from(mainTable)
+        .join(ROUND).on(ROUND.ID.eq(roundIdField))
+        .join(PLAYER).on(PLAYER.ID.eq(playerIdField))
+        .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(roundIdField)
+            .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(playerIdField))
+            .and(timeField.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
+        )
+        .where(mapCode == null ? trueCondition() : ROUND.MAP_CODE.eq(mapCode))
+        .and(playerId == null ? trueCondition() : playerIdField.eq(playerId))
+        .and(roundId == null ? trueCondition() : roundIdField.eq(roundId))
+        .fetch();
   }
 
   public Result<Record> fetchKillRecords(String mapCode, Integer playerId, Integer roundId) {

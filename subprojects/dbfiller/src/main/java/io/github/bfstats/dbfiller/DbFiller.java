@@ -537,6 +537,7 @@ public class DbFiller {
       case createVehicle:
         break;
       case destroyVehicle:
+        // handled already in exitVehicle?
         break;
       case beginMedPack:
         addLastBeginMedPackEvent(e);

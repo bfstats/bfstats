@@ -45,3 +45,19 @@ There are no vehicle events
   </tbody>
 </table>
 {% endif %}
+
+{% if repairEvents is empty %}
+There are no repair events
+{% else %}
+<table class="styled_table chat_table" style="margin: 0 0 10px 0">
+  <tbody>
+  {% for repairEvent in repairEvents %}
+  <tr class="chat-team team-{{ repairEvent.playerTeam }}">
+    <td class="time">{{ repairEvent.startTime | dt('HH:mm:ss') }}</td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ repairEvent.playerId }}">{{ repairEvent.playerName }}</a></td>
+    <td class="message left">Repaired {{ repairEvent.vehicleType}} for {{ repairEvent.durationSeconds }} seconds</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
