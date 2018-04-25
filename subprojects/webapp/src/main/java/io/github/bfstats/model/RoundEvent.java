@@ -39,7 +39,7 @@ public class RoundEvent {
     return getKillerPlayerId() != null ? getKillerPlayerId() : getPlayerId();
   }
 
-  public String killerOrDeathPlayerName() {
+  public String getKillerOrDeathPlayerName() {
     return getKillerPlayerName() != null ? getKillerPlayerName() : getPlayerName();
   }
 
