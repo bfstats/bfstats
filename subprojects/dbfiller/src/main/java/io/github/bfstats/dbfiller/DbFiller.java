@@ -1075,8 +1075,8 @@ else: repair; number of repairs
 
     GamePlayerRecord gamePlayerRecord = transaction().newRecord(GAME_PLAYER);
     gamePlayerRecord.setGameId(gameRecordId);
-    gamePlayerRecord.setJoinedRoundId(joinedRoundId); // TODO: there can be 2 rounds, so not really correct to have one round id
-    gamePlayerRecord.setEndRoundId(endRoundId); // TODO: there can be 2 rounds, so not really correct to have one round id
+    gamePlayerRecord.setJoinedRoundId(joinedRoundId);
+    gamePlayerRecord.setEndRoundId(endRoundId);
     gamePlayerRecord.setPlayerId(gamePlayer.getPlayerId());
     gamePlayerRecord.setStartTime(Timestamp.valueOf(joined));
     gamePlayerRecord.setEndTime(Timestamp.valueOf(ended));
