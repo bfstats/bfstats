@@ -107,11 +107,11 @@
  #{{ player.partialKeyHash }}
 
  {% if nicknames is not empty %}
- nicknames:
- {% for nickname in nicknames %}
- {{ nickname.name }} x {{ nickname.timesUsed }}
- {% if loop.index < loop.length-1 %}, {% endif %}
- {% endfor %}
+ has also played as:
+  {% for nickname in nicknames %}
+  {{ nickname.name }} x {{ nickname.timesUsed }}
+  {% if loop.index < loop.length-1 %}, {% endif %}
+  {% endfor %}
  {% endif %}
 </div>
 
