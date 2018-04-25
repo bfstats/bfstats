@@ -262,6 +262,42 @@ public class RoundService {
         .collect(toList());
   }
 
+  public List<TeamEvent> getTeamEvents(String gameCode, int roundId) {
+    return fetchTeamRecords(null, null, roundId).stream()
+        .map(r -> toTeamEvent(gameCode, r))
+        .collect(toList());
+  }
+
+  private List<Record> fetchTeamRecords(String mapCode, Integer playerId, Integer roundId) {
+    return getDslContext()
+        .select(ROUND_PLAYER_TEAM.fields())
+        .select(PLAYER.NAME)
+        .select(ROUND_PLAYER_TEAM.TEAM)
+        .from(ROUND_PLAYER_TEAM)
+        .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_TEAM.ROUND_ID))
+        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_TEAM.PLAYER_ID))
+        .where(mapCode == null ? trueCondition() : ROUND.MAP_CODE.eq(mapCode))
+        .and(playerId == null ? trueCondition() : ROUND_PLAYER_TEAM.PLAYER_ID.eq(playerId))
+        .and(roundId == null ? trueCondition() : ROUND_PLAYER_TEAM.ROUND_ID.eq(roundId))
+        .fetch();
+  }
+
+  private static TeamEvent toTeamEvent(String gameCode, Record teamEvent) {
+    Integer playerId = teamEvent.get(ROUND_PLAYER_TEAM.PLAYER_ID);
+    String playerName = teamEvent.get(PLAYER.NAME);
+    Integer playerTeam = teamEvent.get(ROUND_PLAYER_TEAM.TEAM);
+
+    LocalDateTime startTime = toUserZone(teamEvent.get(ROUND_PLAYER_TEAM.START_TIME).toLocalDateTime());
+    LocalDateTime endTime = toUserZone(teamEvent.get(ROUND_PLAYER_TEAM.END_TIME).toLocalDateTime());
+
+    return new TeamEvent()
+        .setPlayerId(playerId)
+        .setPlayerName(playerName)
+        .setPlayerTeam(playerTeam)
+        .setStartTime(startTime)
+        .setEndTime(endTime);
+  }
+
   public List<ScoreEvent> getScoreEvents(int roundId) {
     return fetchScoreEventRecords(null, null, roundId).stream()
         .map(RoundService::toScoreEvent)

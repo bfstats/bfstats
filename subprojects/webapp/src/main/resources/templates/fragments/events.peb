@@ -84,3 +84,19 @@ There are no healing events
   </tbody>
 </table>
 {% endif %}
+
+{% if teamEvents is empty %}
+There are no team events
+{% else %}
+<table class="styled_table chat_table" style="margin: 0 0 10px 0">
+  <tbody>
+  {% for teamEvent in teamEvents %}
+  <tr class="chat-team team-{{ teamEvent.playerTeam }}">
+    <td class="time">{{ teamEvent.startTime | dt('HH:mm:ss') }}</td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ teamEvent.playerId }}">{{ teamEvent.playerName }}</a></td>
+    <td class="message left"> until {{ teamEvent.endTime | dt('HH:mm:ss') }} </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}

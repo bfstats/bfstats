@@ -78,14 +78,15 @@ public class RoundController extends Controller {
 
     List<RoundEvent> roundEvents = roundService.getRoundEvents(round.getGameCode(), roundId);
 
-    List<ScoreEvent> scoreEvents = roundService.getScoreEvents(roundId);
+    List<ScoreEvent> scoreEvents = roundService.getScoreEvents(roundId); // capture/neutralize
     List<VehicleEvent> vehicleEvents = roundService.getVehicleEvents(round.getGameCode(), roundId);
     List<RepairEvent> repairEvents = roundService.getRepairEvents(round.getGameCode(), roundId);
     List<MedPackEvent> medPackEvents = roundService.getMedPackEvents(round.getGameCode(), roundId);
+    List<TeamEvent> teamEvents = roundService.getTeamEvents(round.getGameCode(), roundId);
 
     // TODO: mix chatMessages and roundEvents together
     //* player join/disconnect
-    //* player spawn (kit, team)
+    //* player spawn (kit)
 
     getResponse()
         .bind("round", round)
@@ -97,6 +98,7 @@ public class RoundController extends Controller {
         .bind("vehicleEvents", vehicleEvents)
         .bind("repairEvents", repairEvents)
         .bind("medPackEvents", medPackEvents)
+        .bind("teamEvents", teamEvents)
         .render("rounds/details");
   }
 
