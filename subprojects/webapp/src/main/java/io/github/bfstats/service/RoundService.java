@@ -28,9 +28,11 @@ import static io.github.bfstats.util.DateTimeUtils.toUserZone;
 import static io.github.bfstats.util.DbUtils.getDslContext;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static org.jooq.impl.DSL.falseCondition;
 import static org.jooq.impl.DSL.trueCondition;
 
 public class RoundService {
+  private static final io.github.bfstats.dbstats.jooq.tables.Player OTHER_PLAYER_TABLE = PLAYER.as("otherPlayer");
   private static final io.github.bfstats.dbstats.jooq.tables.Player KILLER_PLAYER_TABLE = PLAYER.as("killerPlayer");
   private static final RoundPlayerTeam KILLER_PLAYER_TEAM_TABLE = ROUND_PLAYER_TEAM.as("killerPlayerTeam");
   private static final String KILL = "Kill";
@@ -377,7 +379,8 @@ public class RoundService {
         ROUND_PLAYER_MEDPACK,
         ROUND_PLAYER_MEDPACK.ROUND_ID,
         ROUND_PLAYER_MEDPACK.PLAYER_ID,
-        ROUND_PLAYER_MEDPACK.START_TIME
+        ROUND_PLAYER_MEDPACK.START_TIME,
+        ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID
     );
     return fetchEventRecords(mapCode, playerId, roundId, eventTableDescriptor);
   }
@@ -404,6 +407,7 @@ public class RoundService {
         .orElse(null);
 
     Integer healedPlayerId = medPackRecord.get(ROUND_PLAYER_MEDPACK.HEALED_PLAYER_ID); // not null
+    String healedPlayerName = medPackRecord.get(OTHER_PLAYER_TABLE.NAME);
 
     BigDecimal endPlayerX = medPackRecord.get(ROUND_PLAYER_MEDPACK.END_PLAYER_LOCATION_X);
     BigDecimal endPlayerY = medPackRecord.get(ROUND_PLAYER_MEDPACK.END_PLAYER_LOCATION_Y);
@@ -421,7 +425,8 @@ public class RoundService {
         .setEndTime(endTime)
         .setDurationSeconds(durationSeconds)
         .setUsedMedPackPoints(usedMedPackPoints)
-        .setHealedPlayerId(healedPlayerId);
+        .setHealedPlayerId(healedPlayerId)
+        .setHealedPlayerName(healedPlayerName);
   }
 
   public List<RepairEvent> getRepairEvents(String gameCode, int roundId) {
@@ -435,7 +440,8 @@ public class RoundService {
         ROUND_PLAYER_REPAIR,
         ROUND_PLAYER_REPAIR.ROUND_ID,
         ROUND_PLAYER_REPAIR.PLAYER_ID,
-        ROUND_PLAYER_REPAIR.START_TIME
+        ROUND_PLAYER_REPAIR.START_TIME,
+        null
     );
     return fetchEventRecords(mapCode, playerId, roundId, eventTableDescriptor);
   }
@@ -489,18 +495,24 @@ public class RoundService {
     TableField<R, Integer> playerIdField;
     TableField<R, Timestamp> timeField;
 
+    @Nullable
+    TableField<R, Integer> otherPlayerIdField;
+
     public EventTableDescriptor(Table<R> mainTable,
                                 TableField<R, Integer> roundIdField,
                                 TableField<R, Integer> playerIdField,
-                                TableField<R, Timestamp> timeField) {
+                                TableField<R, Timestamp> timeField,
+                                TableField<R, Integer> otherPlayerIdField) {
       this.mainTable = mainTable;
       this.roundIdField = roundIdField;
       this.playerIdField = playerIdField;
       this.timeField = timeField;
+      this.otherPlayerIdField = otherPlayerIdField;
     }
   }
 
-  private <R extends Record> List<Record> fetchEventRecords(String mapCode, Integer playerId, Integer roundId, EventTableDescriptor<R> eventTableDescriptor) {
+  private <R extends Record> List<Record> fetchEventRecords(String mapCode, Integer playerId, Integer roundId,
+                                                            EventTableDescriptor<R> eventTableDescriptor) {
     if (mapCode == null && roundId == null) {
       throw new IllegalArgumentException("Either mapCode or roundId has to be set");
     }
@@ -509,11 +521,13 @@ public class RoundService {
     TableField<R, Integer> roundIdField = eventTableDescriptor.roundIdField;
     TableField<R, Integer> playerIdField = eventTableDescriptor.playerIdField;
     TableField<R, Timestamp> timeField = eventTableDescriptor.timeField;
+    TableField<R, Integer> otherPlayerIdField = eventTableDescriptor.otherPlayerIdField;
 
     return getDslContext()
         .select(mainTable.fields())
         .select(PLAYER.NAME)
         .select(ROUND_PLAYER_TEAM.TEAM)
+        .select(OTHER_PLAYER_TABLE.NAME)
         .from(mainTable)
         .join(ROUND).on(ROUND.ID.eq(roundIdField))
         .join(PLAYER).on(PLAYER.ID.eq(playerIdField))
@@ -521,6 +535,7 @@ public class RoundService {
             .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(playerIdField))
             .and(timeField.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
         )
+        .leftJoin(OTHER_PLAYER_TABLE).on(otherPlayerIdField == null ? falseCondition() : OTHER_PLAYER_TABLE.ID.eq(otherPlayerIdField))
         .where(mapCode == null ? trueCondition() : ROUND.MAP_CODE.eq(mapCode))
         .and(playerId == null ? trueCondition() : playerIdField.eq(playerId))
         .and(roundId == null ? trueCondition() : roundIdField.eq(roundId))

@@ -21,4 +21,5 @@ public class MedPackEvent {
   private Integer usedMedPackPoints;
 
   private Integer healedPlayerId;
+  private String healedPlayerName;
 }

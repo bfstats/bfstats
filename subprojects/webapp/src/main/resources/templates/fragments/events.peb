@@ -76,7 +76,7 @@ There are no healing events
       {% if medPackEvent.healedPlayerId == medPackEvent.playerId %}
       Self-healed
       {% else %}
-      Healed player {{ medPackEvent.healedPlayerId}}
+      Healed player {{ medPackEvent.healedPlayerName}}
       {% endif %}
       for {{ medPackEvent.durationSeconds }} seconds</td>
   </tr>
