@@ -269,24 +269,14 @@ public class RoundService {
   }
 
   public List<Record> fetchScoreEventRecords(String mapCode, Integer playerId, Integer roundId) {
-    if (mapCode == null && roundId == null) {
-      throw new IllegalArgumentException("Either mapCode or roundId has to be set");
-    }
-    return getDslContext()
-        .select(ROUND_PLAYER_SCORE_EVENT.fields())
-        .select(PLAYER.NAME)
-        .select(ROUND_PLAYER_TEAM.TEAM)
-        .from(ROUND_PLAYER_SCORE_EVENT)
-        .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_SCORE_EVENT.ROUND_ID))
-        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_SCORE_EVENT.PLAYER_ID))
-        .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_PLAYER_SCORE_EVENT.ROUND_ID)
-            .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(ROUND_PLAYER_SCORE_EVENT.PLAYER_ID))
-            .and(ROUND_PLAYER_SCORE_EVENT.EVENT_TIME.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
-        )
-        .where(mapCode == null ? trueCondition() : ROUND.MAP_CODE.eq(mapCode))
-        .and(playerId == null ? trueCondition() : ROUND_PLAYER_SCORE_EVENT.PLAYER_ID.eq(playerId))
-        .and(roundId == null ? trueCondition() : ROUND_PLAYER_SCORE_EVENT.ROUND_ID.eq(roundId))
-        .fetch();
+    EventTableDescriptor<RoundPlayerScoreEventRecord> eventTableDescriptor = new EventTableDescriptor<>(
+        ROUND_PLAYER_SCORE_EVENT,
+        ROUND_PLAYER_SCORE_EVENT.ROUND_ID,
+        ROUND_PLAYER_SCORE_EVENT.PLAYER_ID,
+        ROUND_PLAYER_SCORE_EVENT.EVENT_TIME,
+        null
+    );
+    return fetchEventRecords(mapCode, playerId, roundId, eventTableDescriptor);
   }
 
   private static ScoreEvent toScoreEvent(Record scoreRecord) {
@@ -319,24 +309,14 @@ public class RoundService {
   }
 
   public List<Record> fetchVehicleEventRecords(String mapCode, Integer playerId, Integer roundId) {
-    if (mapCode == null && roundId == null) {
-      throw new IllegalArgumentException("Either mapCode or roundId has to be set");
-    }
-    return getDslContext()
-        .select(ROUND_PLAYER_VEHICLE.fields())
-        .select(PLAYER.NAME)
-        .select(ROUND_PLAYER_TEAM.TEAM)
-        .from(ROUND_PLAYER_VEHICLE)
-        .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_VEHICLE.ROUND_ID))
-        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_VEHICLE.PLAYER_ID))
-        .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_PLAYER_VEHICLE.ROUND_ID)
-            .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(ROUND_PLAYER_VEHICLE.PLAYER_ID))
-            .and(ROUND_PLAYER_VEHICLE.START_TIME.between(ROUND_PLAYER_TEAM.START_TIME, ROUND_PLAYER_TEAM.END_TIME))
-        )
-        .where(mapCode == null ? trueCondition() : ROUND.MAP_CODE.eq(mapCode))
-        .and(playerId == null ? trueCondition() : ROUND_PLAYER_VEHICLE.PLAYER_ID.eq(playerId))
-        .and(roundId == null ? trueCondition() : ROUND_PLAYER_VEHICLE.ROUND_ID.eq(roundId))
-        .fetch();
+    EventTableDescriptor<RoundPlayerVehicleRecord> eventTableDescriptor = new EventTableDescriptor<>(
+        ROUND_PLAYER_VEHICLE,
+        ROUND_PLAYER_VEHICLE.ROUND_ID,
+        ROUND_PLAYER_VEHICLE.PLAYER_ID,
+        ROUND_PLAYER_VEHICLE.START_TIME,
+        null
+    );
+    return fetchEventRecords(mapCode, playerId, roundId, eventTableDescriptor);
   }
 
   private static VehicleEvent toVehicleEvent(String gameCode, Record vehicleEvent) {
