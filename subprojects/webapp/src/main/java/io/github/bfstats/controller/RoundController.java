@@ -84,10 +84,10 @@ public class RoundController extends Controller {
     List<MedPackEvent> medPackEvents = roundService.getMedPackEvents(round.getGameCode(), roundId);
     List<TeamEvent> teamEvents = roundService.getTeamEvents(round.getGameCode(), roundId);
     List<KitEvent> kitEvents = roundService.getKitEvents(round.getGameCode(), roundId);
+    List<DeployEvent> deployEvents = roundService.getDeployEvents(round.getGameCode(), roundId);
 
-    // TODO: mix chatMessages and roundEvents together
+    // TODO: mix all events together
     //* player join/disconnect
-    // player deploy object
 
     getResponse()
         .bind("round", round)
@@ -101,6 +101,7 @@ public class RoundController extends Controller {
         .bind("medPackEvents", medPackEvents)
         .bind("teamEvents", teamEvents)
         .bind("kitEvents", kitEvents)
+        .bind("deployEvents", deployEvents)
         .render("rounds/details");
   }
 

@@ -116,3 +116,19 @@ There are no kit events
   </tbody>
 </table>
 {% endif %}
+
+{% if deployEvents is empty %}
+There are no deploy events
+{% else %}
+<table class="styled_table chat_table" style="margin: 0 0 10px 0">
+  <tbody>
+  {% for deployEvent in deployEvents %}
+  <tr class="chat-team team-{{ deployEvent.playerTeam }}">
+    <td class="time">{{ deployEvent.time | dt('HH:mm:ss') }}</td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ deployEvent.playerId }}">{{ deployEvent.playerName }}</a></td>
+    <td class="message left"> deployed {{ deployEvent.objectName }} </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}

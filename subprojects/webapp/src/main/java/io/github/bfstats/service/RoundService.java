@@ -298,6 +298,48 @@ public class RoundService {
         .setEndTime(endTime);
   }
 
+  public List<DeployEvent> getDeployEvents(String gameCode, int roundId) {
+    return fetchDeployRecords(null, null, roundId).stream()
+        .map(r -> toDeployEvent(gameCode, r))
+        .collect(toList());
+  }
+
+  private List<Record> fetchDeployRecords(String mapCode, Integer playerId, Integer roundId) {
+    EventTableDescriptor<RoundPlayerDeployObjectRecord> eventTableDescriptor = new EventTableDescriptor<>(
+        ROUND_PLAYER_DEPLOY_OBJECT,
+        ROUND_PLAYER_DEPLOY_OBJECT.ROUND_ID,
+        ROUND_PLAYER_DEPLOY_OBJECT.PLAYER_ID,
+        ROUND_PLAYER_DEPLOY_OBJECT.EVENT_TIME,
+        null
+    );
+    return fetchEventRecords(mapCode, playerId, roundId, eventTableDescriptor);
+  }
+
+  private static DeployEvent toDeployEvent(String gameCode, Record kitRecord) {
+    BigDecimal playerX = kitRecord.get(ROUND_PLAYER_DEPLOY_OBJECT.PLAYER_LOCATION_X);
+    BigDecimal playerY = kitRecord.get(ROUND_PLAYER_DEPLOY_OBJECT.PLAYER_LOCATION_Y);
+    BigDecimal playerZ = kitRecord.get(ROUND_PLAYER_DEPLOY_OBJECT.PLAYER_LOCATION_Z);
+    Location location = new Location(playerX.floatValue(), playerY.floatValue(), playerZ.floatValue());
+
+    Integer playerId = kitRecord.get(ROUND_PLAYER_DEPLOY_OBJECT.PLAYER_ID);
+    String playerName = kitRecord.get(PLAYER.NAME);
+    Integer playerTeam = kitRecord.get(ROUND_PLAYER_TEAM.TEAM);
+
+    LocalDateTime eventTime = toUserZone(kitRecord.get(ROUND_PLAYER_DEPLOY_OBJECT.EVENT_TIME).toLocalDateTime());
+
+    String objectCode = kitRecord.get(ROUND_PLAYER_DEPLOY_OBJECT.OBJECT);
+    String objectName = TranslationUtil.getVehicleName(gameCode, objectCode);
+
+    return new DeployEvent()
+        .setLocation(location)
+        .setTime(eventTime)
+        .setPlayerId(playerId)
+        .setPlayerName(playerName)
+        .setPlayerTeam(playerTeam)
+        .setObjectCode(objectCode)
+        .setObjectName(objectName);
+  }
+
   public List<KitEvent> getKitEvents(String gameCode, int roundId) {
     return fetchKitEventRecords(null, null, roundId).stream()
         .map(r -> toKitEvent(gameCode, r))
@@ -561,7 +603,7 @@ public class RoundService {
                                 TableField<R, Integer> roundIdField,
                                 TableField<R, Integer> playerIdField,
                                 TableField<R, Timestamp> timeField,
-                                TableField<R, Integer> otherPlayerIdField) {
+                                @Nullable TableField<R, Integer> otherPlayerIdField) {
       this.mainTable = mainTable;
       this.roundIdField = roundIdField;
       this.playerIdField = playerIdField;
