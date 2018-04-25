@@ -272,7 +272,6 @@ public class RoundService {
     return getDslContext()
         .select(ROUND_PLAYER_TEAM.fields())
         .select(PLAYER.NAME)
-        .select(ROUND_PLAYER_TEAM.TEAM)
         .from(ROUND_PLAYER_TEAM)
         .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_TEAM.ROUND_ID))
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_TEAM.PLAYER_ID))
