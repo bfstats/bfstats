@@ -88,7 +88,6 @@ public class RoundController extends Controller {
     List<JoinOrLeaveEvent> joinOrLeaveEvents = roundService.getJoinOrLeaveEvents(round.getGameCode(), roundId);
 
     // TODO: mix all events together
-    //* player join/disconnect
 
     getResponse()
         .bind("round", round)

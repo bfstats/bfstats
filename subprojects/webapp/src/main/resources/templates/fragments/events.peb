@@ -39,7 +39,7 @@ There are no vehicle events
   <tr class="chat-team team-{{ vehicleEvent.playerTeam }}">
     <td class="time">{{ vehicleEvent.startTime | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ vehicleEvent.playerId }}">{{ vehicleEvent.playerName }}</a></td>
-    <td class="message left">{{ vehicleEvent.vehicleName }}</td>
+    <td class="message left">Drove {{ vehicleEvent.vehicleName }}</td>
   </tr>
   {% endfor %}
   </tbody>
@@ -139,7 +139,7 @@ There are no join or leave events
 <table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
   {% for joinOrLeaveEvent in joinOrLeaveEvents %}
-  <tr class="chat-team">
+  <tr class="chat-team team-0">
     <td class="time">{{ joinOrLeaveEvent.time | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ joinOrLeaveEvent.playerId }}">{{ joinOrLeaveEvent.playerName }}</a></td>
     <td class="message left"> {{ joinOrLeaveEvent.type }} </td>

@@ -301,6 +301,11 @@ tr.team-3 {
   color: #ffff00;
 }
 
+/* unknown or without team */
+tr.team-0 {
+  color: #bfbfbf;
+}
+
 .team-color-1, .team-color-2, tr.chat-team {
   text-shadow:
      -1px -1px 0 #000,
@@ -335,6 +340,10 @@ tr.team-2 .name, .name.team-2 {
 }
 tr.team-3 .name, .name.team-3 {
   background-image: url('../img/roundflagicons/spec_hud_flag.png');
+}
+/* unknown or without team */
+tr.team-0 .name, .name.team-0 {
+  background-image: none;
 }
 
 .chat_table th, .chat_table td {
