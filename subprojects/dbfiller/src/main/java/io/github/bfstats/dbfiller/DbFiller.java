@@ -433,7 +433,7 @@ public class DbFiller {
     if (previousRoundId != -1) {
       // put team between two rounds into the previous round
       // kind of waste of db - should merge this to existing previous round team usage?
-      recordEndGame(previousRoundId, bfRound.getDurationSinceLogStart());
+      recordEndRound(previousRoundId, bfRound.getDurationSinceLogStart());
     }
 
     BfEvent lastEvent = null;
@@ -467,13 +467,13 @@ public class DbFiller {
       Duration teamEndDur = ofNullable(bfRound.getRoundStats())
           .map(BfRoundStats::getDurationSinceLogStart)
           .orElse(lastEvent.getDurationSinceLogStart());
-      recordEndGame(roundId, teamEndDur);
+      recordEndRound(roundId, teamEndDur);
     }
 
     return roundId;
   }
 
-  private void recordEndGame(int endingRoundId, Duration endingRoundEndTime) {
+  private void recordEndRound(int endingRoundId, Duration endingRoundEndTime) {
     for (GamePlayer gamePlayer : activePlayersByRoundPlayerId.values()) {
       if (isSlotIdBot(gamePlayer.getRoundPlayerSlotId())) {
         continue;
