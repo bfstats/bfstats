@@ -66,7 +66,8 @@ public class PlayerService {
 
   private static Player toPlayer(PlayerRecord r) {
     String keyhash = r.getKeyhash();
-    String partialKeyHash = keyhash.substring(25);
+    String partialKeyHash = keyhash.length() >= 25 ?
+        keyhash.substring(25) : "???";
 
     return new Player()
         .setId(r.getId())
