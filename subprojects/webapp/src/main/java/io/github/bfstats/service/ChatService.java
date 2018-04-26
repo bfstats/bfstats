@@ -25,8 +25,9 @@ public class ChatService {
 
     return getDslContext()
         .select(ROUND_CHAT_LOG.fields())
-        .select(PLAYER.NAME, ROUND_PLAYER_TEAM.TEAM)
+        .select(PLAYER.NAME, ROUND_PLAYER_TEAM.TEAM, ROUND.GAME_CODE, ROUND.MAP_CODE)
         .from(ROUND_CHAT_LOG)
+        .join(ROUND).on(ROUND.ID.eq(ROUND_CHAT_LOG.ROUND_ID))
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_CHAT_LOG.PLAYER_ID))
         .leftJoin(ROUND_PLAYER_TEAM).on(ROUND_PLAYER_TEAM.ROUND_ID.eq(ROUND_CHAT_LOG.ROUND_ID)
             .and(ROUND_PLAYER_TEAM.PLAYER_ID.eq(ROUND_CHAT_LOG.PLAYER_ID))
@@ -41,11 +42,13 @@ public class ChatService {
         .limit(firstRowIndex, numberOfRows)
         .fetch()
         .stream()
-        .map(this::toChatMessage)
+        .map(r -> toChatMessage(r))
         .collect(Collectors.toList());
   }
 
-  private ChatMessage toChatMessage(Record r) {
+  private static ChatMessage toChatMessage(Record r) {
+    String gameCode = r.get(ROUND.GAME_CODE);
+    String mapCode = r.get(ROUND.MAP_CODE);
     Date eventTimeDate = r.get(ROUND_CHAT_LOG.EVENT_TIME, Date.class);
 
     BigDecimal x = r.get(ROUND_CHAT_LOG.PLAYER_LOCATION_X);
@@ -53,7 +56,11 @@ public class ChatService {
     BigDecimal z = r.get(ROUND_CHAT_LOG.PLAYER_LOCATION_Z);
     Location location = new Location(x.floatValue(), y.floatValue(), z.floatValue());
 
-    Integer targetTeamId = r.get(ROUND_CHAT_LOG.TO_TEAM);
+    Integer playerTeam = r.get(ROUND_PLAYER_TEAM.TEAM);
+    String playerTeamCode = KitService.getTeamCode(gameCode, mapCode, playerTeam);
+
+    Integer targetTeamId = r.get(ROUND_CHAT_LOG.TO_TEAM); // is 0 if for all;
+    String targetTeamName = toTeamName(targetTeamId); // nullable
 
     return new ChatMessage()
         .setPlayerId(r.get(ROUND_CHAT_LOG.PLAYER_ID, Integer.class))
@@ -62,8 +69,9 @@ public class ChatService {
         .setText(r.get(ROUND_CHAT_LOG.MESSAGE, String.class))
         .setTime(toUserZone(toLocalDateTime(eventTimeDate)))
         .setTargetTeamId(targetTeamId)
-        .setTargetTeamName(toTeamName(targetTeamId))
-        .setPlayerTeam(r.get(ROUND_PLAYER_TEAM.TEAM))
+        .setTargetTeamName(targetTeamName)
+        .setPlayerTeam(playerTeam)
+        .setPlayerTeamCode(playerTeamCode)
         .setRoundId(r.get(ROUND_CHAT_LOG.ROUND_ID));
   }
 

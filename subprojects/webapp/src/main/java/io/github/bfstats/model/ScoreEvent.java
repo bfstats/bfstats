@@ -11,6 +11,7 @@ public class ScoreEvent {
   private Integer playerId;
   private String playerName;
   private Integer playerTeam;
+  private String playerTeamCode;
 
   private Location location;
   private LocalDateTime time;

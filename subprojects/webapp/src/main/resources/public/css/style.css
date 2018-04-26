@@ -289,20 +289,20 @@ tr.chat-team a {
 }
 
 /* NVA */
-tr.team-1 {
+tr.team-1, tr.team-nva {
   color: #ff5959;
 }
 /* USA */
-tr.team-2 {
+tr.team-2, tr.team-usa {
   color: #6699ff;
 }
 /* Spectator */
-tr.team-3 {
+tr.team-3, tr.team-spectator {
   color: #ffff00;
 }
 
 /* unknown or without team */
-tr.team-0 {
+tr.team-unknown {
   color: #bfbfbf;
 }
 
@@ -332,17 +332,17 @@ tr.chat-team .name, .name {
   padding-left: 16px;
   background: transparent url('../img/roundflagicons/nva_hud_flag.png') no-repeat center left;
 }
-tr.team-1 .name, .name.team-1 {
+tr.team-1 .name, .name.team-1, tr.team-nva .name, .name.team-nva {
   background-image: url('../img/roundflagicons/nva_hud_flag.png');
 }
-tr.team-2 .name, .name.team-2 {
+tr.team-2 .name, .name.team-2, tr.team-usa .name, .name.team-usa {
   background-image: url('../img/roundflagicons/us_hud_flag.png');
 }
-tr.team-3 .name, .name.team-3 {
+tr.team-3 .name, .name.team-3, tr.team-spectator .name, .name.team-spectator {
   background-image: url('../img/roundflagicons/spec_hud_flag.png');
 }
 /* unknown or without team */
-tr.team-0 .name, .name.team-0 {
+tr.team-unknown .name, .name.team-unknown {
   background-image: none;
 }
 

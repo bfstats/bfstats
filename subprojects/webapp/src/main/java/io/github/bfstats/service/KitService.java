@@ -154,6 +154,22 @@ public class KitService {
   }
 
   @ParametersAreNonnullByDefault
+  public static String getTeamCode(String gameCode, String mapCode, Integer teamId) {
+    if (teamId == 3) {
+      return "spectator";
+    }
+    // TODO: take correct team based on map
+    //       (instead of writing configuration, could also gather this from pickupKit events)
+
+    if (gameCode.equals("bfvietnam")) {
+      return teamId == 1 ? "nva" : "usa";
+    } else if (gameCode.equals("bf1942")) {
+      return teamId == 1 ? "allied" : "axies";
+    }
+    throw new IllegalArgumentException("unknown getTeamCode() args : " + gameCode + " " + mapCode + " " + teamId);
+  }
+
+  @ParametersAreNonnullByDefault
   public static String getTeamName(String gameCode, String teamCode) {
     return teamNameByCodeByGameCode.get(gameCode).getOrDefault(teamCode, teamCode);
   }

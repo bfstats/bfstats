@@ -242,7 +242,6 @@ public class RoundService {
         .setCaptures(r.getCaptures())
         .setAttacks(r.getAttacks())
         .setDefences(r.getDefences());
-
   }
 
   public int getTotalActiveRoundsCount() {
@@ -272,6 +271,7 @@ public class RoundService {
     return getDslContext()
         .select(ROUND_PLAYER_TEAM.fields())
         .select(PLAYER.NAME)
+        .select(ROUND.MAP_CODE)
         .from(ROUND_PLAYER_TEAM)
         .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_TEAM.ROUND_ID))
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_TEAM.PLAYER_ID))
@@ -285,10 +285,11 @@ public class RoundService {
     Integer playerId = teamEvent.get(ROUND_PLAYER_TEAM.PLAYER_ID);
     String playerName = teamEvent.get(PLAYER.NAME);
     Integer playerTeam = teamEvent.get(ROUND_PLAYER_TEAM.TEAM);
-    //String teamCode = playerTeam == 1 ? "NVA" : "USArmy";
+    String mapCode = teamEvent.get(ROUND.MAP_CODE);
+    String playerTeamCode = KitService.getTeamCode(gameCode, mapCode, playerTeam);
+
     //String teamName = KitService.getTeamName(gameCode, teamCode);
-    String teamCode = playerTeam == 1 ? "NVA" : "USA";
-    String teamName = playerTeam == 1 ? "NVA" : "USA";
+    String teamName = playerTeamCode;
 
     LocalDateTime startTime = toUserZone(teamEvent.get(ROUND_PLAYER_TEAM.START_TIME).toLocalDateTime());
     LocalDateTime endTime = toUserZone(teamEvent.get(ROUND_PLAYER_TEAM.END_TIME).toLocalDateTime());
@@ -297,7 +298,7 @@ public class RoundService {
         .setPlayerId(playerId)
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
-        .setPlayerTeamCode(teamCode)
+        .setPlayerTeamCode(playerTeamCode)
         .setPlayerTeamName(teamName)
         .setStartTime(startTime)
         .setEndTime(endTime);
@@ -329,6 +330,8 @@ public class RoundService {
     Integer playerId = kitRecord.get(ROUND_PLAYER_DEPLOY_OBJECT.PLAYER_ID);
     String playerName = kitRecord.get(PLAYER.NAME);
     Integer playerTeam = kitRecord.get(ROUND_PLAYER_TEAM.TEAM);
+    String mapCode = kitRecord.get(ROUND.MAP_CODE);
+    String playerTeamCode = KitService.getTeamCode(gameCode, mapCode, playerTeam);
 
     LocalDateTime eventTime = toUserZone(kitRecord.get(ROUND_PLAYER_DEPLOY_OBJECT.EVENT_TIME).toLocalDateTime());
 
@@ -341,6 +344,7 @@ public class RoundService {
         .setPlayerId(playerId)
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
+        .setPlayerTeamCode(playerTeamCode)
         .setObjectCode(objectCode)
         .setObjectName(objectName);
   }
@@ -371,6 +375,8 @@ public class RoundService {
     Integer playerId = kitRecord.get(ROUND_PLAYER_PICKUP_KIT.PLAYER_ID);
     String playerName = kitRecord.get(PLAYER.NAME);
     Integer playerTeam = kitRecord.get(ROUND_PLAYER_TEAM.TEAM);
+    String mapCode = kitRecord.get(ROUND.MAP_CODE);
+    String playerTeamCode = KitService.getTeamCode(gameCode, mapCode, playerTeam);
 
     LocalDateTime eventTime = toUserZone(kitRecord.get(ROUND_PLAYER_PICKUP_KIT.EVENT_TIME).toLocalDateTime());
 
@@ -383,14 +389,15 @@ public class RoundService {
         .setPlayerId(playerId)
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
+        .setPlayerTeamCode(playerTeamCode)
         .setKitCode(kitCode)
         .setKitName(kitNameAndWeapons.getName())
         .setKitWeapons(kitNameAndWeapons.getWeapons());
   }
 
-  public List<ScoreEvent> getScoreEvents(int roundId) {
+  public List<ScoreEvent> getScoreEvents(String gameCode, int roundId) {
     return fetchScoreEventRecords(null, null, roundId).stream()
-        .map(RoundService::toScoreEvent)
+        .map(r -> toScoreEvent(gameCode, r))
         .collect(toList());
   }
 
@@ -405,7 +412,7 @@ public class RoundService {
     return fetchEventRecords(mapCode, playerId, roundId, eventTableDescriptor);
   }
 
-  private static ScoreEvent toScoreEvent(Record scoreRecord) {
+  private static ScoreEvent toScoreEvent(String gameCode, Record scoreRecord) {
     BigDecimal playerX = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.PLAYER_LOCATION_X);
     BigDecimal playerY = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.PLAYER_LOCATION_Y);
     BigDecimal playerZ = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.PLAYER_LOCATION_Z);
@@ -414,6 +421,8 @@ public class RoundService {
     Integer playerId = scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.PLAYER_ID);
     String playerName = scoreRecord.get(PLAYER.NAME);
     Integer playerTeam = scoreRecord.get(ROUND_PLAYER_TEAM.TEAM);
+    String mapCode = scoreRecord.get(ROUND.MAP_CODE);
+    String playerTeamCode = KitService.getTeamCode(gameCode, mapCode, playerTeam);
 
     LocalDateTime eventTime = toUserZone(scoreRecord.get(ROUND_PLAYER_SCORE_EVENT.EVENT_TIME).toLocalDateTime());
 
@@ -425,6 +434,7 @@ public class RoundService {
         .setPlayerId(playerId)
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
+        .setPlayerTeamCode(playerTeamCode)
         .setScoreType(scoreType); // FlagCapture, Defence
   }
 
@@ -488,6 +498,8 @@ public class RoundService {
     Integer playerId = vehicleRecord.get(ROUND_PLAYER_VEHICLE.PLAYER_ID);
     String playerName = vehicleRecord.get(PLAYER.NAME);
     Integer playerTeam = vehicleRecord.get(ROUND_PLAYER_TEAM.TEAM);
+    String mapCode = vehicleRecord.get(ROUND.MAP_CODE);
+    String playerTeamCode = KitService.getTeamCode(gameCode, mapCode, playerTeam);
 
     String vehicleCode = vehicleRecord.get(ROUND_PLAYER_VEHICLE.VEHICLE);
 
@@ -502,6 +514,7 @@ public class RoundService {
         .setPlayerId(playerId)
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
+        .setPlayerTeamCode(playerTeamCode)
         .setStartTime(startTime)
         .setEndTime(endTime)
         .setVehicleCode(vehicleCode)
@@ -534,6 +547,8 @@ public class RoundService {
     Integer playerId = medPackRecord.get(ROUND_PLAYER_MEDPACK.PLAYER_ID);
     String playerName = medPackRecord.get(PLAYER.NAME);
     Integer playerTeam = medPackRecord.get(ROUND_PLAYER_TEAM.TEAM);
+    String mapCode = medPackRecord.get(ROUND.MAP_CODE);
+    String playerTeamCode = KitService.getTeamCode(gameCode, mapCode, playerTeam);
 
     LocalDateTime startTime = toUserZone(medPackRecord.get(ROUND_PLAYER_MEDPACK.START_TIME).toLocalDateTime());
     LocalDateTime endTime = toUserZone(medPackRecord.get(ROUND_PLAYER_MEDPACK.END_TIME).toLocalDateTime());
@@ -561,6 +576,7 @@ public class RoundService {
         .setPlayerId(playerId)
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
+        .setPlayerTeamCode(playerTeamCode)
         .setStartTime(startTime)
         .setEndTime(endTime)
         .setDurationSeconds(durationSeconds)
@@ -595,6 +611,8 @@ public class RoundService {
     Integer playerId = repairRecord.get(ROUND_PLAYER_REPAIR.PLAYER_ID);
     String playerName = repairRecord.get(PLAYER.NAME);
     Integer playerTeam = repairRecord.get(ROUND_PLAYER_TEAM.TEAM);
+    String mapCode = repairRecord.get(ROUND.MAP_CODE);
+    String playerTeamCode = KitService.getTeamCode(gameCode, mapCode, playerTeam);
 
     LocalDateTime startTime = toUserZone(repairRecord.get(ROUND_PLAYER_REPAIR.START_TIME).toLocalDateTime());
     LocalDateTime endTime = toUserZone(repairRecord.get(ROUND_PLAYER_REPAIR.END_TIME).toLocalDateTime());
@@ -622,6 +640,7 @@ public class RoundService {
         .setPlayerId(playerId)
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
+        .setPlayerTeamCode(playerTeamCode)
         .setStartTime(startTime)
         .setEndTime(endTime)
         .setDurationSeconds(durationSeconds)
@@ -668,6 +687,7 @@ public class RoundService {
         .select(PLAYER.NAME)
         .select(ROUND_PLAYER_TEAM.TEAM)
         .select(OTHER_PLAYER_TABLE.NAME)
+        .select(ROUND.MAP_CODE)
         .from(mainTable)
         .join(ROUND).on(ROUND.ID.eq(roundIdField))
         .join(PLAYER).on(PLAYER.ID.eq(playerIdField))
@@ -704,6 +724,7 @@ public class RoundService {
         .select(KILLER_PLAYER_TABLE.NAME)
         .select(ROUND_PLAYER_TEAM.TEAM)
         .select(KILLER_PLAYER_TEAM_TABLE.TEAM)
+        .select(ROUND.MAP_CODE)
         .from(ROUND_PLAYER_DEATH)
         .join(ROUND).on(ROUND.ID.eq(ROUND_PLAYER_DEATH.ROUND_ID))
         .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_DEATH.PLAYER_ID))
@@ -737,8 +758,16 @@ public class RoundService {
     Integer playerId = deathRecord.get(ROUND_PLAYER_DEATH.PLAYER_ID);
     String playerName = deathRecord.get(PLAYER.NAME);
     String killerPlayerName = deathRecord.get(KILLER_PLAYER_TABLE.NAME);
+
+    String mapCode = deathRecord.get(ROUND.MAP_CODE);
+
     Integer playerTeam = findPlayerTeam(deathRecord);
+    String playerTeamCode = KitService.getTeamCode(gameCode, mapCode, playerTeam);
+
     Integer killerPlayerTeam = findKillerTeam(deathRecord);
+    String killerPlayerTeamCode = ofNullable(killerPlayerTeam)
+        .map(teamId -> KitService.getTeamCode(gameCode, mapCode, killerPlayerTeam))
+        .orElse(null);
 
     LocalDateTime deathTime = toUserZone(deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime());
 
@@ -755,9 +784,11 @@ public class RoundService {
         .setKillerPlayerId(killerPlayerId)
         .setKillerPlayerName(killerPlayerName)
         .setKillerPlayerTeam(killerPlayerTeam)
+        .setKillerPlayerTeamCode(killerPlayerTeamCode)
         .setPlayerId(playerId)
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
+        .setPlayerTeamCode(playerTeamCode)
         .setKillWeapon(killWeapon)
         .setKillType(killType);
   }
@@ -789,6 +820,8 @@ public class RoundService {
 
     Integer playerTeam = findPlayerTeam(deathRecord);
     Integer killerPlayerTeam = findKillerTeam(deathRecord);
+    String mapCode = deathRecord.get(ROUND.MAP_CODE);
+    String playerTeamCode = KitService.getTeamCode(gameCode, mapCode, playerTeam);
 
     LocalDateTime deathTime = toUserZone(deathRecord.get(ROUND_PLAYER_DEATH.EVENT_TIME).toLocalDateTime());
     String killWeaponCode = deathRecord.get(ROUND_PLAYER_DEATH.KILL_WEAPON);
@@ -807,6 +840,7 @@ public class RoundService {
         .setPlayerId(playerId)
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
+        .setPlayerTeamCode(playerTeamCode)
         .setKillWeapon(killWeapon)
         .setKillType(killType);
   }

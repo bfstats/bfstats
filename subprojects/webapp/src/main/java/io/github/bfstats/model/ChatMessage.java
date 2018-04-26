@@ -17,7 +17,10 @@ public class ChatMessage {
   @Nullable
   private Integer targetTeamId;
   @Nullable
+  private String targetTeamCode;
+  @Nullable
   private String targetTeamName;
   private Integer playerTeam;
+  private String playerTeamCode;
   private Integer roundId;
 }

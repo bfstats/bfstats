@@ -20,7 +20,7 @@ There are no score events
 <table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
   {% for scoreEvent in scoreEvents %}
-  <tr class="chat-team team-{{ scoreEvent.playerTeam }}">
+  <tr class="chat-team team-{{ scoreEvent.playerTeamCode }}">
     <td class="time">{{ scoreEvent.time | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ scoreEvent.playerId }}">{{ scoreEvent.playerName }}</a></td>
     <td class="message left">{{ scoreEvent.scoreType }}</td>
@@ -36,7 +36,7 @@ There are no vehicle events
 <table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
   {% for vehicleEvent in vehicleEvents %}
-  <tr class="chat-team team-{{ vehicleEvent.playerTeam }}">
+  <tr class="chat-team team-{{ vehicleEvent.playerTeamCode }}">
     <td class="time">{{ vehicleEvent.startTime | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ vehicleEvent.playerId }}">{{ vehicleEvent.playerName }}</a></td>
     <td class="message left">Drove {{ vehicleEvent.vehicleName }}</td>
@@ -52,7 +52,7 @@ There are no repair events
 <table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
   {% for repairEvent in repairEvents %}
-  <tr class="chat-team team-{{ repairEvent.playerTeam }}">
+  <tr class="chat-team team-{{ repairEvent.playerTeamCode }}">
     <td class="time">{{ repairEvent.startTime | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ repairEvent.playerId }}">{{ repairEvent.playerName }}</a></td>
     <td class="message left">Repaired {{ repairEvent.vehicleType}} for {{ repairEvent.durationSeconds }} seconds</td>
@@ -69,7 +69,7 @@ There are no healing events
 <table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
   {% for medPackEvent in medPackEvents %}
-  <tr class="chat-team team-{{ medPackEvent.playerTeam }}">
+  <tr class="chat-team team-{{ medPackEvent.playerTeamCode }}">
     <td class="time">{{ medPackEvent.startTime | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ medPackEvent.playerId }}">{{ medPackEvent.playerName }}</a></td>
     <td class="message left">
@@ -91,7 +91,7 @@ There are no team events
 <table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
   {% for teamEvent in teamEvents %}
-  <tr class="chat-team team-{{ teamEvent.playerTeam }}">
+  <tr class="chat-team team-{{ teamEvent.playerTeamCode }}">
     <td class="time">{{ teamEvent.startTime | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ teamEvent.playerId }}">{{ teamEvent.playerName }}</a></td>
     <td class="message left">set team to {{ teamEvent.playerTeamName }} (and stayed until {{ teamEvent.endTime | dt('HH:mm:ss') }} )</td>
@@ -107,7 +107,7 @@ There are no kit events
 <table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
   {% for kitEvent in kitEvents %}
-  <tr class="chat-team team-{{ kitEvent.playerTeam }}">
+  <tr class="chat-team team-{{ kitEvent.playerTeamCode }}">
     <td class="time">{{ kitEvent.time | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ kitEvent.playerId }}">{{ kitEvent.playerName }}</a></td>
     <td class="message left"> spawns with or picks up {{ kitEvent.kitName }} </td>
@@ -123,7 +123,7 @@ There are no deploy events
 <table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
   {% for deployEvent in deployEvents %}
-  <tr class="chat-team team-{{ deployEvent.playerTeam }}">
+  <tr class="chat-team team-{{ deployEvent.playerTeamCode }}">
     <td class="time">{{ deployEvent.time | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ deployEvent.playerId }}">{{ deployEvent.playerName }}</a></td>
     <td class="message left"> deployed {{ deployEvent.objectName }} </td>
@@ -139,7 +139,7 @@ There are no join or leave events
 <table class="styled_table chat_table" style="margin: 0 0 10px 0">
   <tbody>
   {% for joinOrLeaveEvent in joinOrLeaveEvents %}
-  <tr class="chat-team team-0">
+  <tr class="chat-team team-unknown">
     <td class="time">{{ joinOrLeaveEvent.time | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ joinOrLeaveEvent.playerId }}">{{ joinOrLeaveEvent.playerName }}</a></td>
     <td class="message left"> {{ joinOrLeaveEvent.type }} </td>

@@ -78,7 +78,7 @@ public class RoundController extends Controller {
 
     List<RoundEvent> roundEvents = roundService.getRoundEvents(round.getGameCode(), roundId);
 
-    List<ScoreEvent> scoreEvents = roundService.getScoreEvents(roundId); // capture/neutralize
+    List<ScoreEvent> scoreEvents = roundService.getScoreEvents(round.getGameCode(), roundId); // capture/neutralize
     List<VehicleEvent> vehicleEvents = roundService.getVehicleEvents(round.getGameCode(), roundId);
     List<RepairEvent> repairEvents = roundService.getRepairEvents(round.getGameCode(), roundId);
     List<MedPackEvent> medPackEvents = roundService.getMedPackEvents(round.getGameCode(), roundId);

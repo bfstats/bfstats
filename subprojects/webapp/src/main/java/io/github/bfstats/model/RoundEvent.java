@@ -17,10 +17,12 @@ public class RoundEvent {
   private Integer killerPlayerId;
   private String killerPlayerName;
   private Integer killerPlayerTeam;
+  private String killerPlayerTeamCode;
   private Integer playerId;
   private Weapon killWeapon;
   private String playerName;
   private Integer playerTeam;
+  private String playerTeamCode;
   private String killType;
 
   public Double getDistance() {

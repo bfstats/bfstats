@@ -11,6 +11,7 @@ public class VehicleEvent {
   private Integer playerId;
   private String playerName;
   private Integer playerTeam;
+  private String playerTeamCode;
   private Location startLocation;
   private LocalDateTime startTime;
   private LocalDateTime endTime;
