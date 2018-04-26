@@ -445,7 +445,7 @@ public class RoundService {
     Integer playerId = joinOrLeaveRecord.get(ROUND_PLAYER_JOIN_LEFT.PLAYER_ID);
     String playerName = joinOrLeaveRecord.get(PLAYER.NAME);
 
-    LocalDateTime time = toUserZone(joinOrLeaveRecord.get(ROUND_PLAYER_JOIN_LEFT.TIME).toLocalDateTime());
+    LocalDateTime time = toUserZone(joinOrLeaveRecord.get(ROUND_PLAYER_JOIN_LEFT.EVENT_TIME).toLocalDateTime());
 
     String type = joinOrLeaveRecord.get(ROUND_PLAYER_JOIN_LEFT.STATUS, String.class);
 
