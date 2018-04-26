@@ -424,4 +424,5 @@ FROM player_summary p,
 CREATE VIEW IF NOT EXISTS round_player_join_left AS
 SELECT gp.joined_round_id AS round_id, gp.player_id AS player_id, gp.start_time AS event_time, 'JOINED' AS status FROM game_player gp
 UNION ALL
-SELECT gp.end_round_id, gp.player_id, gp.end_time, 'LEFT' FROM game_player gp;
+SELECT gp.end_round_id, gp.player_id, gp.end_time, 'LEFT' FROM game_player gp
+ORDER BY event_time ASC;
