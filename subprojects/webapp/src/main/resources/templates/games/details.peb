@@ -5,7 +5,7 @@
 <h3>{{ game.mapName }} {{ game.startTime | dt("HH:mm") }}</h3>
 
 {% for round in rounds %}
-<h3>Round #{{ loop.index + 1}} {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)</h3>
+<h3><a href="{{appPath}}/rounds/{{ round.id }}">Round #{{ loop.index + 1}}</a> {{ round.startTime | dt("HH:mm") }} - {{ round.endTime | dt("HH:mm") }} ({{ round.durationInMinutes }} min)</h3>
 
 <div class="clear">
   <div>
