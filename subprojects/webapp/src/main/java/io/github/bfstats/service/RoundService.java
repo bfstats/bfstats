@@ -439,21 +439,21 @@ public class RoundService {
     return fetchEventRecords(mapCode, playerId, roundId, eventTableDescriptor);
   }
 
-  private static VehicleEvent toVehicleEvent(String gameCode, Record vehicleEvent) {
-    BigDecimal playerX = vehicleEvent.get(ROUND_PLAYER_VEHICLE.PLAYER_LOCATION_X);
-    BigDecimal playerY = vehicleEvent.get(ROUND_PLAYER_VEHICLE.PLAYER_LOCATION_Y);
-    BigDecimal playerZ = vehicleEvent.get(ROUND_PLAYER_VEHICLE.PLAYER_LOCATION_Z);
+  private static VehicleEvent toVehicleEvent(String gameCode, Record vehicleRecord) {
+    BigDecimal playerX = vehicleRecord.get(ROUND_PLAYER_VEHICLE.PLAYER_LOCATION_X);
+    BigDecimal playerY = vehicleRecord.get(ROUND_PLAYER_VEHICLE.PLAYER_LOCATION_Y);
+    BigDecimal playerZ = vehicleRecord.get(ROUND_PLAYER_VEHICLE.PLAYER_LOCATION_Z);
     Location startLocation = new Location(playerX.floatValue(), playerY.floatValue(), playerZ.floatValue());
 
-    Integer playerId = vehicleEvent.get(ROUND_PLAYER_VEHICLE.PLAYER_ID);
-    String playerName = vehicleEvent.get(PLAYER.NAME);
-    Integer playerTeam = vehicleEvent.get(ROUND_PLAYER_TEAM.TEAM);
+    Integer playerId = vehicleRecord.get(ROUND_PLAYER_VEHICLE.PLAYER_ID);
+    String playerName = vehicleRecord.get(PLAYER.NAME);
+    Integer playerTeam = vehicleRecord.get(ROUND_PLAYER_TEAM.TEAM);
 
-    String vehicleCode = vehicleEvent.get(ROUND_PLAYER_VEHICLE.VEHICLE);
+    String vehicleCode = vehicleRecord.get(ROUND_PLAYER_VEHICLE.VEHICLE);
 
-    LocalDateTime startTime = toUserZone(vehicleEvent.get(ROUND_PLAYER_VEHICLE.START_TIME).toLocalDateTime());
-    LocalDateTime endTime = toUserZone(vehicleEvent.get(ROUND_PLAYER_VEHICLE.END_TIME).toLocalDateTime());
-    Integer durationSeconds = vehicleEvent.get(ROUND_PLAYER_VEHICLE.DURATION_SECONDS);
+    LocalDateTime startTime = toUserZone(vehicleRecord.get(ROUND_PLAYER_VEHICLE.START_TIME).toLocalDateTime());
+    LocalDateTime endTime = toUserZone(vehicleRecord.get(ROUND_PLAYER_VEHICLE.END_TIME).toLocalDateTime());
+    Integer durationSeconds = vehicleRecord.get(ROUND_PLAYER_VEHICLE.DURATION_SECONDS);
 
     String vehicleName = VehicleService.vehicleNameAndSeat(gameCode, vehicleCode);
 
