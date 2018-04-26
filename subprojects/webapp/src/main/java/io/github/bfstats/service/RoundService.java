@@ -422,6 +422,40 @@ public class RoundService {
         .setScoreType(scoreType); // FlagCapture, Defence
   }
 
+
+  public List<JoinOrLeaveEvent> getJoinOrLeaveEvents(String gameCode, int roundId) {
+    List<Record> records = fetchJoinLeftRecords(roundId);
+
+    return records.stream()
+        .map(record -> toJoinOrLeaveEvent(gameCode, record))
+        .collect(toList());
+  }
+
+  private List<Record> fetchJoinLeftRecords(int roundId) {
+    return getDslContext()
+        .select(ROUND_PLAYER_JOIN_LEFT.fields())
+        .select(PLAYER.NAME)
+        .from(ROUND_PLAYER_JOIN_LEFT)
+        .join(PLAYER).on(PLAYER.ID.eq(ROUND_PLAYER_JOIN_LEFT.PLAYER_ID))
+        .where(ROUND_PLAYER_JOIN_LEFT.ROUND_ID.eq(roundId))
+        .fetch();
+  }
+
+  private static JoinOrLeaveEvent toJoinOrLeaveEvent(String gameCode, Record joinOrLeaveRecord) {
+    Integer playerId = joinOrLeaveRecord.get(ROUND_PLAYER_JOIN_LEFT.PLAYER_ID);
+    String playerName = joinOrLeaveRecord.get(PLAYER.NAME);
+
+    LocalDateTime time = toUserZone(joinOrLeaveRecord.get(ROUND_PLAYER_JOIN_LEFT.TIME).toLocalDateTime());
+
+    String type = joinOrLeaveRecord.get(ROUND_PLAYER_JOIN_LEFT.STATUS, String.class);
+
+    return new JoinOrLeaveEvent()
+        .setPlayerId(playerId)
+        .setPlayerName(playerName)
+        .setTime(time)
+        .setType(type);
+  }
+
   public List<VehicleEvent> getVehicleEvents(String gameCode, int roundId) {
     return fetchVehicleEventRecords(null, null, roundId).stream()
         .map(r -> toVehicleEvent(gameCode, r))

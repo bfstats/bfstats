@@ -132,3 +132,19 @@ There are no deploy events
   </tbody>
 </table>
 {% endif %}
+
+{% if joinOrLeaveEvents is empty %}
+There are no join or leave events
+{% else %}
+<table class="styled_table chat_table" style="margin: 0 0 10px 0">
+  <tbody>
+  {% for joinOrLeaveEvent in joinOrLeaveEvents %}
+  <tr class="chat-team">
+    <td class="time">{{ joinOrLeaveEvent.time | dt('HH:mm:ss') }}</td>
+    <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ joinOrLeaveEvent.playerId }}">{{ joinOrLeaveEvent.playerName }}</a></td>
+    <td class="message left"> {{ joinOrLeaveEvent.type }} </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}

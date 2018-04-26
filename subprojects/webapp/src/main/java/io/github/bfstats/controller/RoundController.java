@@ -85,6 +85,7 @@ public class RoundController extends Controller {
     List<TeamEvent> teamEvents = roundService.getTeamEvents(round.getGameCode(), roundId);
     List<KitEvent> kitEvents = roundService.getKitEvents(round.getGameCode(), roundId);
     List<DeployEvent> deployEvents = roundService.getDeployEvents(round.getGameCode(), roundId);
+    List<JoinOrLeaveEvent> joinOrLeaveEvents = roundService.getJoinOrLeaveEvents(round.getGameCode(), roundId);
 
     // TODO: mix all events together
     //* player join/disconnect
@@ -102,6 +103,7 @@ public class RoundController extends Controller {
         .bind("teamEvents", teamEvents)
         .bind("kitEvents", kitEvents)
         .bind("deployEvents", deployEvents)
+        .bind("joinOrLeaveEvents", joinOrLeaveEvents)
         .render("rounds/details");
   }
 

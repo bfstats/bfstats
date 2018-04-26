@@ -24,6 +24,7 @@ public class DBCreator {
       statement.execute("DROP VIEW IF EXISTS player_summary_no_rank;");
       statement.execute("DROP VIEW IF EXISTS player_points;");
       statement.execute("DROP VIEW IF EXISTS player_top_stats;");
+      statement.execute("DROP VIEW IF EXISTS round_player_join_left;");
       statement.close();
       System.out.println("Dropped views so they will be recreated");
     }
