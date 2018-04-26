@@ -11,6 +11,8 @@ public class TeamEvent {
   private Integer playerId;
   private String playerName;
   private Integer playerTeam;
+  private String playerTeamCode;
+  private String playerTeamName;
   private LocalDateTime startTime;
   private LocalDateTime endTime;
 }

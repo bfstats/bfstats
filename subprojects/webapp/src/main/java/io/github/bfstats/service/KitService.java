@@ -8,6 +8,7 @@ import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Map;
 
@@ -152,6 +153,11 @@ public class KitService {
     }
   }
 
+  @ParametersAreNonnullByDefault
+  public static String getTeamName(String gameCode, String teamCode) {
+    return teamNameByCodeByGameCode.get(gameCode).getOrDefault(teamCode, teamCode);
+  }
+
   public static KitNameAndWeapons findKitNameAndWeapons(String gameCode, String kitCode) {
     String[] parts = kitCode.split("_");
     if (parts.length < 2) {
@@ -162,7 +168,7 @@ public class KitService {
     }
 
     String teamCode = parts[0];
-    String teamName = teamNameByCodeByGameCode.get(gameCode).getOrDefault(teamCode, teamCode);
+    String teamName = getTeamName(gameCode, teamCode);
 
     String categoryCode = parts[1];
     String categoryName = categoryNameByCodeByGameCode.get(gameCode).getOrDefault(categoryCode, categoryCode);

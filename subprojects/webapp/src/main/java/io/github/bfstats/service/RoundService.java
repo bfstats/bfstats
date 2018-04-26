@@ -285,6 +285,10 @@ public class RoundService {
     Integer playerId = teamEvent.get(ROUND_PLAYER_TEAM.PLAYER_ID);
     String playerName = teamEvent.get(PLAYER.NAME);
     Integer playerTeam = teamEvent.get(ROUND_PLAYER_TEAM.TEAM);
+    //String teamCode = playerTeam == 1 ? "NVA" : "USArmy";
+    //String teamName = KitService.getTeamName(gameCode, teamCode);
+    String teamCode = playerTeam == 1 ? "NVA" : "USA";
+    String teamName = playerTeam == 1 ? "NVA" : "USA";
 
     LocalDateTime startTime = toUserZone(teamEvent.get(ROUND_PLAYER_TEAM.START_TIME).toLocalDateTime());
     LocalDateTime endTime = toUserZone(teamEvent.get(ROUND_PLAYER_TEAM.END_TIME).toLocalDateTime());
@@ -293,6 +297,8 @@ public class RoundService {
         .setPlayerId(playerId)
         .setPlayerName(playerName)
         .setPlayerTeam(playerTeam)
+        .setPlayerTeamCode(teamCode)
+        .setPlayerTeamName(teamName)
         .setStartTime(startTime)
         .setEndTime(endTime);
   }
