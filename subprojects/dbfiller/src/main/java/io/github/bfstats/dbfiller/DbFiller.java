@@ -67,6 +67,7 @@ public class DbFiller {
   private final String gameServerAddress;
   private final ZoneId logFileZoneId;
   private final LocalDateTime logStartTime; // in UTC
+  private Duration logEndDuration; // in UTC
   private final String engine;
 
   private List<BfEvent> eventQueueBeforeFirstRound = new ArrayList<>();
@@ -374,6 +375,10 @@ public class DbFiller {
         log.warn("unhandled child type" + child.toString());
       }
     }
+
+    if (lastRoundId != -1 && logEndDuration != null) {
+      recordEndGame(lastRoundId, logEndDuration);
+    }
   }
 
   private void processEventQueueFromBeforeFirstRound(int firstRoundId) {
@@ -470,7 +475,27 @@ public class DbFiller {
       recordEndRound(roundId, teamEndDur);
     }
 
+    if (lastEvent != null) {
+      logEndDuration = lastEvent.getDurationSinceLogStart();
+    } else {
+      if (bfRound.getRoundStats() != null) {
+        log.warn(logStartTime + " there were no events in round, so using round stats time as end time");
+        logEndDuration = bfRound.getRoundStats().getDurationSinceLogStart();
+      } else {
+        log.warn(logStartTime + " there were no events in round, so using round start time as end time");
+        logEndDuration = Duration.ZERO;
+      }
+    }
+
     return roundId;
+  }
+
+  private void recordEndGame(int endingRoundId, Duration endingRoundEndTime) {
+    for (GamePlayer gamePlayer : activePlayersByRoundPlayerId.values()) {
+      if (!isSlotIdBot(gamePlayer.getRoundPlayerSlotId())) {
+        addGamePlayerJoinEndDates(endingRoundId, gamePlayer, endingRoundEndTime);
+      }
+    }
   }
 
   private void recordEndRound(int endingRoundId, Duration endingRoundEndTime) {
