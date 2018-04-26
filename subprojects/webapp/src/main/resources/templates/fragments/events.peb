@@ -94,7 +94,7 @@ There are no team events
   <tr class="chat-team team-{{ teamEvent.playerTeam }}">
     <td class="time">{{ teamEvent.startTime | dt('HH:mm:ss') }}</td>
     <td class="name" style="text-align:right"><a href="{{appPath}}/players/{{ teamEvent.playerId }}">{{ teamEvent.playerName }}</a></td>
-    <td class="message left"> until {{ teamEvent.endTime | dt('HH:mm:ss') }} </td>
+    <td class="message left">set team to {{ teamEvent.playerTeam }} (and stayed until {{ teamEvent.endTime | dt('HH:mm:ss') }} )</td>
   </tr>
   {% endfor %}
   </tbody>

@@ -584,6 +584,7 @@ public class DbFiller {
           GamePlayer gamePlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
           Integer spawnTeam = e.getIntegerParamValueByName(SpawnEventParams.team.name());
           if (!gamePlayer.getTeam().equals(spawnTeam)) {
+            // adds team-usage for previous team
             addRoundPlayerTeamUsage(roundId, gamePlayer, e.getDurationSinceLogStart());
             gamePlayer.setTeam(spawnTeam);
           }
@@ -807,7 +808,9 @@ else: repair; number of repairs
   private void parseSetTeamEvent(int roundId, BfEvent e) {
     GamePlayer gamePlayer = getRoundPlayerFromSlotId(e.getPlayerSlotId());
 
+    // adds team-usage for previous team
     addRoundPlayerTeamUsage(roundId, gamePlayer, e.getDurationSinceLogStart());
+
     Integer team = e.getIntegerParamValueByName(SetTeamParams.team.name());
     gamePlayer.setTeam(team);
   }
