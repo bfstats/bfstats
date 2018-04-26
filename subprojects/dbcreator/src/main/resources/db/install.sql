@@ -299,7 +299,7 @@ CREATE INDEX IF NOT EXISTS round_player_medpack_round_id_idx ON round_player_med
 CREATE INDEX IF NOT EXISTS round_player_medpack_player_id_idx ON round_player_medpack(player_id);
 CREATE INDEX IF NOT EXISTS round_player_medpack_vehicle_healed_player_id_idx ON round_player_medpack(healed_player_id);
 
--- TODO: also add table like round_player_team, which logs start and end date;
+-- TODO: also add table like round_player_team, which logs start and end date
 --       creating view is not that good, because end time can be caused by
 --       other reasons than picking up new kit
 

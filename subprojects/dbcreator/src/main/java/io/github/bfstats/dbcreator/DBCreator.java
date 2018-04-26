@@ -53,6 +53,9 @@ public class DBCreator {
         if (line.startsWith("#")) {
           continue;
         }
+        if (line.startsWith("--")) {
+          continue;
+        }
         if (line.startsWith("/*!") && line.endsWith("*/")) {
           int i = line.indexOf(' ');
           line = line.substring(i + 1, line.length() - " */".length());
